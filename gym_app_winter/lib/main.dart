@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_winter/Schemes/color_scheme.dart';
+import 'package:gym_app_winter/schemes/color_scheme.dart';
+import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart';
 import 'package:gym_app_winter/widgets/floating_button.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -68,22 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {},
         label: "Add Exercise",
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Exercises',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center),
-            label: 'Workouts',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      bottomNavigationBar: CustomBottomNavigationBar(),
     );
   }
 }

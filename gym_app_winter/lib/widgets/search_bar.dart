@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_winter/Schemes/color_scheme.dart';
+import 'package:gym_app_winter/schemes/color_scheme.dart';
 
 class CustomSearchBar extends StatelessWidget {
   const CustomSearchBar({
