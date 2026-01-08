@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart' show CustomBottomNavigationBar;
 import 'package:gym_app_winter/widgets/floating_button.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
@@ -41,7 +42,10 @@ class _PoopState extends State<Poop> {
         ),
       ),
       floatingActionButton: CustomFloatingButton(
-        onPressed: () {},
+        onPressed: () {
+            // GoRouter.of(context).go("/");
+            context.go("/");
+        },
         label: "Add Exercise",
       ),
       bottomNavigationBar: CustomBottomNavigationBar(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/schemes/color_scheme.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   const CustomBottomNavigationBar({super.key});
@@ -11,6 +12,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+        selectedItemColor: AppColors.primaryBlue,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),

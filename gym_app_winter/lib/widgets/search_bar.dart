@@ -15,7 +15,7 @@ class CustomSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-              padding: const EdgeInsets.fromLTRB(24.0, 12, 24, 24),
+              padding: const EdgeInsets.fromLTRB(24.0, 12, 24,24),
               child: TextField(
                 decoration: InputDecoration(
                   filled: true,
