@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_winter/schemes/color_scheme.dart';
+import 'package:gym_app_winter/palette/color_scheme.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   const CustomBottomNavigationBar({super.key});

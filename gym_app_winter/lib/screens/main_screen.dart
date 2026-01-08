@@ -15,7 +15,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   void onChanged(String e) {
-    print("hello world");
+    
   }
 
   final TextEditingController _controller = TextEditingController();
@@ -38,16 +38,9 @@ class _MainScreenState extends State<MainScreen> {
               controller: _controller,
               onChanged: onChanged,
             ),
-            ExerciseTile(
-              title: "Bench Press",
-              subtitle: "Last Log: 7kg for 10reps",
-              onTap: () {},
-            ),
-            ExerciseTile(
-              title: "Bench Press",
-              subtitle: "Last Log: 7kg for 10reps",
-              onTap: () {},
-            ),
+            Expanded(child: ListView.builder(itemCount: 20, itemBuilder: (context,index){
+                return ExerciseTile(title: "Exercise $index", subtitle: "Last Log: 28th January", onTap: (){});
+            },))
           ],
         ),
       ),
