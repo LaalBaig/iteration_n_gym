@@ -6,6 +6,7 @@ import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart'
 import 'package:gym_app_winter/widgets/empty_exercise_screen.dart';
 import 'package:gym_app_winter/widgets/exercise_tile.dart';
 import 'package:gym_app_winter/widgets/floating_button.dart';
+import 'package:gym_app_winter/widgets/not_found.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
 
 class MainScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final TextEditingController _controller = TextEditingController();
-  List<Exercise> get exerciseList => genEx(4);
+  List<Exercise> get exerciseList => genEx(5);
   late List<Exercise> filteredExerciseList;
   @override
   void initState() {
@@ -74,7 +75,9 @@ class _MainScreenState extends State<MainScreen> {
               controller: _controller,
               onChanged: _filterExercises,
             ),
-            if (filteredExerciseList.isEmpty)
+            if(filteredExerciseList.isEmpty && _controller.text.isNotEmpty && exerciseList.isNotEmpty)
+                NotFound(exercise: _controller.text)
+            else if (filteredExerciseList.isEmpty)
               const EmptyExerciseScreen()
             else
               Expanded(
