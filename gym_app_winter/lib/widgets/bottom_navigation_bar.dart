@@ -13,6 +13,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
         selectedItemColor: AppColors.primaryBlue,
+        backgroundColor: AppColors.backgroundGrey,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),

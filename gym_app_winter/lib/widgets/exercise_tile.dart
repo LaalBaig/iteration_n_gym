@@ -19,7 +19,7 @@ class ExerciseTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         // REFINEMENT: Reduced top/bottom margin for a tighter list
-        margin: const EdgeInsets.fromLTRB(24,6,24,6), 
+        margin: const EdgeInsets.fromLTRB(0,0,0,12), 
         // REFINEMENT: Switched to symmetric padding to control vertical height specifically
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12), 
         decoration: BoxDecoration(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gym_app_winter/datamodel/exercise.dart';
 import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart'
     show CustomBottomNavigationBar;
+import 'package:gym_app_winter/widgets/empty_exercise_screen.dart';
 import 'package:gym_app_winter/widgets/exercise_tile.dart';
 import 'package:gym_app_winter/widgets/floating_button.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
@@ -14,11 +16,45 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  void onChanged(String e) {
-    
+  final TextEditingController _controller = TextEditingController();
+  List<Exercise> get exerciseList => genEx(4);
+  late List<Exercise> filteredExerciseList;
+  @override
+  void initState() {
+    super.initState();
+    filteredExerciseList = exerciseList;
   }
 
-  final TextEditingController _controller = TextEditingController();
+  void onChanged(String e) {}
+  List<Exercise> genEx(int n) {
+    List<Exercise> temp = [];
+    for (int i = 0; i < n; i++) {
+      temp.add(
+        Exercise(
+          id: "id$i",
+          name: "name$i",
+          lastLog: "lastLog$i",
+          category: "category$i",
+        ),
+      );
+    }
+    return temp;
+  }
+
+  void _filterExercises(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredExerciseList = exerciseList;
+      } else {
+        filteredExerciseList = exerciseList
+            .where(
+              (exercise) =>
+                  exercise.name.toLowerCase().contains(query.toLowerCase()),
+            )
+            .toList();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +72,24 @@ class _MainScreenState extends State<MainScreen> {
             CustomSearchBar(
               hintText: "Search For Exercise",
               controller: _controller,
-              onChanged: onChanged,
+              onChanged: _filterExercises,
             ),
-            Expanded(child: ListView.builder(itemCount: 20, itemBuilder: (context,index){
-                return ExerciseTile(title: "Exercise $index", subtitle: "Last Log: 28th January", onTap: (){});
-            },))
+            if (filteredExerciseList.isEmpty)
+              const EmptyExerciseScreen()
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredExerciseList.length,
+                  padding: EdgeInsets.fromLTRB(24, 0, 24, 6),
+                  itemBuilder: (context, index) {
+                    return ExerciseTile(
+                      title: filteredExerciseList[index].name,
+                      subtitle: filteredExerciseList[index].lastLog,
+                      onTap: () {},
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),
