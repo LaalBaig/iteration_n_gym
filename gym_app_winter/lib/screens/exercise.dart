@@ -4,14 +4,14 @@ import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart' show CustomBo
 import 'package:gym_app_winter/widgets/floating_button.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
 
-class Poop extends StatefulWidget {
-  const Poop({super.key});
+class ExercisePage extends StatefulWidget {
+  const ExercisePage({super.key});
 
   @override
-  State<Poop> createState() => _PoopState();
+  State<ExercisePage> createState() => _ExercisePageState();
 }
 
-class _PoopState extends State<Poop> {
+class _ExercisePageState extends State<ExercisePage> {
     void onChanged(String e) {
     print("hello world");
   }

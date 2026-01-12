@@ -88,7 +88,9 @@ class _MainScreenState extends State<MainScreen> {
                     return ExerciseTile(
                       title: filteredExerciseList[index].name,
                       subtitle: filteredExerciseList[index].lastLog,
-                      onTap: () {},
+                      onTap: () {
+                        context.go('/temp');
+                      },
                     );
                   },
                 ),
