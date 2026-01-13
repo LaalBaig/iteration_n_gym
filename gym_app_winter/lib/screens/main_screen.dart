@@ -89,7 +89,7 @@ class _MainScreenState extends State<MainScreen> {
                       title: filteredExerciseList[index].name,
                       subtitle: filteredExerciseList[index].lastLog,
                       onTap: () {
-                        context.go('/temp');
+                        context.go('/exercise_page/${filteredExerciseList[index].name}');
                       },
                     );
                   },
