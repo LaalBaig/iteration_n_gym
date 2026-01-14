@@ -19,8 +19,8 @@ class LogSetCard extends StatefulWidget {
 }
 
 class _SetData {
-  int weight;
-  int reps;
+  int weight = 0;
+  int reps = 0;
   final FixedExtentScrollController weightScrollController;
   final FixedExtentScrollController repsScrollController;
   final TextEditingController weightTextController;
@@ -28,7 +28,7 @@ class _SetData {
   final FocusNode weightFocusNode;
   final FocusNode repsFocusNode;
 
-  _SetData({this.weight = 0, this.reps = 0})
+  _SetData()
     : weightScrollController = FixedExtentScrollController(),
       repsScrollController = FixedExtentScrollController(),
       weightTextController = TextEditingController(),

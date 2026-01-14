@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_winter/datamodel/exercise.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 
 class HistoryTile extends StatelessWidget {
@@ -39,7 +38,7 @@ class HistoryTile extends StatelessWidget {
                       children: [
                         Text("${i+1} ", style: TextStyle(color: AppColors.emptyText,),),
                         SizedBox(width: 12,),
-                        Text("$reps reps x ${weight}kg", style: TextStyle(fontWeight: FontWeight.w600,),),
+                        Text("$reps  reps  x  ${weight} kg", style: TextStyle(fontWeight: FontWeight.w400,),),
                       ],
                     ),
                     SizedBox(height: 6,),

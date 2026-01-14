@@ -16,9 +16,20 @@ class _ExercisePageState extends State<ExercisePage> {
   void onChanged(String e) {
     print("hello world");
   }
+
   final List<HistoryTile> history = [
-    HistoryTile(date: "Wednesday, December 23", sets: "3", reps: "10", weight: "100"),
-    HistoryTile(date: "Wednesday, October 25", sets: "3", reps: "11", weight: "105"),
+    HistoryTile(
+      date: "Wednesday, December 23",
+      sets: "3",
+      reps: "10",
+      weight: "100",
+    ),
+    HistoryTile(
+      date: "Wednesday, October 25",
+      sets: "3",
+      reps: "11",
+      weight: "105",
+    ),
   ];
   // final TextEditingController _controller = TextEditingController();
 
@@ -29,7 +40,6 @@ class _ExercisePageState extends State<ExercisePage> {
       body: SafeArea(
         minimum: EdgeInsets.fromLTRB(24, 24, 24, 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -48,42 +58,49 @@ class _ExercisePageState extends State<ExercisePage> {
             ),
             SizedBox(height: 24),
 
-            LogSetCard(
-              exerciseName: widget.exerciseName,
-              onFinish: () {},
-              onAddSet: () {},
-            ),
-            SizedBox(height: 24),
-            Row(
-              children: [
-                Text(
-                  "History",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
-                  child: Text(
-                    "See All",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.primaryBlue,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12),
             Expanded(
-              child: ListView.builder(
-                itemCount: history.length,
-                itemBuilder: (context, index) {
-                  return history[index];
-                },
+              child: ListView(
+                children: [
+                  LogSetCard(
+                    exerciseName: widget.exerciseName,
+                    onFinish: () {},
+                    onAddSet: () {},
+                  ),
+                  SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Text(
+                        "History",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
+                        child: Text(
+                          "See All",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.primaryBlue,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  for (int i = 0; i < 2; i++)
+                    HistoryTile(
+                      date: "Wednesday, December 23",
+                      sets: "3",
+                      reps: "10",
+                      weight: "100",
+                    ),
+                ],
               ),
             ),
           ],
-          
         ),
       ),
     );
