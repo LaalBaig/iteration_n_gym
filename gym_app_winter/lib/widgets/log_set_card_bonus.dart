@@ -190,7 +190,7 @@ class _LogSetCardState extends State<LogSetCard> {
                     IconButton(
                       onPressed: () => _removeSet(index),
                       icon: const Icon(Icons.remove_circle_outline),
-                      color: const Color.fromARGB(255, 255, 100, 89),
+                      color: Colors.red,
                       iconSize: 24,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),

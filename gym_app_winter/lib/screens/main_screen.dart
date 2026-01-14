@@ -29,16 +29,46 @@ class _MainScreenState extends State<MainScreen> {
   void onChanged(String e) {}
   List<Exercise> genEx(int n) {
     List<Exercise> temp = [];
-    for (int i = 0; i < n; i++) {
-      temp.add(
+    temp.add(
         Exercise(
-          id: "id$i",
-          name: "name$i",
-          lastLog: "lastLog$i",
-          category: "category$i",
+          id: "id1",
+          name: "Bench Press",
+          lastLog: "25th December 9:50pm",
+          category: "free weights",
         ),
       );
-    }
+      temp.add(
+        Exercise(
+          id: "id2",
+          name: "Deadlift",
+          lastLog: "25th December 9:50pm",
+          category: "free weights",
+        ),
+      );
+      temp.add(
+        Exercise(
+          id: "id3",
+          name: "Dumbbell Press",
+          lastLog: "20th December 9:50pm",
+          category: "free weights",
+        ),
+      );
+      temp.add(
+        Exercise(
+          id: "id4",
+          name: "Squat",
+          lastLog: "20th December 9:50pm",
+          category: "free weights",
+        ),
+      );
+      temp.add(
+        Exercise(
+          id: "id5",
+          name: "Push-Ups",
+          lastLog: "18th September",
+          category: "Bodyweight",
+        ),
+      );
     return temp;
   }
 
@@ -68,7 +98,7 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-              child: Text('Track Exercises', style: TextStyle(fontSize: 24)),
+              child: Text('Track Exercises', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
             ),
             CustomSearchBar(
               hintText: "Search For Exercise",
