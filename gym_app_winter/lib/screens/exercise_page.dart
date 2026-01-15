@@ -17,97 +17,82 @@ class _ExercisePageState extends State<ExercisePage> {
     print("hello world");
   }
 
-  final List<HistoryTile> history = [
-    HistoryTile(
-      date: "Wednesday, December 23",
-      sets: "3",
-      reps: "10",
-      weight: "100",
-    ),
-    HistoryTile(
-      date: "Wednesday, October 25",
-      sets: "3",
-      reps: "11",
-      weight: "105",
-    ),
-  ];
+  final List<HistoryTile> history = [];
   // final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.textWhite,
-      body: SafeArea(
-        minimum: EdgeInsets.fromLTRB(24, 24, 24, 24),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                GestureDetector(
-                  child: Icon(Icons.arrow_back),
-                  onTap: () => context.pop(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
-                  child: Text(
-                    widget.exerciseName,
-                    style: TextStyle(fontSize: 24),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 24),
-
-            Expanded(
-              child: ListView(
+      body: GestureDetector(
+        onTap: () {
+          // Dismiss keyboard when tapping outside
+          FocusScope.of(context).unfocus();
+        },
+        child: SafeArea(
+          minimum: EdgeInsets.fromLTRB(24, 24, 24, 24),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  LogSetCard(
-                    exerciseName: widget.exerciseName,
-                    onFinish: (setData) {
-                      setState(() {
-                        print("setData: $setData");
-                        history.add(
-                          HistoryTile(
-                            date: "Wednesday, December 23",
-                            sets: "3",
-                            reps: setData[0]['reps'].toString(),
-                            weight: setData[0]['weight'].toString(),
-                          ),
-                        );
-                      });
-                    },
-                    onAddSet: () {},
+                  GestureDetector(
+                    child: Icon(Icons.arrow_back),
+                    onTap: () => context.pop(),
                   ),
-                  SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Text(
-                        "History",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
-                        child: Text(
-                          "See All",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.primaryBlue,
-                          ),
-                        ),
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
+                    child: Text(
+                      widget.exerciseName,
+                      style: TextStyle(fontSize: 24),
+                    ),
                   ),
-                  SizedBox(height: 12),
-                  for (int i = 0; i < history.length; i++)
-                    history[i],
                 ],
               ),
-            ),
-          ],
+              SizedBox(height: 24),
+
+              Expanded(
+                child: ListView(
+                  children: [
+                    LogSetCard(
+                      exerciseName: widget.exerciseName,
+                      onFinish: (setData) {
+                        setState(() {
+                          print("setData: $setData");
+                          history.add(HistoryTile(setData: setData));
+                        });
+                      },
+                      onAddSet: () {},
+                    ),
+                    SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Text(
+                          "History",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
+                          child: Text(
+                            "See All",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.primaryBlue,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+                    for (int i = 0; i < history.length; i++) history[i],
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

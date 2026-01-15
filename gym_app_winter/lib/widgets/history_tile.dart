@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 
 class HistoryTile extends StatelessWidget {
-  const HistoryTile({super.key, required this.date, required this.sets, required this.reps, required this.weight});
-  final String date;
-  final String sets;
-  final String reps;
-  final String weight;
+  const HistoryTile({super.key, required this.setData});
+
+  final List<Map<String, int>> setData;
 
   @override
   Widget build(BuildContext context) {
@@ -25,20 +23,20 @@ class HistoryTile extends StatelessWidget {
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(date, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,),),
+                  Text("Wednesday, December 23", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,),),
                 ],
               ),
               SizedBox(height: 10),
               Text("Sets", style: TextStyle(color: AppColors.emptyText),),
               Divider(),
-              for (int i = 0; i < int.parse(sets); i++)
+              for (int i = 0; i < setData.length; i++)
                 Column(
                   children: [
                     Row(
                       children: [
                         Text("${i+1} ", style: TextStyle(color: AppColors.emptyText,),),
                         SizedBox(width: 12,),
-                        Text("$reps  reps  x  ${weight} kg", style: TextStyle(fontWeight: FontWeight.w400,),),
+                        Text("${setData[i]['reps']}  reps  x  ${setData[i]['weight']} kg", style: TextStyle(fontWeight: FontWeight.w400,),),
                       ],
                     ),
                     SizedBox(height: 6,),

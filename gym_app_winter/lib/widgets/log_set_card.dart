@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 
@@ -208,6 +209,23 @@ class _LogSetCardState extends State<LogSetCard> {
             height: 48,
             child: ElevatedButton(
               onPressed: () {
+                // Unfocus all text fields to save any pending input
+                for (var set in _sets) {
+                  if (set.weightFocusNode.hasFocus) {
+                    final newValue =
+                        int.tryParse(set.weightTextController.text) ?? 0;
+                    set.weight = newValue.clamp(0, 500);
+                    set.weightFocusNode.unfocus();
+                  }
+                  if (set.repsFocusNode.hasFocus) {
+                    final newValue =
+                        int.tryParse(set.repsTextController.text) ?? 0;
+                    set.reps = newValue.clamp(0, 100);
+                    set.repsFocusNode.unfocus();
+                  }
+                }
+
+                // Collect the data after ensuring all values are saved
                 final setData = _sets
                     .map((set) => {'weight': set.weight, 'reps': set.reps})
                     .toList();
@@ -342,6 +360,10 @@ class _LogSetCardState extends State<LogSetCard> {
                                 controller: textController,
                                 focusNode: focusNode,
                                 keyboardType: TextInputType.number,
+                                textInputAction: TextInputAction.done,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 textAlign: TextAlign.center,
                                 maxLength: 3,
                                 style: const TextStyle(
@@ -376,10 +398,10 @@ class _LogSetCardState extends State<LogSetCard> {
           Container(
             width: 35,
             decoration: BoxDecoration(
-              color: AppColors.backgroundGrey.withOpacity(0.3),
+              color: AppColors.backgroundGrey,
               border: Border(
                 left: BorderSide(
-                  color: AppColors.emptyText.withOpacity(0.2),
+                  color: AppColors.emptyText,
                   width: 1,
                 ),
               ),
