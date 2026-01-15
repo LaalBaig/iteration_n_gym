@@ -5,8 +5,7 @@ import 'package:gym_app_winter/palette/color_scheme.dart';
 class LogSetCard extends StatefulWidget {
   final String exerciseName;
   final VoidCallback onAddSet;
-  final VoidCallback onFinish;
-
+  final void Function(List<Map<String, int>>) onFinish;
   const LogSetCard({
     super.key,
     required this.exerciseName,
@@ -208,7 +207,12 @@ class _LogSetCardState extends State<LogSetCard> {
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
-              onPressed: widget.onFinish,
+              onPressed: () {
+                final setData = _sets
+                    .map((set) => {'weight': set.weight, 'reps': set.reps})
+                    .toList();
+                widget.onFinish(setData);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
                 shape: RoundedRectangleBorder(

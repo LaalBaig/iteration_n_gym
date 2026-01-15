@@ -63,7 +63,19 @@ class _ExercisePageState extends State<ExercisePage> {
                 children: [
                   LogSetCard(
                     exerciseName: widget.exerciseName,
-                    onFinish: () {},
+                    onFinish: (setData) {
+                      setState(() {
+                        print("setData: $setData");
+                        history.add(
+                          HistoryTile(
+                            date: "Wednesday, December 23",
+                            sets: "3",
+                            reps: setData[0]['reps'].toString(),
+                            weight: setData[0]['weight'].toString(),
+                          ),
+                        );
+                      });
+                    },
                     onAddSet: () {},
                   ),
                   SizedBox(height: 24),
@@ -90,13 +102,8 @@ class _ExercisePageState extends State<ExercisePage> {
                     ],
                   ),
                   SizedBox(height: 12),
-                  for (int i = 0; i < 2; i++)
-                    HistoryTile(
-                      date: "Wednesday, December 23",
-                      sets: "3",
-                      reps: "10",
-                      weight: "100",
-                    ),
+                  for (int i = 0; i < history.length; i++)
+                    history[i],
                 ],
               ),
             ),
