@@ -398,10 +398,10 @@ class _LogSetCardState extends State<LogSetCard> {
           Container(
             width: 35,
             decoration: BoxDecoration(
-              color: AppColors.backgroundGrey,
+              color: AppColors.backgroundGrey.withValues(alpha: 0.3),
               border: Border(
                 left: BorderSide(
-                  color: AppColors.emptyText,
+                  color: AppColors.emptyText.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
