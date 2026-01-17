@@ -293,9 +293,6 @@ class _LogSetCardState extends State<LogSetCard> {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
-                    debugPrint(
-                      'Tapped! Current value: $value, isEditing: $isEditing',
-                    );
                     textController.text = value.toString();
                     focusNode.requestFocus();
                     // Select all text
@@ -399,7 +396,7 @@ class _LogSetCardState extends State<LogSetCard> {
 
           // Watch Crown dial on the right
           Container(
-            width: 24,
+            width: 30,
             decoration: BoxDecoration(
               color: AppColors.backgroundGrey.withValues(alpha: 0.3),
               border: Border(
