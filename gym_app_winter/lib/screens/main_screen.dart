@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gym_app_winter/datamodel/exercise.dart';
-import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart'
-    show CustomBottomNavigationBar;
-import 'package:gym_app_winter/widgets/empty_exercise_screen.dart';
-import 'package:gym_app_winter/widgets/exercise_tile.dart';
+import 'package:gym_app_winter/screens/exercises_tab.dart';
+import 'package:gym_app_winter/screens/profile_tab.dart';
+import 'package:gym_app_winter/screens/workout_tab.dart';
+import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart';
 import 'package:gym_app_winter/widgets/floating_button.dart';
-import 'package:gym_app_winter/widgets/not_found.dart';
-import 'package:gym_app_winter/widgets/search_bar.dart';
+
+
+
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -17,141 +18,37 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
-  final TextEditingController _controller = TextEditingController();
-  List<Exercise> get exerciseList => genEx(5);
-  late List<Exercise> filteredExerciseList;
-  @override
-  void initState() {
-    super.initState();
-    filteredExerciseList = exerciseList;
-  }
+  int _selectedIndex = 0;
 
-  void onChanged(String e) {}
-  List<Exercise> genEx(int n) {
-    List<Exercise> temp = [];
-    temp.add(
-      Exercise(
-        id: "id1",
-        name: "Bench Press",
-        lastLog: "25th December 9:50pm",
-        category: "free weights",
-      ),
-    );
-    temp.add(
-      Exercise(
-        id: "id2",
-        name: "Deadlift",
-        lastLog: "25th December 9:50pm",
-        category: "free weights",
-      ),
-    );
-    temp.add(
-      Exercise(
-        id: "id3",
-        name: "Dumbbell Press",
-        lastLog: "20th December 9:50pm",
-        category: "free weights",
-      ),
-    );
-    temp.add(
-      Exercise(
-        id: "id4",
-        name: "Squat",
-        lastLog: "20th December 9:50pm",
-        category: "free weights",
-      ),
-    );
-    temp.add(
-      Exercise(
-        id: "id5",
-        name: "Push-Ups",
-        lastLog: "18th September",
-        category: "Bodyweight",
-      ),
-    );
-    return temp;
-  }
+  final List<Widget> _tabs = const [
+    ExercisesTab(),
+    WorkoutsTab(),
+    ProfileTab(),
+  ];
 
-  void _filterExercises(String query) {
+  void _onTabSelected(int index) {
     setState(() {
-      if (query.isEmpty) {
-        filteredExerciseList = exerciseList;
-      } else {
-        filteredExerciseList = exerciseList
-            .where(
-              (exercise) =>
-                  exercise.name.toLowerCase().contains(query.toLowerCase()),
-            )
-            .toList();
-      }
+      _selectedIndex = index;
     });
   }
-    void setIndex(int index) {
-      setState(() {
-        _currentIndex = index;
-      });
-    }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Column(
-            mainAxisAlignment: .start,
-            crossAxisAlignment: .start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-                child: Text(
-                  'Track Exercises',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-                ),
-              ),
-              CustomSearchBar(
-                hintText: "Search For Exercise",
-                controller: _controller,
-                onChanged: _filterExercises,
-              ),
-              if (filteredExerciseList.isEmpty &&
-                  _controller.text.isNotEmpty &&
-                  exerciseList.isNotEmpty)
-                NotFound(exercise: _controller.text)
-              else if (filteredExerciseList.isEmpty)
-                const EmptyExerciseScreen()
-              else
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: filteredExerciseList.length,
-                    padding: EdgeInsets.fromLTRB(24, 0, 24, 6),
-                    itemBuilder: (context, index) {
-                      return ExerciseTile(
-                        title: filteredExerciseList[index].name,
-                        subtitle: filteredExerciseList[index].lastLog,
-                        onTap: () {
-                          FocusScope.of(context).unfocus();
-                          context.go(
-                            '/exercise_page/${filteredExerciseList[index].name}',
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-            ],
-          ),
-        ),
-        floatingActionButton: CustomFloatingButton(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(child: _tabs[_selectedIndex]),
+      floatingActionButton: Visibility(
+        visible: _selectedIndex == 0,
+        child: CustomFloatingButton(
           onPressed: () {
             GoRouter.of(context).go("/temp");
           },
           label: "Add Exercise",
         ),
-        bottomNavigationBar: CustomBottomNavigationBar(currentIndex: _currentIndex, onTabChanged: setIndex,),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTabSelected: _onTabSelected,
       ),
     );
   }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/datamodel/exercise.dart';
-import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart'
-    show CustomBottomNavigationBar;
 import 'package:gym_app_winter/widgets/search_bar.dart';
 
 class WorkoutPage extends StatefulWidget {
@@ -110,7 +108,7 @@ class WorkoutPageState extends State<WorkoutPage> {
             ],
           ),
         ),
-        bottomNavigationBar: CustomBottomNavigationBar(currentIndex: 1, onTabChanged: (int p1) {  },),
+        // bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 0, onTabSelected: (int value) {  },),
       ),
     );
   }

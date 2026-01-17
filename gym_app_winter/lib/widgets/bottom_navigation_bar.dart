@@ -1,44 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 
-class CustomBottomNavigationBar extends StatefulWidget {
+class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
-  final Function(int) onTabChanged;
+  final ValueChanged<int> onTabSelected;
 
   const CustomBottomNavigationBar({
     super.key,
     required this.currentIndex,
-    required this.onTabChanged,
+    required this.onTabSelected,
   });
-
-  @override
-  State<CustomBottomNavigationBar> createState() =>
-      _CustomBottomNavigationBarState();
-}
-
-class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
-//   int _currentIndex = 0;
-  void _onItemTapped(int index) {
-    // Navigate based on index
-    switch (index) {
-      case 0:
-        context.go('/');
-        break;
-      case 1:
-        context.go('/workout_page');
-        break;
-      case 2:
-        context.go('/profile');
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      currentIndex: widget.currentIndex,
-      onTap: _onItemTapped,
+      currentIndex: currentIndex,
+      onTap: onTabSelected,
       type: BottomNavigationBarType.fixed,
       selectedItemColor: AppColors.primaryBlue,
       unselectedItemColor: AppColors.emptyText,
