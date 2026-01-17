@@ -30,14 +30,17 @@ class _ExercisePageState extends State<ExercisePage> {
           FocusScope.of(context).unfocus();
         },
         child: SafeArea(
-          minimum: EdgeInsets.fromLTRB(24, 24, 24, 24),
+          minimum: EdgeInsets.fromLTRB(24, 24, 24, 0),
           child: Column(
             children: [
               Row(
                 children: [
                   GestureDetector(
                     child: Icon(Icons.arrow_back),
-                    onTap: () => context.pop(),
+                    onTap: () {
+                      context.pop();
+                      FocusScope.of(context).unfocus();
+                    },
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),

@@ -92,7 +92,7 @@ class _LogSetCardState extends State<LogSetCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.backgroundGrey,
         borderRadius: BorderRadius.circular(16),
@@ -138,7 +138,7 @@ class _LogSetCardState extends State<LogSetCard> {
               child: Row(
                 children: [
                   _buildSetCircle("set ${index + 1}:"),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 4),
                   Expanded(
                     child: _buildCrownPicker(
                       label: "kg",
@@ -161,7 +161,7 @@ class _LogSetCardState extends State<LogSetCard> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 4),
                   Expanded(
                     child: _buildCrownPicker(
                       label: "reps",
@@ -186,12 +186,12 @@ class _LogSetCardState extends State<LogSetCard> {
                   ),
                   // Remove button (only show if more than 1 set)
                   if (_sets.length > 1) ...[
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 2),
                     IconButton(
                       onPressed: () => _removeSet(index),
                       icon: const Icon(Icons.remove_circle_outline),
                       color: const Color.fromARGB(255, 255, 100, 89),
-                      iconSize: 24,
+                      iconSize: 18,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                     ),
@@ -254,9 +254,12 @@ class _LogSetCardState extends State<LogSetCard> {
 
   // Helper for the Set Number indicator
   Widget _buildSetCircle(String number) {
-    return Text(
-      number,
-      style: const TextStyle(color: AppColors.emptyText, fontSize: 16),
+    return SizedBox(
+      width: 38,
+      child: Text(
+        number,
+        style: const TextStyle(color: AppColors.emptyText, fontSize: 13),
+      ),
     );
   }
 
@@ -308,7 +311,7 @@ class _LogSetCardState extends State<LogSetCard> {
                   },
                   child: Container(
                     alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -396,7 +399,7 @@ class _LogSetCardState extends State<LogSetCard> {
 
           // Watch Crown dial on the right
           Container(
-            width: 35,
+            width: 24,
             decoration: BoxDecoration(
               color: AppColors.backgroundGrey.withValues(alpha: 0.3),
               border: Border(
@@ -430,7 +433,7 @@ class _LogSetCardState extends State<LogSetCard> {
                   return Center(
                     child: Container(
                       height: 1.5,
-                      width: isSelected ? 20 : 14,
+                      width: isSelected ? 16 : 12,
                       decoration: BoxDecoration(
                         color: isSelected
                             ? AppColors.primaryBlue
