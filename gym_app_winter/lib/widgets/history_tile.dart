@@ -24,6 +24,7 @@ class HistoryTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("Wednesday, December 23", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,),),
+                  Icon(Icons.delete_outline, size: 24, color: AppColors.emptyText,),
                 ],
               ),
               SizedBox(height: 10),
