@@ -52,20 +52,19 @@ class _ExercisePageState extends State<ExercisePage> {
                 ],
               ),
               SizedBox(height: 24),
-
+              LogSetCard(
+                exerciseName: widget.exerciseName,
+                onFinish: (setData) {
+                  setState(() {
+                    print("setData: $setData");
+                    history.add(HistoryTile(setData: setData));
+                  });
+                },
+                onAddSet: () {},
+              ),
               Expanded(
                 child: ListView(
                   children: [
-                    LogSetCard(
-                      exerciseName: widget.exerciseName,
-                      onFinish: (setData) {
-                        setState(() {
-                          print("setData: $setData");
-                          history.add(HistoryTile(setData: setData));
-                        });
-                      },
-                      onAddSet: () {},
-                    ),
                     SizedBox(height: 24),
                     Row(
                       children: [

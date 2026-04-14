@@ -104,12 +104,15 @@ class _LogSetCardState extends State<LogSetCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Log Set",
-                style: TextStyle(
-                  color: AppColors.textBlack,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                child: const Text(
+                  "Log Set",
+                  style: TextStyle(
+                    color: AppColors.textBlack,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               TextButton.icon(

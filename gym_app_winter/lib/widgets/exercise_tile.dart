@@ -18,9 +18,7 @@ class ExerciseTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        // REFINEMENT: Reduced top/bottom margin for a tighter list
         margin: const EdgeInsets.fromLTRB(0,0,0,12), 
-        // REFINEMENT: Switched to symmetric padding to control vertical height specifically
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12), 
         decoration: BoxDecoration(
           color: AppColors.backgroundGrey,
@@ -28,7 +26,6 @@ class ExerciseTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // 1. Leaner Icon Container
             Container(
               padding: const EdgeInsets.all(8), // Reduced from 12
               decoration: BoxDecoration(
@@ -38,30 +35,29 @@ class ExerciseTile extends StatelessWidget {
               child: const Icon(
                 Icons.fitness_center,
                 color: AppColors.primaryBlue,
-                size: 24, // Explicitly smaller icon
+                size: 24, 
               ),
             ),
             const SizedBox(width: 12),
 
-            // 2. The Text Column
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min, // Takes up only needed space
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 15, // Matches your lean requirement
-                      fontWeight: FontWeight.w600, // Semi-bold looks cleaner than Bold
+                      fontSize: 15, 
+                      fontWeight: FontWeight.w600, 
                       color: AppColors.textBlack,
                     ),
                   ),
-                  const SizedBox(height: 2), // Tighter gap
+                  const SizedBox(height: 2), 
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 12, // Slightly smaller
+                      fontSize: 12, 
                       color: Colors.grey[600],
                     ),
                   ),
