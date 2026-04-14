@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:gym_app_winter/screens/add_exercise_screen.dart';
 import 'package:gym_app_winter/screens/main_screen.dart';
 import 'package:gym_app_winter/screens/exercise_page.dart';
 import 'package:gym_app_winter/screens/workout_page.dart';
@@ -17,6 +18,10 @@ class AppRouter {
             ),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/add_exercise',
+        builder: (context, state) => const AddExerciseScreen(),
       ),
       GoRoute(
         path: '/workout_page',

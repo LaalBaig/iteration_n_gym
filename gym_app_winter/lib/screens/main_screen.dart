@@ -41,7 +41,7 @@ class _MainScreenState extends State<MainScreen> {
         visible: _selectedIndex == 0,
         child: CustomFloatingButton(
           onPressed: () {
-            GoRouter.of(context).go("/temp");
+            GoRouter.of(context).push("/add_exercise");
           },
           label: "Add Exercise",
         ),
