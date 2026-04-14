@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/widgets/confirm_log.dart';
 
 class LogSetCard extends StatefulWidget {
   final String exerciseName;
@@ -211,8 +212,8 @@ class _LogSetCardState extends State<LogSetCard> {
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
-              onPressed: () {
-                // Unfocus all text fields to save any pending input
+              onPressed: () async {
+                // Focus unfocus code...
                 for (var set in _sets) {
                   if (set.weightFocusNode.hasFocus) {
                     final newValue =
@@ -228,11 +229,19 @@ class _LogSetCardState extends State<LogSetCard> {
                   }
                 }
 
-                // Collect the data after ensuring all values are saved
-                final setData = _sets
-                    .map((set) => {'weight': set.weight, 'reps': set.reps})
-                    .toList();
-                widget.onFinish(setData);
+                // Show confirmation dialog before finishing
+                final bool? shouldLog = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => const ConfirmLog(),
+                );
+                
+                if (shouldLog == true) {
+                  // Collect the data after ensuring all values are saved
+                  final setData = _sets
+                      .map((set) => {'weight': set.weight, 'reps': set.reps})
+                      .toList();
+                  widget.onFinish(setData);
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
@@ -360,6 +369,9 @@ class _LogSetCardState extends State<LogSetCard> {
                                 }
                               },
                               child: TextField(
+                                onTapOutside: (PointerDownEvent event) {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                },
                                 controller: textController,
                                 focusNode: focusNode,
                                 keyboardType: TextInputType.number,

@@ -28,15 +28,8 @@ class CustomSearchBar extends StatelessWidget {
             ),
             Expanded(
               child: TextField(
-                onTap: () {
-                  //if not focused then focus
-                  if (!FocusScope.of(context).hasFocus) {
-                    FocusScope.of(context).requestFocus();
-                  }
-                  //otherwise unfocus
-                  else {
-                    FocusScope.of(context).unfocus();
-                  }
+                onTapOutside: (PointerDownEvent event) {
+                  FocusManager.instance.primaryFocus?.unfocus();
                 },
                 decoration: InputDecoration(
                   filled: true,
