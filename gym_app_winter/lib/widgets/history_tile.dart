@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:figma_squircle/figma_squircle.dart';
+import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
 class HistoryTile extends StatelessWidget {
   const HistoryTile({super.key, required this.setData});
@@ -10,22 +12,34 @@ class HistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(0),
-      child: Material(
-        color: AppColors.backgroundGrey,
-        borderRadius: BorderRadius.circular(14),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () {
-            if (setData.length > 3) {
-              _showFullHistoryDialog(context);
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
+      child: BouncingButton(
+        onTap: () {
+          if (setData.length > 3) {
+            _showFullHistoryDialog(context);
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: ShapeDecoration(
+            color: AppColors.surfaceWhite,
+            shape: SmoothRectangleBorder(
+              borderRadius: SmoothBorderRadius(
+                cornerRadius: 14,
+                cornerSmoothing: 1,
+              ),
+            ),
+            shadows: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -75,22 +89,16 @@ class HistoryTile extends StatelessWidget {
                 if (setData.length > 3)
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
-                    child: GestureDetector(
-                      onTap: () {
-                        _showFullHistoryDialog(context);
-                      },
-                      child: Text(
-                        "View more",
-                        style: TextStyle(
-                          color: AppColors.primaryBlue,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    child: Text(
+                      "View more",
+                      style: TextStyle(
+                        color: AppColors.primaryBlue,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
               ],
-            ),
           ),
         ),
       ),
@@ -106,9 +114,14 @@ class HistoryTile extends StatelessWidget {
           insetPadding: const EdgeInsets.all(24),
           child: Container(
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppColors.backgroundGrey,
-              borderRadius: BorderRadius.circular(14),
+            decoration: ShapeDecoration(
+              color: AppColors.surfaceWhite,
+              shape: SmoothRectangleBorder(
+                borderRadius: SmoothBorderRadius(
+                  cornerRadius: 20,
+                  cornerSmoothing: 1,
+                ),
+              ),
             ),
             child: SingleChildScrollView(
               child: Column(

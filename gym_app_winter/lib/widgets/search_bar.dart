@@ -40,7 +40,7 @@ class CustomSearchBar extends StatelessWidget {
                   hintText: hintText,
                   hintStyle: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),

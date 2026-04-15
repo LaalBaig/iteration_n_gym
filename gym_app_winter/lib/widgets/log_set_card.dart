@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/confirm_log.dart';
+import 'package:figma_squircle/figma_squircle.dart';
+import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
 class LogSetCard extends StatefulWidget {
   final String exerciseName;
@@ -104,9 +105,14 @@ class _LogSetCardState extends State<LogSetCard> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
+      decoration: ShapeDecoration(
         color: AppColors.backgroundGrey,
-        borderRadius: BorderRadius.circular(16),
+        shape: SmoothRectangleBorder(
+          borderRadius: SmoothBorderRadius(
+            cornerRadius: 16,
+            cornerSmoothing: 1,
+          ),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -221,8 +227,8 @@ class _LogSetCardState extends State<LogSetCard> {
             SizedBox(
               width: double.infinity,
               height: 48,
-              child: ElevatedButton(
-                onPressed: () async {
+              child: BouncingButton(
+                onTap: () async {
                   // Focus unfocus code...
                   for (var set in _sets) {
                     if (set.weightFocusNode.hasFocus) {
@@ -253,18 +259,24 @@ class _LogSetCardState extends State<LogSetCard> {
                     widget.onFinish(setData);
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: ShapeDecoration(
+                    color: AppColors.primaryBlue,
+                    shape: SmoothRectangleBorder(
+                      borderRadius: SmoothBorderRadius(
+                        cornerRadius: 12,
+                        cornerSmoothing: 1,
+                      ),
+                    ),
                   ),
-                ),
-                child: const Text(
-                  "Log Exercise",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                  child: const Text(
+                    "Log Exercise",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),

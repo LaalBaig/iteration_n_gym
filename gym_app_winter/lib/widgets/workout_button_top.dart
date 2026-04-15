@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:go_router/go_router.dart';
+import 'package:figma_squircle/figma_squircle.dart';
+import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
 class WorkoutButtonTop extends StatelessWidget {
   const WorkoutButtonTop({super.key});
@@ -9,14 +11,19 @@ class WorkoutButtonTop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24.0, 12, 24, 16),
-      child: GestureDetector(
+      child: BouncingButton(
         onTap: () {
           context.push('/active_workout');
         },
         child: Container(
-          decoration: BoxDecoration(
+          decoration: ShapeDecoration(
             color:AppColors.primaryBlue,
-            borderRadius: BorderRadius.circular(12),
+            shape: SmoothRectangleBorder(
+              borderRadius: SmoothBorderRadius(
+                cornerRadius: 12,
+                cornerSmoothing: 1,
+              ),
+            ),
           ),
           child: Row(
             children: [
