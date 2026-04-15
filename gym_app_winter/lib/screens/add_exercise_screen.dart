@@ -127,56 +127,14 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                   return ExerciseTile(
                     title: exercise.name,
                     subtitle: exercise.category,
-                    onTap: () async {
+                    onTap: () {
                       FocusScope.of(context).unfocus();
-                      final bool? confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            backgroundColor: AppColors.textWhite,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            title: const Text(
-                              "Confirm adding exercises",
-                              style: TextStyle(
-                                color: AppColors.textBlack,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            content: Text(
-                              "Are you sure you want to add ${exercise.name}?",
-                              style: const TextStyle(
-                                color: AppColors.emptyText,
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(false),
-                                child: const Text(
-                                  "Cancel",
-                                  style: TextStyle(color: AppColors.emptyText),
-                                ),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => Navigator.of(context).pop(true),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primaryBlue,
-                                  foregroundColor: AppColors.textWhite,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: const Text("Add"),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-
-                      if (confirm == true && context.mounted) {
-                        // Add the exercise to the global state
-                        globalMyExercises.value = List.from(globalMyExercises.value)..add(exercise);
+                      
+                      // Add the exercise to the global state
+                      globalMyExercises.value = List.from(globalMyExercises.value)..add(exercise);
+                      if (context.canPop()) {
+                        context.pop(exercise);
+                      } else {
                         // Navigate back to the main screen
                         context.go('/');
                       }

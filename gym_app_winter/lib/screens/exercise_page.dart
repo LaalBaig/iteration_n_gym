@@ -31,7 +31,7 @@ class _ExercisePageState extends State<ExercisePage> {
         },
         child: SafeArea(
           minimum: EdgeInsets.fromLTRB(24, 24, 24, 0),
-          child: Column(
+          child: ListView(
             children: [
               Row(
                 children: [
@@ -62,36 +62,48 @@ class _ExercisePageState extends State<ExercisePage> {
                 },
                 onAddSet: () {},
               ),
-              Expanded(
-                child: ListView(
-                  children: [
-                    SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Text(
-                          "History",
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Text(
+                        "History",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
+                        child: Text(
+                          "See All",
                           style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.primaryBlue,
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
-                          child: Text(
-                            "See All",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.primaryBlue,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  SizedBox(
+                    height: 220,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: history.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          width: 300,
+                          padding: const EdgeInsets.only(right: 16),
+                          child: history[index],
+                        );
+                      },
                     ),
-                    SizedBox(height: 12),
-                    for (int i = 0; i < history.length; i++) history[i],
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),

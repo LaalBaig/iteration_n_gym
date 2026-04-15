@@ -4,6 +4,7 @@ import 'package:gym_app_winter/screens/custom_exercise_screen.dart';
 import 'package:gym_app_winter/screens/main_screen.dart';
 import 'package:gym_app_winter/screens/exercise_page.dart';
 import 'package:gym_app_winter/screens/workout_page.dart';
+import 'package:gym_app_winter/screens/active_workout_screen.dart';
 
 class AppRouter {
   final GoRouter routeManager = GoRouter(
@@ -29,6 +30,10 @@ class AppRouter {
         builder: (context, state) => const WorkoutPage(),
       ),
       GoRoute(
+        path: '/active_workout',
+        builder: (context, state) => const ActiveWorkoutScreen(),
+      ),
+      GoRoute(
         path: '/custom',
         builder: (context, state) => const CustomExerciseScreen(),
       ),
@@ -39,3 +44,4 @@ class AppRouter {
     return routeManager;
   }
 }
+

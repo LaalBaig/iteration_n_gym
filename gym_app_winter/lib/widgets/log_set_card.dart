@@ -8,11 +8,13 @@ class LogSetCard extends StatefulWidget {
   final String exerciseName;
   final VoidCallback onAddSet;
   final void Function(List<Map<String, int>>) onFinish;
+  final bool showLogButton;
   const LogSetCard({
     super.key,
     required this.exerciseName,
     required this.onAddSet,
     required this.onFinish,
+    this.showLogButton = true,
   });
 
   @override
@@ -20,8 +22,8 @@ class LogSetCard extends StatefulWidget {
 }
 
 class _SetData {
-  int weight = 0;
-  int reps = 0;
+  int weight;
+  int reps;
   final FixedExtentScrollController weightScrollController;
   final FixedExtentScrollController repsScrollController;
   final TextEditingController weightTextController;
@@ -29,11 +31,11 @@ class _SetData {
   final FocusNode weightFocusNode;
   final FocusNode repsFocusNode;
 
-  _SetData()
-    : weightScrollController = FixedExtentScrollController(),
-      repsScrollController = FixedExtentScrollController(),
-      weightTextController = TextEditingController(),
-      repsTextController = TextEditingController(),
+  _SetData({this.weight = 0, this.reps = 0})
+    : weightScrollController = FixedExtentScrollController(initialItem: weight),
+      repsScrollController = FixedExtentScrollController(initialItem: reps),
+      weightTextController = TextEditingController(text: weight > 0 ? weight.toString() : ''),
+      repsTextController = TextEditingController(text: reps > 0 ? reps.toString() : ''),
       weightFocusNode = FocusNode(),
       repsFocusNode = FocusNode();
 
@@ -70,7 +72,15 @@ class _LogSetCardState extends State<LogSetCard> {
 
   void _addSet() {
     setState(() {
-      final newSet = _SetData();
+      int initialWeight = 0;
+      int initialReps = 0;
+      
+      if (_sets.isNotEmpty) {
+        initialWeight = _sets.last.weight;
+        initialReps = _sets.last.reps;
+      }
+      
+      final newSet = _SetData(weight: initialWeight, reps: initialReps);
       newSet.weightFocusNode.addListener(() => setState(() {}));
       newSet.repsFocusNode.addListener(() => setState(() {}));
       _sets.add(newSet);
@@ -108,7 +118,7 @@ class _LogSetCardState extends State<LogSetCard> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                 child: const Text(
-                  "Log Set",
+                  "Log Sets",
                   style: TextStyle(
                     color: AppColors.textBlack,
                     fontSize: 18,
@@ -205,60 +215,61 @@ class _LogSetCardState extends State<LogSetCard> {
             );
           }),
 
-          const SizedBox(height: 20),
-
           // Finish Workout Action
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              onPressed: () async {
-                // Focus unfocus code...
-                for (var set in _sets) {
-                  if (set.weightFocusNode.hasFocus) {
-                    final newValue =
-                        int.tryParse(set.weightTextController.text) ?? 0;
-                    set.weight = newValue.clamp(0, 500);
-                    set.weightFocusNode.unfocus();
+          if (widget.showLogButton) ...[
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () async {
+                  // Focus unfocus code...
+                  for (var set in _sets) {
+                    if (set.weightFocusNode.hasFocus) {
+                      final newValue =
+                          int.tryParse(set.weightTextController.text) ?? 0;
+                      set.weight = newValue.clamp(0, 500);
+                      set.weightFocusNode.unfocus();
+                    }
+                    if (set.repsFocusNode.hasFocus) {
+                      final newValue =
+                          int.tryParse(set.repsTextController.text) ?? 0;
+                      set.reps = newValue.clamp(0, 100);
+                      set.repsFocusNode.unfocus();
+                    }
                   }
-                  if (set.repsFocusNode.hasFocus) {
-                    final newValue =
-                        int.tryParse(set.repsTextController.text) ?? 0;
-                    set.reps = newValue.clamp(0, 100);
-                    set.repsFocusNode.unfocus();
-                  }
-                }
 
-                // Show confirmation dialog before finishing
-                final bool? shouldLog = await showDialog<bool>(
-                  context: context,
-                  builder: (context) => const ConfirmLog(),
-                );
-                
-                if (shouldLog == true) {
-                  // Collect the data after ensuring all values are saved
-                  final setData = _sets
-                      .map((set) => {'weight': set.weight, 'reps': set.reps})
-                      .toList();
-                  widget.onFinish(setData);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  // Show confirmation dialog before finishing
+                  final bool? shouldLog = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => const ConfirmLog(),
+                  );
+                  
+                  if (shouldLog == true) {
+                    // Collect the data after ensuring all values are saved
+                    final setData = _sets
+                        .map((set) => {'weight': set.weight, 'reps': set.reps})
+                        .toList();
+                    widget.onFinish(setData);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-              ),
-              child: const Text(
-                "Log Exercise",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                child: const Text(
+                  "Log Exercise",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
