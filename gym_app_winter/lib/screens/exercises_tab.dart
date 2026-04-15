@@ -73,6 +73,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                     padding: const EdgeInsets.fromLTRB(24, 0, 24, 6),
                     itemBuilder: (context, index) {
                       return ExerciseTile(
+                        key: ValueKey(filteredExerciseList[index].id),
                         title: filteredExerciseList[index].name,
                         subtitle: filteredExerciseList[index].lastLog,
                         onTap: () {
@@ -80,6 +81,12 @@ class _ExercisesTabState extends State<ExercisesTab> {
                           context.go(
                             '/exercise_page/${filteredExerciseList[index].name}',
                           );
+                        },
+                        onDelete: () {
+                          final exerciseIdToRemove = filteredExerciseList[index].id;
+                          final currentList = List<Exercise>.from(globalMyExercises.value);
+                          currentList.removeWhere((Exercise ex) => ex.id == exerciseIdToRemove);
+                          globalMyExercises.value = currentList;
                         },
                       );
                     },

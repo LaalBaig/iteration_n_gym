@@ -7,22 +7,20 @@ class NotFound extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Vital to keep it centered
-          children: [
-            Icon(
-              Icons.fitness_center,
-              color: const Color.fromARGB(255, 127, 127, 127),
-              size: 48,
-            ),
-            const SizedBox(height: 16),
-            Text(
-                style: const TextStyle(color: AppColors.emptyText),
-                "No results for $exercise"),
-          ],
-        ),
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // Vital to keep it centered
+        children: [
+          Icon(
+            Icons.fitness_center,
+            color: const Color.fromARGB(255, 127, 127, 127),
+            size: 48,
+          ),
+          const SizedBox(height: 16),
+          Text(
+              style: const TextStyle(color: AppColors.emptyText),
+              "No results for $exercise"),
+        ],
       ),
     );
   }

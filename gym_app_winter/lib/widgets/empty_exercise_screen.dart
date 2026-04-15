@@ -6,22 +6,20 @@ class EmptyExerciseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Vital to keep it centered
-          children: [
-            Icon(
-              Icons.fitness_center,
-              color: const Color.fromARGB(255, 127, 127, 127),
-              size: 48,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-                style: TextStyle(color: AppColors.emptyText),
-                "No Exercises Added Yet"),
-          ],
-        ),
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // Vital to keep it centered
+        children: [
+          Icon(
+            Icons.fitness_center,
+            color: const Color.fromARGB(255, 127, 127, 127),
+            size: 48,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+              style: TextStyle(color: AppColors.emptyText),
+              "No Exercises Added Yet"),
+        ],
       ),
     );
   }
