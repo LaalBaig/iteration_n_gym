@@ -95,7 +95,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                 height: 48,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // TODO: Implement create custom exercise navigation
+                    context.push('/custom');
                   },
                   icon: const Icon(Icons.add, color: AppColors.primaryBlue),
                   label: const Text(

@@ -35,68 +35,65 @@ class _ExercisesTabState extends State<ExercisesTab> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
-            child: Text(
-              'Track Exercises',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-            ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+          child: Text(
+            'Track Exercises',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
           ),
-          CustomSearchBar(
-            hintText: "Search For Exercise",
-            controller: _controller,
-            onChanged: (val) {}, // State already updates via listener
+        ),
+        CustomSearchBar(
+          hintText: "Search For Exercise",
+          controller: _controller,
+          onChanged: (val) {}, // State already updates via listener
+        ),
+        Expanded(
+          child: ValueListenableBuilder<List<Exercise>>(
+            valueListenable: globalMyExercises,
+            builder: (context, exerciseList, _) {
+              final filteredExerciseList = _searchQuery.isEmpty 
+                  ? exerciseList 
+                  : exerciseList.where((exercise) => 
+                      exercise.name.toLowerCase().contains(_searchQuery.toLowerCase())
+                    ).toList();
+    
+              if (filteredExerciseList.isEmpty && _searchQuery.isNotEmpty && exerciseList.isNotEmpty) {
+                return NotFound(exercise: _searchQuery);
+              } else if (filteredExerciseList.isEmpty) {
+                return const EmptyExerciseScreen();
+              } else {
+                return ListView.builder(
+                  itemCount: filteredExerciseList.length,
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 6),
+                  itemBuilder: (context, index) {
+                    return ExerciseTile(
+                      key: ValueKey(filteredExerciseList[index].id),
+                      title: filteredExerciseList[index].name,
+                      subtitle: filteredExerciseList[index].lastLog,
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                        context.go(
+                          '/exercise_page/${filteredExerciseList[index].name}',
+                        );
+                      },
+                      onDelete: () {
+                        final exerciseIdToRemove = filteredExerciseList[index].id;
+                        final currentList = List<Exercise>.from(globalMyExercises.value);
+                        currentList.removeWhere((Exercise ex) => ex.id == exerciseIdToRemove);
+                        globalMyExercises.value = currentList;
+                      },
+                    );
+                  },
+                );
+              }
+            },
           ),
-          Expanded(
-            child: ValueListenableBuilder<List<Exercise>>(
-              valueListenable: globalMyExercises,
-              builder: (context, exerciseList, _) {
-                final filteredExerciseList = _searchQuery.isEmpty 
-                    ? exerciseList 
-                    : exerciseList.where((exercise) => 
-                        exercise.name.toLowerCase().contains(_searchQuery.toLowerCase())
-                      ).toList();
-
-                if (filteredExerciseList.isEmpty && _searchQuery.isNotEmpty && exerciseList.isNotEmpty) {
-                  return NotFound(exercise: _searchQuery);
-                } else if (filteredExerciseList.isEmpty) {
-                  return const EmptyExerciseScreen();
-                } else {
-                  return ListView.builder(
-                    itemCount: filteredExerciseList.length,
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 6),
-                    itemBuilder: (context, index) {
-                      return ExerciseTile(
-                        key: ValueKey(filteredExerciseList[index].id),
-                        title: filteredExerciseList[index].name,
-                        subtitle: filteredExerciseList[index].lastLog,
-                        onTap: () {
-                          FocusScope.of(context).unfocus();
-                          context.go(
-                            '/exercise_page/${filteredExerciseList[index].name}',
-                          );
-                        },
-                        onDelete: () {
-                          final exerciseIdToRemove = filteredExerciseList[index].id;
-                          final currentList = List<Exercise>.from(globalMyExercises.value);
-                          currentList.removeWhere((Exercise ex) => ex.id == exerciseIdToRemove);
-                          globalMyExercises.value = currentList;
-                        },
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

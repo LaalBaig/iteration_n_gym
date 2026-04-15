@@ -48,9 +48,9 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                       child: Column(
                         mainAxisAlignment: .center,
                         children: [
-                            FaIcon(FontAwesomeIcons.clipboardList, color: const Color.fromARGB(255, 195, 195, 195),),
+                            FaIcon(FontAwesomeIcons.plus, color: const Color.fromARGB(255, 195, 195, 195),),
                           SizedBox(height: 12,),
-                          Text("New Routines", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.textBlack),),
+                          Text("New Routine", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.textBlack),),
                         ],
                       ),
                   ),
