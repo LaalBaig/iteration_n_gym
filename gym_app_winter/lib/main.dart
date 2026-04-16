@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gym_app_winter/database/database.dart';
 import 'package:gym_app_winter/navigation/app_router.dart';
+import 'package:gym_app_winter/widgets/minimized_workout_bar.dart';
 
 
 void main() {
@@ -26,31 +28,45 @@ class _MyAppState extends State<MyApp> {
     });
   }
   
+  final _db = AppDatabase();
+  final _appRouter = AppRouter();
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-        title: "Fitness App",
-        debugShowCheckedModeBanner: false,
-        themeMode: _themeMode,
-        darkTheme: ThemeData.dark().copyWith(
-          scaffoldBackgroundColor: const Color(0xFF000000),
-          textTheme: GoogleFonts.interTextTheme(
-            ThemeData.dark().textTheme,
-          ),
-          splashFactory: NoSplash.splashFactory,
-          highlightColor: Colors.transparent,
-          splashColor: Colors.transparent,
+      title: "Fitness App",
+      debugShowCheckedModeBanner: false,
+      themeMode: _themeMode,
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color(0xFFF2F2F7),
+        textTheme: GoogleFonts.interTextTheme(
+          ThemeData.light().textTheme,
         ),
-        theme: ThemeData(
-          scaffoldBackgroundColor: const Color(0xFFF2F2F7), // Match iOS background
-          textTheme: GoogleFonts.interTextTheme(
-            ThemeData.light().textTheme,
-          ),
-          splashFactory: NoSplash.splashFactory,
-          highlightColor: Colors.transparent,
-          splashColor: Colors.transparent,
+        splashFactory: NoSplash.splashFactory,
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+      ),
+      darkTheme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF000000),
+        textTheme: GoogleFonts.interTextTheme(
+          ThemeData.dark().textTheme,
         ),
-        routerConfig: _router.getRouter(),
+        splashFactory: NoSplash.splashFactory,
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+      ),
+      routerConfig: _router.getRouter(),
+      builder: (context, child) {
+        return Stack(
+          children: [
+            if (child != null) child,
+            const Align(
+              alignment: Alignment.bottomCenter,
+              child: MinimizedWorkoutBar(),
+            ),
+          ],
+        );
+      },
     );
   }
 }

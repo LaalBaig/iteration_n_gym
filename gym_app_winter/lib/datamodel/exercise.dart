@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 class Exercise {
   final String id;
   final String name;
-  final String lastLog; // should have date instead of weight and reps ?
+  final String lastLog;
   final String category;
 
   Exercise({
@@ -12,9 +12,17 @@ class Exercise {
     required this.lastLog,
     required this.category,
   });
-}
 
-final ValueNotifier<List<Exercise>> globalMyExercises = ValueNotifier([
+  // Convert to Map for Database
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'lastLog': lastLog,
+      'category': category,
+    };
+  }
+}final ValueNotifier<List<Exercise>> globalMyExercises = ValueNotifier([
   Exercise(
     id: "id1",
     name: "Bench Press",

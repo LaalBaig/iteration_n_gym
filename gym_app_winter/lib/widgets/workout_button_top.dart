@@ -3,6 +3,7 @@ import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
+import 'package:gym_app_winter/state/workout_manager.dart';
 
 class WorkoutButtonTop extends StatelessWidget {
   const WorkoutButtonTop({super.key});
@@ -13,6 +14,7 @@ class WorkoutButtonTop extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24.0, 12, 24, 16),
       child: BouncingButton(
         onTap: () {
+          WorkoutManager().startWorkout();
           context.push('/active_workout');
         },
         child: Container(

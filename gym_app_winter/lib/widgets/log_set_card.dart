@@ -4,6 +4,7 @@ import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/confirm_log.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
+import 'package:gym_app_winter/state/workout_manager.dart';
 
 class LogSetCard extends StatefulWidget {
   final String exerciseName;
@@ -56,6 +57,8 @@ class _LogSetCardState extends State<LogSetCard> {
   @override
   void initState() {
     super.initState();
+    // Add initial set to manager count
+    WorkoutManager().incrementSet();
     // Add listeners to trigger rebuilds when focus changes
     for (var set in _sets) {
       set.weightFocusNode.addListener(() => setState(() {}));
@@ -85,6 +88,7 @@ class _LogSetCardState extends State<LogSetCard> {
       newSet.weightFocusNode.addListener(() => setState(() {}));
       newSet.repsFocusNode.addListener(() => setState(() {}));
       _sets.add(newSet);
+      WorkoutManager().incrementSet();
     });
   }
 
@@ -93,6 +97,7 @@ class _LogSetCardState extends State<LogSetCard> {
       setState(() {
         _sets[index].dispose();
         _sets.removeAt(index);
+        WorkoutManager().decrementSet();
       });
     }
   }

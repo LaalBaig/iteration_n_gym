@@ -31,6 +31,8 @@ dependencies:
   sqflite: ^2.3.0
   path: ^1.8.3
   font_awesome_flutter: ^11.0.0
+  drift: ^2.15.0
+  drift_sqflite: ^2.0.0
   flutter:
     sdk: flutter
 
@@ -43,6 +45,8 @@ dependencies:
   fl_chart: ^0.69.0
 
 dev_dependencies:
+  drift_dev: ^2.15.0
+  build_runner: ^2.4.0
   flutter_test:
     sdk: flutter
 

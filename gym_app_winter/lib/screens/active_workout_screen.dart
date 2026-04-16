@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gym_app_winter/datamodel/exercise.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
+import 'package:gym_app_winter/state/workout_manager.dart';
 
 class ActiveWorkoutScreen extends StatefulWidget {
   const ActiveWorkoutScreen({super.key});
@@ -21,7 +22,17 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     if (result != null && result is Exercise) {
       setState(() {
         _workoutExercises.add(result);
+        WorkoutManager().updateExercise(result.name);
       });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Ensure workout is started in manager if it isn't
+    if (!WorkoutManager().isActive) {
+      WorkoutManager().startWorkout();
     }
   }
 
@@ -39,6 +50,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
           titleSpacing: 16,
           title: BouncingButton(
             onTap: () {
+              WorkoutManager().minimize();
               context.pop();
             },
             child: Row(
@@ -61,6 +73,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: ElevatedButton(
                 onPressed: () {
+                  WorkoutManager().finishWorkout();
                   context.pop();
                 },
                 style: ElevatedButton.styleFrom(
@@ -76,31 +89,37 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             ),
           ],
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Divider(color: context.colors.emptyText.withValues(alpha: 0.2), thickness: 1, height: 1),
-              // Summary Row
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildSummaryItem("Duration", "5s", true),
-                    _buildSummaryItem("Volume", "0 kg", false),
-                    _buildSummaryItem("Sets", "0", false),
-                  ],
-                ),
+        body: ListenableBuilder(
+          listenable: WorkoutManager(),
+          builder: (context, _) {
+            final manager = WorkoutManager();
+            return SafeArea(
+              child: Column(
+                children: [
+                  Divider(color: context.colors.emptyText.withValues(alpha: 0.2), thickness: 1, height: 1),
+                  // Summary Row
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildSummaryItem("Duration", manager.formattedDuration, true),
+                        _buildSummaryItem("Volume", "0 kg", false),
+                        _buildSummaryItem("Sets", manager.setsCount.toString(), false),
+                      ],
+                    ),
+                  ),
+                  Divider(color: context.colors.emptyText.withValues(alpha: 0.2), thickness: 1, height: 1),
+                  
+                  Expanded(
+                    child: _workoutExercises.isEmpty
+                        ? _buildEmptyState()
+                        : _buildWorkoutList(),
+                  ),
+                ],
               ),
-              Divider(color: context.colors.emptyText.withValues(alpha: 0.2), thickness: 1, height: 1),
-              
-              Expanded(
-                child: _workoutExercises.isEmpty
-                    ? _buildEmptyState()
-                    : _buildWorkoutList(),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -179,6 +198,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
+                      WorkoutManager().discardWorkout();
                       context.pop();
                   },
                   style: ElevatedButton.styleFrom(
@@ -264,6 +284,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
+                          WorkoutManager().discardWorkout();
                           context.pop();
                       },
                       style: ElevatedButton.styleFrom(
