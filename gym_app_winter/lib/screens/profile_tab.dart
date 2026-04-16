@@ -34,7 +34,7 @@ class ProfileTab extends StatelessWidget {
                 onChanged: (bool value) {
                   import_main.MyApp.of(context).toggleTheme(value);
                 },
-                activeColor: context.colors.primaryBlue,
+                activeThumbColor: context.colors.primaryBlue,
               ),
             ],
           ),
