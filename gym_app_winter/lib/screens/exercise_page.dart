@@ -4,6 +4,7 @@ import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/history_tile.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
+import 'package:gym_app_winter/widgets/progress_chart.dart';
 
 class ExercisePage extends StatefulWidget {
   const ExercisePage({super.key, required this.exerciseName});
@@ -63,6 +64,8 @@ class _ExercisePageState extends State<ExercisePage> {
                 },
                 onAddSet: () {},
               ),
+              SizedBox(height: 24),
+              ProgressChart(history: history),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -76,14 +79,23 @@ class _ExercisePageState extends State<ExercisePage> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
-                        child: Text(
-                          "See All",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: context.colors.primaryBlue,
+                      BouncingButton(
+                        onTap: () {
+                          // Pass history natively in memory state since it's just a local session array
+                          context.push(
+                            '/see_all_history/${Uri.encodeComponent(widget.exerciseName)}', 
+                            extra: history
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
+                          child: Text(
+                            "See All",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: context.colors.primaryBlue,
+                            ),
                           ),
                         ),
                       ),
