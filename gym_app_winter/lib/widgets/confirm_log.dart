@@ -7,36 +7,36 @@ class ConfirmLog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: AppColors.textWhite,
+      backgroundColor: context.colors.textWhite,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      title: const Text(
+      title: Text(
         "Confirm Log",
         style: TextStyle(
-          color: AppColors.textBlack,
+          color: context.colors.textBlack,
           fontWeight: FontWeight.bold,
         ),
       ),
-      content: const Text(
+      content: Text(
         "Are you sure you want to log this exercise?",
         style: TextStyle(
-          color: AppColors.emptyText,
+          color: context.colors.emptyText,
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text(
+          child: Text(
             "Cancel",
-            style: TextStyle(color: AppColors.emptyText),
+            style: TextStyle(color: context.colors.emptyText),
           ),
         ),
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(true),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryBlue,
-            foregroundColor: AppColors.textWhite,
+            backgroundColor: context.colors.primaryBlue,
+            foregroundColor: context.colors.textWhite,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),

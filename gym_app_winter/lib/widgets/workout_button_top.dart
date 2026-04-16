@@ -17,7 +17,7 @@ class WorkoutButtonTop extends StatelessWidget {
         },
         child: Container(
           decoration: ShapeDecoration(
-            color:AppColors.primaryBlue,
+            color:context.colors.primaryBlue,
             shape: SmoothRectangleBorder(
               borderRadius: SmoothBorderRadius(
                 cornerRadius: 12,
@@ -29,11 +29,11 @@ class WorkoutButtonTop extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 0, 0, 0),
-                child: Icon(Icons.add, color: AppColors.textWhite,),
+                child: Icon(Icons.add, color: Colors.white,),
               ),
               Expanded(
                 child: Container(padding: EdgeInsets.all(16), child: Text("Start Empty Workout",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textWhite),),),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),),),
               ),
               
             ],

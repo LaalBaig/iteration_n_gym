@@ -21,7 +21,7 @@ class HistoryTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: ShapeDecoration(
-            color: AppColors.surfaceWhite,
+            color: context.colors.backgroundGrey,
             shape: SmoothRectangleBorder(
               borderRadius: SmoothBorderRadius(
                 cornerRadius: 14,
@@ -30,7 +30,7 @@ class HistoryTile extends StatelessWidget {
             ),
             shadows: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
+                color: context.colors.textBlack.withValues(alpha: 0.04),
                 blurRadius: 20,
                 offset: const Offset(0, 4),
               ),
@@ -56,12 +56,12 @@ class HistoryTile extends StatelessWidget {
                     Icon(
                       Icons.delete_outline,
                       size: 24,
-                      color: AppColors.emptyText,
+                      color: context.colors.emptyText,
                     ),
                   ],
                 ),
                 SizedBox(height: 10),
-                Text("Sets", style: TextStyle(color: AppColors.emptyText)),
+                Text("Sets", style: TextStyle(color: context.colors.emptyText)),
                 Divider(),
                 for (
                   int i = 0;
@@ -74,7 +74,7 @@ class HistoryTile extends StatelessWidget {
                         children: [
                           Text(
                             "${i + 1} ",
-                            style: TextStyle(color: AppColors.emptyText),
+                            style: TextStyle(color: context.colors.emptyText),
                           ),
                           SizedBox(width: 12),
                           Text(
@@ -92,7 +92,7 @@ class HistoryTile extends StatelessWidget {
                     child: Text(
                       "View more",
                       style: TextStyle(
-                        color: AppColors.primaryBlue,
+                        color: context.colors.primaryBlue,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -115,7 +115,7 @@ class HistoryTile extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: ShapeDecoration(
-              color: AppColors.surfaceWhite,
+              color: context.colors.backgroundGrey,
               shape: SmoothRectangleBorder(
                 borderRadius: SmoothBorderRadius(
                   cornerRadius: 20,
@@ -134,22 +134,22 @@ class HistoryTile extends StatelessWidget {
                       Flexible(
                         child: Text(
                           "Wednesday, December 23",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textBlack,
+                            color: context.colors.textBlack,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      GestureDetector(
+                      BouncingButton(
                         onTap: () => Navigator.pop(context),
-                        child: const Icon(Icons.close, color: AppColors.emptyText),
+                        child: Icon(Icons.close, color: context.colors.emptyText),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text("Sets", style: TextStyle(color: AppColors.emptyText, fontSize: 16)),
+                  Text("Sets", style: TextStyle(color: context.colors.emptyText, fontSize: 16)),
                   const Divider(),
                   for (int i = 0; i < setData.length; i++)
                     Column(
@@ -158,7 +158,7 @@ class HistoryTile extends StatelessWidget {
                           children: [
                             Text(
                               "${i + 1} ",
-                              style: const TextStyle(color: AppColors.emptyText, fontSize: 16),
+                              style: TextStyle(color: context.colors.emptyText, fontSize: 16),
                             ),
                             const SizedBox(width: 16),
                             Text(

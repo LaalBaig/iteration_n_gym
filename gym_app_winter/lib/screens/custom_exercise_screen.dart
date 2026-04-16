@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
 class CustomExerciseScreen extends StatefulWidget {
   const CustomExerciseScreen({super.key});
@@ -26,10 +27,10 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
       padding: const EdgeInsets.only(top: 24.0, bottom: 12.0),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: AppColors.textBlack,
+          color: context.colors.textBlack,
         ),
       ),
     );
@@ -38,15 +39,15 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
   Widget _buildChoiceButton(String title, String groupValue, ValueChanged<String> onChanged) {
     final isSelected = title == groupValue;
     return Expanded(
-      child: GestureDetector(
+      child: BouncingButton(
         onTap: () => onChanged(title),
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 4.0),
           padding: const EdgeInsets.symmetric(vertical: 14.0),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primaryBlue : AppColors.textWhite,
+            color: isSelected ? context.colors.primaryBlue : context.colors.textWhite,
             border: Border.all(
-              color: isSelected ? AppColors.primaryBlue : AppColors.emptyText.withOpacity(0.3),
+              color: isSelected ? context.colors.primaryBlue : context.colors.emptyText.withOpacity(0.3),
             ),
             borderRadius: BorderRadius.circular(12),
           ),
@@ -54,7 +55,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
             child: Text(
               title,
               style: TextStyle(
-                color: isSelected ? AppColors.textWhite : AppColors.textBlack,
+                color: isSelected ? context.colors.textWhite : context.colors.textBlack,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
@@ -67,13 +68,13 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.textWhite,
+      backgroundColor: context.colors.textWhite,
       appBar: AppBar(
-        backgroundColor: AppColors.textWhite,
+        backgroundColor: context.colors.textWhite,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textBlack),
+          icon: Icon(Icons.arrow_back, color: context.colors.textBlack),
           onPressed: () {
             if (context.canPop()) {
               context.pop();
@@ -82,10 +83,10 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
             }
           },
         ),
-        title: const Text(
+        title: Text(
           "Create Custom Exercise",
           style: TextStyle(
-            color: AppColors.textBlack,
+            color: context.colors.textBlack,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -106,16 +107,16 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
+                backgroundColor: context.colors.primaryBlue,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 "Add custom exercise",
                 style: TextStyle(
-                  color: AppColors.textWhite,
+                  color: context.colors.textWhite,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -135,7 +136,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
               _buildSectionTitle("Name of the new exercise"),
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.backgroundGrey,
+                  color: context.colors.backgroundGrey,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
@@ -143,14 +144,14 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                   onTapOutside: (PointerDownEvent event) {
                     FocusManager.instance.primaryFocus?.unfocus();
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "E.g. Bulgarian Split Squat",
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     hintStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.emptyText,
+                      color: context.colors.emptyText,
                     ),
                   ),
                 ),

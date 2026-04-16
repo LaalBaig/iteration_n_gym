@@ -54,13 +54,13 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.textWhite,
+      backgroundColor: context.colors.textWhite,
       appBar: AppBar(
-        backgroundColor: AppColors.textWhite,
+        backgroundColor: context.colors.textWhite,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textBlack),
+          icon: Icon(Icons.arrow_back, color: context.colors.textBlack),
           onPressed: () {
             if (context.canPop()) {
               context.pop();
@@ -69,10 +69,10 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
             }
           },
         ),
-        title: const Text(
+        title: Text(
           "Add Exercise",
           style: TextStyle(
-            color: AppColors.textBlack,
+            color: context.colors.textBlack,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -97,21 +97,21 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                   onPressed: () {
                     context.push('/custom');
                   },
-                  icon: const Icon(Icons.add, color: AppColors.primaryBlue),
-                  label: const Text(
+                  icon: Icon(Icons.add, color: context.colors.primaryBlue),
+                  label: Text(
                     "Create a custom exercise",
                     style: TextStyle(
-                      color: AppColors.primaryBlue,
+                      color: context.colors.primaryBlue,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.textWhite,
+                    backgroundColor: context.colors.textWhite,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: const BorderSide(color: AppColors.primaryBlue, width: 1.5),
+                      side: BorderSide(color: context.colors.primaryBlue, width: 1.5),
                     ),
                   ),
                 ),

@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/main.dart' as import_main;
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({super.key});
@@ -10,7 +12,7 @@ class ProfileTab extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.person_outline, size: 100, color: Colors.grey),
+          Icon(Icons.person_outline, size: 100, color: context.colors.emptyText),
           SizedBox(height: 16),
           Text(
             'Profile',
@@ -19,7 +21,22 @@ class ProfileTab extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             'Coming soon...',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 16, color: context.colors.emptyText),
+          ),
+          SizedBox(height: 32),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Dark Mode", style: TextStyle(fontSize: 16, color: context.colors.textBlack, fontWeight: FontWeight.w600)),
+              SizedBox(width: 12),
+              Switch(
+                value: Theme.of(context).brightness == Brightness.dark,
+                onChanged: (bool value) {
+                  import_main.MyApp.of(context).toggleTheme(value);
+                },
+                activeColor: context.colors.primaryBlue,
+              ),
+            ],
           ),
         ],
       ),

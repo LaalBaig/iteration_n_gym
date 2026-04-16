@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/history_tile.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
+import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
 class ExercisePage extends StatefulWidget {
   const ExercisePage({super.key, required this.exerciseName});
@@ -23,7 +24,7 @@ class _ExercisePageState extends State<ExercisePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.textWhite,
+      backgroundColor: context.colors.surfaceWhite,
       body: GestureDetector(
         onTap: () {
           // Dismiss keyboard when tapping outside
@@ -35,12 +36,12 @@ class _ExercisePageState extends State<ExercisePage> {
             children: [
               Row(
                 children: [
-                  GestureDetector(
-                    child: Icon(Icons.arrow_back),
+                  BouncingButton(
                     onTap: () {
                       context.pop();
                       FocusScope.of(context).unfocus();
                     },
+                    child: Icon(Icons.arrow_back),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
@@ -82,7 +83,7 @@ class _ExercisePageState extends State<ExercisePage> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
-                            color: AppColors.primaryBlue,
+                            color: context.colors.primaryBlue,
                           ),
                         ),
                       ),

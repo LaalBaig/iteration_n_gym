@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
 class LogSetCard extends StatefulWidget {
   final String exerciseName;
@@ -94,7 +95,7 @@ class _LogSetCardState extends State<LogSetCard> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.backgroundGrey,
+        color: context.colors.backgroundGrey,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -104,24 +105,24 @@ class _LogSetCardState extends State<LogSetCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Log Set",
                 style: TextStyle(
-                  color: AppColors.textBlack,
+                  color: context.colors.textBlack,
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               TextButton.icon(
                 onPressed: _addSet,
-                icon: const Icon(
+                icon: Icon(
                   Icons.add,
                   size: 18,
-                  color: AppColors.primaryBlue,
+                  color: context.colors.primaryBlue,
                 ),
-                label: const Text(
+                label: Text(
                   "Add Set",
-                  style: TextStyle(color: AppColors.primaryBlue),
+                  style: TextStyle(color: context.colors.primaryBlue),
                 ),
               ),
             ],
@@ -210,7 +211,7 @@ class _LogSetCardState extends State<LogSetCard> {
             child: ElevatedButton(
               onPressed: widget.onFinish,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
+                backgroundColor: context.colors.primaryBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -234,7 +235,7 @@ class _LogSetCardState extends State<LogSetCard> {
   Widget _buildSetCircle(String number) {
     return Text(
       number,
-      style: const TextStyle(color: AppColors.emptyText, fontSize: 16),
+      style: TextStyle(color: context.colors.emptyText, fontSize: 16),
     );
   }
 
@@ -256,7 +257,7 @@ class _LogSetCardState extends State<LogSetCard> {
     return Container(
       height: 50,
       decoration: BoxDecoration(
-        color: AppColors.textWhite,
+        color: context.colors.textWhite,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -264,9 +265,7 @@ class _LogSetCardState extends State<LogSetCard> {
           // Display value on the left (tappable for keyboard input)
           Expanded(
             child: ClipRect(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
+              child: BouncingButton(
                   onTap: () {
                     debugPrint(
                       'Tapped! Current value: $value, isEditing: $isEditing',
@@ -300,8 +299,8 @@ class _LogSetCardState extends State<LogSetCard> {
                               Flexible(
                                 child: Text(
                                   value.toString(),
-                                  style: const TextStyle(
-                                    color: AppColors.textBlack,
+                                  style: TextStyle(
+                                    color: context.colors.textBlack,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -312,8 +311,8 @@ class _LogSetCardState extends State<LogSetCard> {
                               const SizedBox(width: 4),
                               Text(
                                 label,
-                                style: const TextStyle(
-                                  color: AppColors.emptyText,
+                                style: TextStyle(
+                                  color: context.colors.emptyText,
                                   fontSize: 10,
                                 ),
                               ),
@@ -340,8 +339,8 @@ class _LogSetCardState extends State<LogSetCard> {
                                 keyboardType: TextInputType.number,
                                 textAlign: TextAlign.center,
                                 maxLength: 3,
-                                style: const TextStyle(
-                                  color: AppColors.textBlack,
+                                style: TextStyle(
+                                  color: context.colors.textBlack,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -364,7 +363,6 @@ class _LogSetCardState extends State<LogSetCard> {
                     ),
                   ),
                 ),
-              ),
             ),
           ),
 
@@ -372,10 +370,10 @@ class _LogSetCardState extends State<LogSetCard> {
           Container(
             width: 35,
             decoration: BoxDecoration(
-              color: AppColors.backgroundGrey.withOpacity(0.3),
+              color: context.colors.backgroundGrey.withOpacity(0.3),
               border: Border(
                 left: BorderSide(
-                  color: AppColors.emptyText.withOpacity(0.2),
+                  color: context.colors.emptyText.withOpacity(0.2),
                   width: 1,
                 ),
               ),
@@ -407,8 +405,8 @@ class _LogSetCardState extends State<LogSetCard> {
                       width: isSelected ? 20 : 14,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.primaryBlue
-                            : AppColors.emptyText,
+                            ? context.colors.primaryBlue
+                            : context.colors.emptyText,
                         borderRadius: BorderRadius.circular(1),
                       ),
                     ),

@@ -16,8 +16,8 @@ class EmptyExerciseScreen extends StatelessWidget {
             size: 48,
           ),
           const SizedBox(height: 16),
-          const Text(
-              style: TextStyle(color: AppColors.emptyText),
+          Text(
+              style: TextStyle(color: context.colors.emptyText),
               "No Exercises Added Yet"),
         ],
       ),

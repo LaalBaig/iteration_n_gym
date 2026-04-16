@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/screens/exercises_tab.dart';
 import 'package:gym_app_winter/screens/profile_tab.dart';
 import 'package:gym_app_winter/screens/workout_tab.dart';
+import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart';
 import 'package:gym_app_winter/widgets/floating_button.dart';
 
@@ -53,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.colors.surfaceWhite,
       body: SafeArea(
         child: PageView(
           controller: _pageController,

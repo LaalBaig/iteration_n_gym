@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/datamodel/exercise.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
+import 'package:gym_app_winter/palette/color_scheme.dart';
 
 class WorkoutPage extends StatefulWidget {
   const WorkoutPage({super.key});
@@ -87,7 +88,7 @@ class WorkoutPageState extends State<WorkoutPage> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: context.colors.surfaceWhite,
         body: SafeArea(
           child: Column(
             mainAxisAlignment: .start,

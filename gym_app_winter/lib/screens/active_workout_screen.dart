@@ -4,6 +4,7 @@ import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gym_app_winter/datamodel/exercise.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
+import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
 class ActiveWorkoutScreen extends StatefulWidget {
   const ActiveWorkoutScreen({super.key});
@@ -29,24 +30,24 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: AppColors.textWhite,
+        backgroundColor: context.colors.textWhite,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: AppColors.textWhite,
+          backgroundColor: context.colors.textWhite,
           scrolledUnderElevation: 0,
           elevation: 0,
           titleSpacing: 16,
-          title: GestureDetector(
+          title: BouncingButton(
             onTap: () {
               context.pop();
             },
             child: Row(
               children: [
-                const Icon(Icons.keyboard_arrow_down, color: AppColors.textBlack),
+                Icon(Icons.keyboard_arrow_down, color: context.colors.textBlack),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   "Log Workout",
-                  style: TextStyle(color: AppColors.textBlack, fontSize: 20, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: context.colors.textBlack, fontSize: 20, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -54,7 +55,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
           actions: [
             IconButton(
               onPressed: () {},
-              icon: const Icon(Icons.timer_outlined, color: AppColors.textBlack),
+              icon: Icon(Icons.timer_outlined, color: context.colors.textBlack),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -63,14 +64,14 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   context.pop();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
+                  backgroundColor: context.colors.primaryBlue,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
-                child: const Text("Finish", style: TextStyle(color: AppColors.textWhite, fontWeight: FontWeight.w600, fontSize: 16)),
+                child: Text("Finish", style: TextStyle(color: context.colors.textWhite, fontWeight: FontWeight.w600, fontSize: 16)),
               ),
             ),
           ],
@@ -78,7 +79,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              Divider(color: Colors.grey[200], thickness: 1, height: 1),
+              Divider(color: context.colors.emptyText.withValues(alpha: 0.2), thickness: 1, height: 1),
               // Summary Row
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
@@ -91,7 +92,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   ],
                 ),
               ),
-              Divider(color: Colors.grey[200], thickness: 1, height: 1),
+              Divider(color: context.colors.emptyText.withValues(alpha: 0.2), thickness: 1, height: 1),
               
               Expanded(
                 child: _workoutExercises.isEmpty
@@ -113,16 +114,16 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
         children: [
           const Spacer(),
           // Empty State Graphic
-          const FaIcon(FontAwesomeIcons.dumbbell, size: 60, color: Colors.grey),
+          FaIcon(FontAwesomeIcons.dumbbell, size: 60, color: context.colors.emptyText),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             "Get started",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textBlack),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: context.colors.textBlack),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             "Add an exercise to start your workout",
-            style: TextStyle(fontSize: 16, color: AppColors.emptyText),
+            style: TextStyle(fontSize: 16, color: context.colors.emptyText),
           ),
           
           const Spacer(),
@@ -133,7 +134,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             child: ElevatedButton(
               onPressed: _navigateToAddExercise,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
+                backgroundColor: context.colors.primaryBlue,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -143,12 +144,12 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.add, color: AppColors.textWhite),
+                children: [
+                  Icon(Icons.add, color: context.colors.textWhite),
                   SizedBox(width: 8),
                   Text(
                     "Add Exercise",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textWhite),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.colors.textWhite),
                   ),
                 ],
               ),
@@ -161,16 +162,16 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.backgroundGrey,
+                    backgroundColor: context.colors.backgroundGrey,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
+                  child: Text(
                     "Settings",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textBlack),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.colors.textBlack),
                   ),
                 ),
               ),
@@ -181,7 +182,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                       context.pop();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.backgroundGrey,
+                    backgroundColor: context.colors.backgroundGrey,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -217,23 +218,23 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                 child: ElevatedButton(
                   onPressed: _navigateToAddExercise,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.textWhite,
+                    backgroundColor: context.colors.textWhite,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: const BorderSide(color: AppColors.primaryBlue, width: 1.5),
+                      side: BorderSide(color: context.colors.primaryBlue, width: 1.5),
                     ),
                     elevation: 0,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.add, color: AppColors.primaryBlue),
+                    children: [
+                      Icon(Icons.add, color: context.colors.primaryBlue),
                       SizedBox(width: 8),
                       Text(
                         "Add Exercise",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.primaryBlue),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.colors.primaryBlue),
                       ),
                     ],
                   ),
@@ -246,16 +247,16 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.backgroundGrey,
+                        backgroundColor: context.colors.backgroundGrey,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
+                      child: Text(
                         "Settings",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textBlack),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.colors.textBlack),
                       ),
                     ),
                   ),
@@ -266,7 +267,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                           context.pop();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.backgroundGrey,
+                        backgroundColor: context.colors.backgroundGrey,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -294,10 +295,10 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             children: [
               Text(
                 exercise.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textBlack,
+                  color: context.colors.textBlack,
                 ),
               ),
               const SizedBox(height: 12),
@@ -320,7 +321,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 12, color: context.colors.emptyText, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 4),
         Text(
@@ -328,7 +329,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: isBlue ? AppColors.primaryBlue : AppColors.textBlack,
+            color: isBlue ? context.colors.primaryBlue : context.colors.textBlack,
           ),
         ),
       ],

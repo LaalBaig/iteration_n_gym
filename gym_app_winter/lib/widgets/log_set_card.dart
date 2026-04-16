@@ -106,7 +106,7 @@ class _LogSetCardState extends State<LogSetCard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: ShapeDecoration(
-        color: AppColors.backgroundGrey,
+        color: context.colors.backgroundGrey,
         shape: SmoothRectangleBorder(
           borderRadius: SmoothBorderRadius(
             cornerRadius: 16,
@@ -123,10 +123,10 @@ class _LogSetCardState extends State<LogSetCard> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                child: const Text(
+                child: Text(
                   "Log Sets",
                   style: TextStyle(
-                    color: AppColors.textBlack,
+                    color: context.colors.textBlack,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
@@ -134,14 +134,14 @@ class _LogSetCardState extends State<LogSetCard> {
               ),
               TextButton.icon(
                 onPressed: _addSet,
-                icon: const Icon(
+                icon: Icon(
                   Icons.add,
                   size: 18,
-                  color: AppColors.primaryBlue,
+                  color: context.colors.primaryBlue,
                 ),
-                label: const Text(
+                label: Text(
                   "Add Set",
-                  style: TextStyle(color: AppColors.primaryBlue),
+                  style: TextStyle(color: context.colors.primaryBlue),
                 ),
               ),
             ],
@@ -262,7 +262,7 @@ class _LogSetCardState extends State<LogSetCard> {
                 child: Container(
                   alignment: Alignment.center,
                   decoration: ShapeDecoration(
-                    color: AppColors.primaryBlue,
+                    color: context.colors.primaryBlue,
                     shape: SmoothRectangleBorder(
                       borderRadius: SmoothBorderRadius(
                         cornerRadius: 12,
@@ -293,7 +293,7 @@ class _LogSetCardState extends State<LogSetCard> {
       width: 38,
       child: Text(
         number,
-        style: const TextStyle(color: AppColors.emptyText, fontSize: 13),
+        style: TextStyle(color: context.colors.emptyText, fontSize: 13),
       ),
     );
   }
@@ -316,7 +316,7 @@ class _LogSetCardState extends State<LogSetCard> {
     return Container(
       height: 50,
       decoration: BoxDecoration(
-        color: AppColors.textWhite,
+        color: context.colors.textWhite,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -324,9 +324,7 @@ class _LogSetCardState extends State<LogSetCard> {
           // Display value on the left (tappable for keyboard input)
           Expanded(
             child: ClipRect(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
+              child: BouncingButton(
                   onTap: () {
                     textController.text = value.toString();
                     focusNode.requestFocus();
@@ -357,8 +355,8 @@ class _LogSetCardState extends State<LogSetCard> {
                               Flexible(
                                 child: Text(
                                   value.toString(),
-                                  style: const TextStyle(
-                                    color: AppColors.textBlack,
+                                  style: TextStyle(
+                                    color: context.colors.textBlack,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -369,8 +367,8 @@ class _LogSetCardState extends State<LogSetCard> {
                               const SizedBox(width: 4),
                               Text(
                                 label,
-                                style: const TextStyle(
-                                  color: AppColors.emptyText,
+                                style: TextStyle(
+                                  color: context.colors.emptyText,
                                   fontSize: 10,
                                 ),
                               ),
@@ -404,8 +402,8 @@ class _LogSetCardState extends State<LogSetCard> {
                                 ],
                                 textAlign: TextAlign.center,
                                 maxLength: 3,
-                                style: const TextStyle(
-                                  color: AppColors.textBlack,
+                                style: TextStyle(
+                                  color: context.colors.textBlack,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -428,7 +426,6 @@ class _LogSetCardState extends State<LogSetCard> {
                     ),
                   ),
                 ),
-              ),
             ),
           ),
 
@@ -436,10 +433,10 @@ class _LogSetCardState extends State<LogSetCard> {
           Container(
             width: 30,
             decoration: BoxDecoration(
-              color: AppColors.backgroundGrey.withValues(alpha: 0.3),
+              color: context.colors.backgroundGrey.withValues(alpha: 0.3),
               border: Border(
                 left: BorderSide(
-                  color: AppColors.emptyText.withValues(alpha: 0.2),
+                  color: context.colors.emptyText.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -471,8 +468,8 @@ class _LogSetCardState extends State<LogSetCard> {
                       width: isSelected ? 16 : 12,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.primaryBlue
-                            : AppColors.emptyText,
+                            ? context.colors.primaryBlue
+                            : context.colors.emptyText,
                         borderRadius: BorderRadius.circular(1),
                       ),
                     ),

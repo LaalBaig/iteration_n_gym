@@ -14,8 +14,8 @@ class CustomFloatingButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryBlue,
-        foregroundColor: AppColors.textWhite,
+        backgroundColor: context.colors.primaryBlue,
+        foregroundColor: Colors.white,
         padding: const EdgeInsets.fromLTRB(24,20,24,20),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12), // Match Figma rounding

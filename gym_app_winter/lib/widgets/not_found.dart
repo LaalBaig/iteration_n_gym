@@ -18,7 +18,7 @@ class NotFound extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-              style: const TextStyle(color: AppColors.emptyText),
+              style: TextStyle(color: context.colors.emptyText),
               "No results for $exercise"),
         ],
       ),

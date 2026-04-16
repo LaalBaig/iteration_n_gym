@@ -17,7 +17,7 @@ class CustomSearchBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24.0, 12, 24, 24),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.backgroundGrey,
+          color: context.colors.backgroundGrey,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -33,7 +33,7 @@ class CustomSearchBar extends StatelessWidget {
                 },
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: AppColors.backgroundGrey,
+                  fillColor: context.colors.backgroundGrey,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

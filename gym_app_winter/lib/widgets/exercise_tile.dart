@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
 class ExerciseTile extends StatelessWidget {
   final String title;
@@ -28,7 +29,7 @@ class ExerciseTile extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              backgroundColor: AppColors.textWhite,
+              backgroundColor: context.colors.textWhite,
               title: const Text("Delete Exercise"),
               content: const Text("Are you sure you want to delete this exercise?"),
               actions: [
@@ -53,15 +54,15 @@ class ExerciseTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
         ),
         alignment: Alignment.centerRight,
-        child: const Icon(Icons.delete, color: Colors.white),
+        child: Icon(Icons.delete, color: Colors.white),
       ),
-      child: GestureDetector(
+      child: BouncingButton(
         onTap: onTap,
         child: Container(
           margin: const EdgeInsets.fromLTRB(0,0,0,12), 
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12), 
           decoration: BoxDecoration(
-            color: AppColors.backgroundGrey,
+            color: context.colors.backgroundGrey,
             borderRadius: BorderRadius.circular(14), // Slightly tighter radius
           ),
         child: Row(
@@ -69,12 +70,12 @@ class ExerciseTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8), // Reduced from 12
               decoration: BoxDecoration(
-                color: AppColors.textWhite,
+                color: context.colors.textWhite,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.fitness_center,
-                color: AppColors.primaryBlue,
+                color: context.colors.primaryBlue,
                 size: 24, 
               ),
             ),
@@ -87,10 +88,10 @@ class ExerciseTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15, 
                       fontWeight: FontWeight.w600, 
-                      color: AppColors.textBlack,
+                      color: context.colors.textBlack,
                     ),
                   ),
                   const SizedBox(height: 2), 
@@ -98,7 +99,7 @@ class ExerciseTile extends StatelessWidget {
                     subtitle,
                     style: TextStyle(
                       fontSize: 12, 
-                      color: Colors.grey[600],
+                      color: context.colors.emptyText,
                     ),
                   ),
                 ],
@@ -106,9 +107,9 @@ class ExerciseTile extends StatelessWidget {
             ),
 
             // 3. Subtle Chevron
-            const Icon(
+            Icon(
               Icons.chevron_right, 
-              color: Colors.grey, 
+              color: context.colors.emptyText, 
               size: 18, // Smaller arrow
             ),
           ],
