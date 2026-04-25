@@ -21,7 +21,7 @@ class HistoryTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: ShapeDecoration(
-            color: context.colors.backgroundGrey,
+            color: context.colors.warmSand,
             shape: SmoothRectangleBorder(
               borderRadius: SmoothBorderRadius(
                 cornerRadius: 14,
@@ -46,9 +46,9 @@ class HistoryTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         "Wednesday, December 23",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 18,
+                          color: context.colors.textBlack,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

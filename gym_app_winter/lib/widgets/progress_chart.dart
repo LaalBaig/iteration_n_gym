@@ -50,7 +50,7 @@ class _ProgressChartState extends State<ProgressChart> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: ShapeDecoration(
-        color: context.colors.surfaceWhite, // Ivory
+        color: context.colors.warmSand,
         shape: SmoothRectangleBorder(
           borderRadius: SmoothBorderRadius(
             cornerRadius: 16,
@@ -71,10 +71,9 @@ class _ProgressChartState extends State<ProgressChart> {
                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                 child: Text(
                   "Progress",
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 20,
                     color: context.colors.textBlack,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -109,7 +108,7 @@ class _ProgressChartState extends State<ProgressChart> {
             decoration: BoxDecoration(
               color: Theme.of(context).brightness == Brightness.dark 
                   ? const Color(0xFF1C1C1E) 
-                  : Colors.white,
+                  : context.colors.surfaceWhite,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: context.colors.emptyText.withValues(alpha: 0.1)),
             ),
@@ -118,8 +117,8 @@ class _ProgressChartState extends State<ProgressChart> {
               children: [
                 LineChart(
                   LineChartData(
-                    minX: hasData ? 1 : 0,
-                    maxX: hasData ? null : 5,
+                    minX: hasData ? 0.5 : 0,
+                    maxX: hasData ? (spots.length > 1 ? spots.length.toDouble() + 0.5 : 1.5) : 5,
                     minY: 0,
                     maxY: hasData ? null : 100,
                     gridData: FlGridData(

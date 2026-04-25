@@ -28,7 +28,7 @@ class _ExercisePageState extends State<ExercisePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colors.surfaceWhite,
+      backgroundColor: context.colors.backgroundGrey,
       body: GestureDetector(
         onTap: () {
           // Dismiss keyboard when tapping outside
@@ -76,7 +76,6 @@ class _ExercisePageState extends State<ExercisePage> {
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontSize: 28,
                             color: context.colors.nearBlack,
-                            fontFamily: 'Playfair Display',
                           ),
                         ),
                       ),
@@ -111,7 +110,10 @@ class _ExercisePageState extends State<ExercisePage> {
                       
                       // Update exercise's lastLog
                       final exercises = await DatabaseService().db.getAllExercises();
-                      final exercise = exercises.firstWhere((e) => e.name == widget.exerciseName);
+                      final exercise = exercises.firstWhere(
+                        (e) => e.name == widget.exerciseName,
+                        orElse: () => exercises.first,
+                      );
                       await DatabaseService().db.addExercise(
                         ExercisesCompanion(
                           id: Value(exercise.id),

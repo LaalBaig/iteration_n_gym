@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
@@ -62,7 +63,7 @@ class ExerciseTile extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(0,0,0,12), 
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12), 
           decoration: BoxDecoration(
-            color: context.colors.surfaceWhite, // Ivory
+            color: context.colors.warmSand,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -78,7 +79,7 @@ class ExerciseTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8), 
               decoration: BoxDecoration(
-                color: context.colors.warmSand,
+                color: context.colors.surfaceWhite,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -105,7 +106,7 @@ class ExerciseTile extends StatelessWidget {
                   const SizedBox(height: 2), 
                   Text(
                     subtitle,
-                    style: TextStyle(
+                    style: GoogleFonts.sourceSerif4(
                       fontSize: 12, 
                       color: context.colors.emptyText,
                     ),

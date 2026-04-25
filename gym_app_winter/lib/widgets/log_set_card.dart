@@ -119,7 +119,7 @@ class _LogSetCardState extends State<LogSetCard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: ShapeDecoration(
-        color: context.colors.surfaceWhite, // Ivory
+        color: context.colors.warmSand,
         shape: SmoothRectangleBorder(
           borderRadius: SmoothBorderRadius(
             cornerRadius: 16,
@@ -139,10 +139,9 @@ class _LogSetCardState extends State<LogSetCard> {
                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                 child: Text(
                   "Log Sets",
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 20,
                     color: context.colors.textBlack,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -332,7 +331,7 @@ class _LogSetCardState extends State<LogSetCard> {
     return Container(
       height: 50,
       decoration: BoxDecoration(
-        color: context.colors.textWhite,
+        color: context.colors.surfaceWhite,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -449,7 +448,7 @@ class _LogSetCardState extends State<LogSetCard> {
           Container(
             width: 30,
             decoration: BoxDecoration(
-              color: context.colors.backgroundGrey.withValues(alpha: 0.3),
+              color: context.colors.backgroundGrey,
               border: Border(
                 left: BorderSide(
                   color: context.colors.emptyText.withValues(alpha: 0.2),

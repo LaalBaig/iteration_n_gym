@@ -44,7 +44,7 @@ class AppRouter {
         builder: (context, state) {
           final historyList = state.extra as List<HistoryTile>? ?? [];
           return SeeAllHistoryScreen(
-            exerciseName: Uri.decodeComponent(state.pathParameters['exerciseName']!),
+            exerciseName: state.pathParameters['exerciseName'] ?? '',
             history: historyList,
           );
         },

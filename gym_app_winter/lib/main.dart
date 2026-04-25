@@ -19,7 +19,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _router = AppRouter();
   ThemeMode _themeMode = ThemeMode.system;
 
   void toggleTheme(bool isDark) {
@@ -28,7 +27,6 @@ class _MyAppState extends State<MyApp> {
     });
   }
   
-  final _db = AppDatabase();
   final _appRouter = AppRouter();
   
   @override
@@ -42,9 +40,10 @@ class _MyAppState extends State<MyApp> {
         textTheme: GoogleFonts.interTextTheme(
           ThemeData.light().textTheme,
         ).copyWith(
-          displayLarge: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500),
-          headlineMedium: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500),
-          titleLarge: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500),
+          displayLarge: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500),
+          headlineMedium: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500),
+          titleLarge: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500),
+          bodyLarge: GoogleFonts.sourceSerif4(fontSize: 17, height: 1.6),
         ),
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,
@@ -55,15 +54,16 @@ class _MyAppState extends State<MyApp> {
         textTheme: GoogleFonts.interTextTheme(
           ThemeData.dark().textTheme,
         ).copyWith(
-          displayLarge: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500, color: Colors.white),
-          headlineMedium: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500, color: Colors.white),
-          titleLarge: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500, color: Colors.white),
+          displayLarge: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500, color: Colors.white),
+          headlineMedium: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500, color: Colors.white),
+          titleLarge: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500, color: Colors.white),
+          bodyLarge: GoogleFonts.sourceSerif4(fontSize: 17, height: 1.6, color: Colors.white),
         ),
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,
         splashColor: Colors.transparent,
       ),
-      routerConfig: _router.getRouter(),
+      routerConfig: _appRouter.getRouter(),
       builder: (context, child) {
         return Stack(
           children: [

@@ -53,7 +53,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colors.surfaceWhite,
+      backgroundColor: context.colors.backgroundGrey,
       body: SafeArea(
         child: PageView(
           controller: _pageController,

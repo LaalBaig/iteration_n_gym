@@ -88,7 +88,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                       onTap: () {
                         FocusScope.of(context).unfocus();
                         context.go(
-                          '/exercise_page/${filteredExerciseList[index].name}',
+                          '/exercise_page/${Uri.encodeComponent(filteredExerciseList[index].name)}',
                         );
                       },
                       onDelete: () {
