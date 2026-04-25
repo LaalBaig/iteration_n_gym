@@ -50,12 +50,13 @@ class _ProgressChartState extends State<ProgressChart> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: ShapeDecoration(
-        color: context.colors.backgroundGrey,
+        color: context.colors.surfaceWhite, // Ivory
         shape: SmoothRectangleBorder(
           borderRadius: SmoothBorderRadius(
             cornerRadius: 16,
             cornerSmoothing: 1,
           ),
+          side: BorderSide(color: context.colors.borderCream),
         ),
       ),
       child: Column(
@@ -80,9 +81,9 @@ class _ProgressChartState extends State<ProgressChart> {
               DropdownButton<String>(
                 value: _selectedMetric,
                 dropdownColor: context.colors.surfaceWhite,
-                iconEnabledColor: context.colors.primaryBlue,
+                iconEnabledColor: context.colors.brandPrimary,
                 underline: const SizedBox(),
-                style: TextStyle(color: context.colors.primaryBlue, fontWeight: FontWeight.w600, fontSize: 14),
+                style: TextStyle(color: context.colors.brandPrimary, fontWeight: FontWeight.w600, fontSize: 14),
                 items: ['Volume', 'Max Weight']
                     .map((e) => DropdownMenuItem(
                           value: e,
@@ -217,13 +218,13 @@ class _ProgressChartState extends State<ProgressChart> {
                           LineChartBarData(
                             spots: spots,
                             isCurved: true,
-                            color: context.colors.primaryBlue,
+                            color: context.colors.brandPrimary,
                             barWidth: 3,
                             isStrokeCapRound: true,
                             dotData: const FlDotData(show: true),
                             belowBarData: BarAreaData(
                               show: true,
-                              color: context.colors.primaryBlue.withValues(alpha: 0.1),
+                              color: context.colors.brandPrimary.withValues(alpha: 0.1),
                             ),
                           ),
                         ]

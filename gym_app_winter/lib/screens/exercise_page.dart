@@ -73,7 +73,11 @@ class _ExercisePageState extends State<ExercisePage> {
                         padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
                         child: Text(
                           widget.exerciseName,
-                          style: TextStyle(fontSize: 24),
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontSize: 28,
+                            color: context.colors.nearBlack,
+                            fontFamily: 'Playfair Display',
+                          ),
                         ),
                       ),
                     ],
@@ -129,9 +133,9 @@ class _ExercisePageState extends State<ExercisePage> {
                         children: [
                           Text(
                             "History",
-                            style: TextStyle(
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontSize: 24,
-                              fontWeight: FontWeight.w600,
+                              color: context.colors.nearBlack,
                             ),
                           ),
                           BouncingButton(

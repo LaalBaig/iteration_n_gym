@@ -38,18 +38,26 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFFF2F2F7),
+        scaffoldBackgroundColor: const Color(0xFFF5F4ED), // Parchment
         textTheme: GoogleFonts.interTextTheme(
           ThemeData.light().textTheme,
+        ).copyWith(
+          displayLarge: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500),
+          headlineMedium: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500),
+          titleLarge: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500),
         ),
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,
         splashColor: Colors.transparent,
       ),
       darkTheme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF000000),
+        scaffoldBackgroundColor: const Color(0xFF141413), // Near Black
         textTheme: GoogleFonts.interTextTheme(
           ThemeData.dark().textTheme,
+        ).copyWith(
+          displayLarge: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500, color: Colors.white),
+          headlineMedium: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500, color: Colors.white),
+          titleLarge: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w500, color: Colors.white),
         ),
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,

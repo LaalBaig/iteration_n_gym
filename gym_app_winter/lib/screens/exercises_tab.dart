@@ -41,11 +41,14 @@ class _ExercisesTabState extends State<ExercisesTab> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
           child: Text(
             'Track Exercises',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontSize: 28,
+              color: context.colors.nearBlack,
+            ),
           ),
         ),
         CustomSearchBar(

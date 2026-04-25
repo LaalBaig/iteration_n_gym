@@ -119,12 +119,13 @@ class _LogSetCardState extends State<LogSetCard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: ShapeDecoration(
-        color: context.colors.backgroundGrey,
+        color: context.colors.surfaceWhite, // Ivory
         shape: SmoothRectangleBorder(
           borderRadius: SmoothBorderRadius(
             cornerRadius: 16,
             cornerSmoothing: 1,
           ),
+          side: BorderSide(color: context.colors.borderCream),
         ),
       ),
       child: Column(
@@ -277,7 +278,7 @@ class _LogSetCardState extends State<LogSetCard> {
                 child: Container(
                   alignment: Alignment.center,
                   decoration: ShapeDecoration(
-                    color: context.colors.primaryBlue,
+                    color: context.colors.brandPrimary,
                     shape: SmoothRectangleBorder(
                       borderRadius: SmoothBorderRadius(
                         cornerRadius: 12,

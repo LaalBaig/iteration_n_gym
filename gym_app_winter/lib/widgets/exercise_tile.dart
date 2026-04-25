@@ -62,20 +62,28 @@ class ExerciseTile extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(0,0,0,12), 
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12), 
           decoration: BoxDecoration(
-            color: context.colors.backgroundGrey,
-            borderRadius: BorderRadius.circular(14), // Slightly tighter radius
+            color: context.colors.surfaceWhite, // Ivory
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: context.colors.borderCream,
+                spreadRadius: 1,
+                blurRadius: 0,
+                offset: const Offset(0, 0),
+              ),
+            ],
           ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8), // Reduced from 12
+              padding: const EdgeInsets.all(8), 
               decoration: BoxDecoration(
-                color: context.colors.textWhite,
+                color: context.colors.warmSand,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 Icons.fitness_center,
-                color: context.colors.primaryBlue,
+                color: context.colors.brandPrimary,
                 size: 24, 
               ),
             ),
