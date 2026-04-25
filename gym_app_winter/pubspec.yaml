@@ -43,6 +43,7 @@ dependencies:
   figma_squircle: ^0.6.3
   google_fonts: ^6.1.0
   fl_chart: ^0.69.0
+  intl: ^0.20.2
 
 dev_dependencies:
   drift_dev: ^2.15.0

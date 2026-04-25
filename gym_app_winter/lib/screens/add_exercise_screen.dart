@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gym_app_winter/datamodel/exercise.dart';
+import 'package:gym_app_winter/datamodel/exercise.dart' as model;
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/exercise_tile.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
+import 'package:gym_app_winter/database/database_service.dart';
+import 'package:gym_app_winter/database/database.dart';
+import 'package:drift/drift.dart' hide Column;
 
 class AddExerciseScreen extends StatefulWidget {
   const AddExerciseScreen({super.key});
@@ -127,11 +130,19 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                   return ExerciseTile(
                     title: exercise.name,
                     subtitle: exercise.category,
-                    onTap: () {
+                    onTap: () async {
                       FocusScope.of(context).unfocus();
                       
-                      // Add the exercise to the global state
-                      globalMyExercises.value = List.from(globalMyExercises.value)..add(exercise);
+                      // Add the exercise to the database
+                      await DatabaseService().db.addExercise(
+                        ExercisesCompanion(
+                          id: Value(exercise.id),
+                          name: Value(exercise.name),
+                          category: Value(exercise.category),
+                          lastLog: Value(exercise.lastLog),
+                        ),
+                      );
+
                       if (context.canPop()) {
                         context.pop(exercise);
                       } else {

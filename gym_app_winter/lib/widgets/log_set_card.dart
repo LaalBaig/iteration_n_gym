@@ -64,6 +64,7 @@ class _LogSetCardState extends State<LogSetCard> {
       set.weightFocusNode.addListener(() => setState(() {}));
       set.repsFocusNode.addListener(() => setState(() {}));
     }
+    _notifyChanges();
   }
 
   @override
@@ -89,6 +90,7 @@ class _LogSetCardState extends State<LogSetCard> {
       newSet.repsFocusNode.addListener(() => setState(() {}));
       _sets.add(newSet);
       WorkoutManager().incrementSet();
+      _notifyChanges();
     });
   }
 
@@ -98,12 +100,18 @@ class _LogSetCardState extends State<LogSetCard> {
         _sets[index].dispose();
         _sets.removeAt(index);
         WorkoutManager().decrementSet();
+        _notifyChanges();
       });
     }
   }
 
   void _triggerHapticFeedback() {
     HapticFeedback.selectionClick();
+  }
+
+  void _notifyChanges() {
+    final setsData = _sets.map((s) => {'weight': s.weight, 'reps': s.reps}).toList();
+    WorkoutManager().addLogsForExercise(widget.exerciseName, setsData);
   }
 
   @override
@@ -176,6 +184,7 @@ class _LogSetCardState extends State<LogSetCard> {
                       onChanged: (value) {
                         setState(() {
                           setData.weight = value;
+                          _notifyChanges();
                         });
                       },
                       onTextChanged: (value) {
@@ -199,6 +208,7 @@ class _LogSetCardState extends State<LogSetCard> {
                       onChanged: (value) {
                         setState(() {
                           setData.reps = value;
+                          _notifyChanges();
                         });
                       },
                       onTextChanged: (value) {

@@ -36,7 +36,6 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _tabs = const [
     ExercisesTab(),
-    WorkoutsTab(),
     ProfileTab(),
   ];
 

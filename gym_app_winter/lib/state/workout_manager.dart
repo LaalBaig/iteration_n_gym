@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/database/database_service.dart';
+import 'package:gym_app_winter/database/database.dart';
+import 'package:drift/drift.dart' hide Column;
 
 class WorkoutManager extends ChangeNotifier {
   static final WorkoutManager _instance = WorkoutManager._internal();
@@ -13,6 +16,9 @@ class WorkoutManager extends ChangeNotifier {
   String _currentExerciseName = "No exercise";
   int _setsCount = 0;
   Timer? _timer;
+
+  // Temporary storage for logs during an active workout
+  final Map<String, List<Map<String, int>>> _workoutLogs = {};
 
   bool get isActive => _isActive;
   bool get isMinimized => _isMinimized;
@@ -35,12 +41,18 @@ class WorkoutManager extends ChangeNotifier {
     _elapsedSeconds = 0;
     _currentExerciseName = "No exercise";
     _setsCount = 0;
+    _workoutLogs.clear();
     
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _elapsedSeconds++;
       notifyListeners();
     });
+    notifyListeners();
+  }
+
+  void addLogsForExercise(String exerciseName, List<Map<String, int>> sets) {
+    _workoutLogs[exerciseName] = sets;
     notifyListeners();
   }
 
@@ -74,11 +86,40 @@ class WorkoutManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void finishWorkout() {
+  Future<void> finishWorkout() async {
+    final workoutId = DateTime.now().millisecondsSinceEpoch.toString();
+    
+    // Save workout session
+    await DatabaseService().db.insertWorkout(
+      WorkoutsCompanion.insert(
+        id: workoutId,
+        startTime: _startTime ?? DateTime.now(),
+        endTime: Value(DateTime.now()),
+      ),
+    );
+
+    // Save all logs
+    for (var entry in _workoutLogs.entries) {
+      final exerciseName = entry.key;
+      final sets = entry.value;
+      for (int i = 0; i < sets.length; i++) {
+        await DatabaseService().db.insertExerciseLog(
+          ExerciseLogsCompanion.insert(
+            workoutId: workoutId,
+            exerciseName: exerciseName,
+            setNumber: i + 1,
+            weight: (sets[i]['weight'] ?? 0).toDouble(),
+            reps: sets[i]['reps'] ?? 0,
+          ),
+        );
+      }
+    }
+
     _isActive = false;
     _isMinimized = false;
     _setsCount = 0;
     _currentExerciseName = "No exercise";
+    _workoutLogs.clear();
     _timer?.cancel();
     notifyListeners();
   }
@@ -88,6 +129,7 @@ class WorkoutManager extends ChangeNotifier {
     _isMinimized = false;
     _setsCount = 0;
     _currentExerciseName = "No exercise";
+    _workoutLogs.clear();
     _timer?.cancel();
     notifyListeners();
   }

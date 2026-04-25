@@ -34,10 +34,48 @@ class ExerciseLogs extends Table {
 
 @DriftDatabase(tables: [Exercises, Workouts, ExerciseLogs])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection()); // It looks for the function here
+  AppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;
+
+  // Exercise queries
+  Stream<List<Exercise>> watchAllExercises() => select(exercises).watch();
+  Future<List<Exercise>> getAllExercises() => select(exercises).get();
+  Future<int> addExercise(ExercisesCompanion entry) => into(exercises).insert(entry, mode: InsertMode.insertOrReplace);
+  Future<void> deleteExercise(String id) => (delete(exercises)..where((t) => t.id.equals(id))).go();
+
+  // Workout queries
+  Future<int> insertWorkout(WorkoutsCompanion entry) => into(workouts).insert(entry);
+  
+  // Log queries
+  Future<int> insertExerciseLog(ExerciseLogsCompanion entry) => into(exerciseLogs).insert(entry);
+  Stream<List<ExerciseLog>> watchLogsForExercise(String name) {
+    return (select(exerciseLogs)..where((t) => t.exerciseName.equals(name))).watch();
+  }
+  Stream<List<ExerciseLogWithWorkout>> watchLogsWithWorkoutForExercise(String name) {
+    final query = select(exerciseLogs).join([
+      innerJoin(workouts, workouts.id.equalsExp(exerciseLogs.workoutId)),
+    ]);
+    query.where(exerciseLogs.exerciseName.equals(name));
+    query.orderBy([OrderingTerm.desc(workouts.startTime)]);
+
+    return query.watch().map((rows) {
+      return rows.map((row) {
+        return ExerciseLogWithWorkout(
+          log: row.readTable(exerciseLogs),
+          workout: row.readTable(workouts),
+        );
+      }).toList();
+    });
+  }
+}
+
+class ExerciseLogWithWorkout {
+  final ExerciseLog log;
+  final Workout workout;
+
+  ExerciseLogWithWorkout({required this.log, required this.workout});
 }
 
 // THIS FUNCTION MUST BE OUTSIDE THE CLASS

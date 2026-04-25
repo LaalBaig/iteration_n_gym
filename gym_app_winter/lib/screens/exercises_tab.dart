@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gym_app_winter/datamodel/exercise.dart';
+import 'package:gym_app_winter/datamodel/exercise.dart' as model;
 import 'package:gym_app_winter/widgets/empty_exercise_screen.dart';
 import 'package:gym_app_winter/widgets/exercise_tile.dart';
 import 'package:gym_app_winter/widgets/not_found.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
+import 'package:gym_app_winter/database/database_service.dart';
+import 'package:gym_app_winter/database/database.dart';
 
 class ExercisesTab extends StatefulWidget {
   const ExercisesTab({super.key});
@@ -52,15 +54,20 @@ class _ExercisesTabState extends State<ExercisesTab> {
           onChanged: (val) {}, // State already updates via listener
         ),
         Expanded(
-          child: ValueListenableBuilder<List<Exercise>>(
-            valueListenable: globalMyExercises,
-            builder: (context, exerciseList, _) {
+          child: StreamBuilder<List<Exercise>>(
+            stream: DatabaseService().db.watchAllExercises(),
+            builder: (context, snapshot) {
+              final exerciseList = snapshot.data ?? [];
               final filteredExerciseList = _searchQuery.isEmpty 
                   ? exerciseList 
                   : exerciseList.where((exercise) => 
                       exercise.name.toLowerCase().contains(_searchQuery.toLowerCase())
                     ).toList();
     
+              if (snapshot.connectionState == ConnectionState.waiting && exerciseList.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
               if (filteredExerciseList.isEmpty && _searchQuery.isNotEmpty && exerciseList.isNotEmpty) {
                 return NotFound(exercise: _searchQuery);
               } else if (filteredExerciseList.isEmpty) {
@@ -81,10 +88,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                         );
                       },
                       onDelete: () {
-                        final exerciseIdToRemove = filteredExerciseList[index].id;
-                        final currentList = List<Exercise>.from(globalMyExercises.value);
-                        currentList.removeWhere((Exercise ex) => ex.id == exerciseIdToRemove);
-                        globalMyExercises.value = currentList;
+                        DatabaseService().db.deleteExercise(filteredExerciseList[index].id);
                       },
                     );
                   },

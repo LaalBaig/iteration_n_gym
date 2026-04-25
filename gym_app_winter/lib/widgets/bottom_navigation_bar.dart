@@ -26,10 +26,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
           label: 'Exercises',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.fitness_center),
-          label: 'Workouts',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.person_outline),
           label: 'Profile',
         ),
