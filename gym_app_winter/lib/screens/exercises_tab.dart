@@ -87,7 +87,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                       subtitle: filteredExerciseList[index].lastLog,
                       onTap: () {
                         FocusScope.of(context).unfocus();
-                        context.go(
+                        context.push(
                           '/exercise_page/${Uri.encodeComponent(filteredExerciseList[index].name)}',
                         );
                       },

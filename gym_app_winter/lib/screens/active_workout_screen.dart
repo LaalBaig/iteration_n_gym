@@ -30,9 +30,11 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
   @override
   void initState() {
     super.initState();
-    // Ensure workout is started in manager if it isn't
+    // Ensure workout is started in manager if it isn't, after build
     if (!WorkoutManager().isActive) {
-      WorkoutManager().startWorkout();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        WorkoutManager().startWorkout();
+      });
     }
   }
 

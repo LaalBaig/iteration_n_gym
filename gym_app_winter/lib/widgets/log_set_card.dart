@@ -57,14 +57,16 @@ class _LogSetCardState extends State<LogSetCard> {
   @override
   void initState() {
     super.initState();
-    // Add initial set to manager count
-    WorkoutManager().incrementSet();
+    // Add initial set to manager count after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      WorkoutManager().incrementSet();
+      _notifyChanges();
+    });
     // Add listeners to trigger rebuilds when focus changes
     for (var set in _sets) {
       set.weightFocusNode.addListener(() => setState(() {}));
       set.repsFocusNode.addListener(() => setState(() {}));
     }
-    _notifyChanges();
   }
 
   @override

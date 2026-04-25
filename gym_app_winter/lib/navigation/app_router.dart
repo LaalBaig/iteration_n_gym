@@ -14,14 +14,12 @@ class AppRouter {
       GoRoute(
         path: '/',
         builder: (context, state) => const MainScreen(),
-        routes: [
-          GoRoute(
-            path: 'exercise_page/:exerciseName',
-            builder: (context, state) => ExercisePage(
-              exerciseName: state.pathParameters['exerciseName']!,
-            ),
-          ),
-        ],
+      ),
+      GoRoute(
+        path: '/exercise_page/:exerciseName',
+        builder: (context, state) => ExercisePage(
+          exerciseName: state.pathParameters['exerciseName']!,
+        ),
       ),
       GoRoute(
         path: '/add_exercise',
