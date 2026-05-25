@@ -370,10 +370,10 @@ class _LogSetCardState extends State<LogSetCard> {
           Container(
             width: 35,
             decoration: BoxDecoration(
-              color: context.colors.backgroundGrey.withOpacity(0.3),
+              color: context.colors.backgroundGrey.withValues(alpha: 0.3),
               border: Border(
                 left: BorderSide(
-                  color: context.colors.emptyText.withOpacity(0.2),
+                  color: context.colors.emptyText.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),

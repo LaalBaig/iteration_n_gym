@@ -47,7 +47,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
           decoration: BoxDecoration(
             color: isSelected ? context.colors.primaryBlue : context.colors.textWhite,
             border: Border.all(
-              color: isSelected ? context.colors.primaryBlue : context.colors.emptyText.withOpacity(0.3),
+              color: isSelected ? context.colors.primaryBlue : context.colors.emptyText.withValues(alpha: 0.3),
             ),
             borderRadius: BorderRadius.circular(12),
           ),

@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, child) {
         return Stack(
           children: [
-            if (child != null) child,
+            ?child,
             const Align(
               alignment: Alignment.bottomCenter,
               child: MinimizedWorkoutBar(),
