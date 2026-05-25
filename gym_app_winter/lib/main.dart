@@ -19,7 +19,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = ThemeMode.system;
+  ThemeMode _themeMode = ThemeMode.light;
 
   void toggleTheme(bool isDark) {
     setState(() {
@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFFF5F4ED), // Parchment
+        scaffoldBackgroundColor: const Color(0xFFFFFFFF), // White
         textTheme: GoogleFonts.interTextTheme(
           ThemeData.light().textTheme,
         ).copyWith(
@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
         splashColor: Colors.transparent,
       ),
       darkTheme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF141413), // Near Black
+        scaffoldBackgroundColor: const Color(0xFF111111), // Black
         textTheme: GoogleFonts.interTextTheme(
           ThemeData.dark().textTheme,
         ).copyWith(

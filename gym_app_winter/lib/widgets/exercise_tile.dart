@@ -76,19 +76,15 @@ class ExerciseTile extends StatelessWidget {
           ),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(8), 
-              decoration: BoxDecoration(
-                color: context.colors.surfaceWhite,
-                borderRadius: BorderRadius.circular(10),
-              ),
+            Padding(
+              padding: const EdgeInsets.only( left: 4, right: 16),
               child: Icon(
                 Icons.fitness_center,
                 color: context.colors.brandPrimary,
                 size: 24, 
               ),
             ),
-            const SizedBox(width: 12),
+    
 
             Expanded(
               child: Column(
