@@ -102,7 +102,7 @@ class ExerciseTile extends StatelessWidget {
                   const SizedBox(height: 2), 
                   Text(
                     subtitle,
-                    style: GoogleFonts.sourceSerif4(
+                    style: TextStyle(
                       fontSize: 12, 
                       color: context.colors.emptyText,
                     ),

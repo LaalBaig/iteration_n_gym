@@ -36,13 +36,8 @@ class _MyAppState extends State<MyApp> {
       themeMode: _themeMode,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFFFFFFF), // White
-        textTheme: GoogleFonts.interTextTheme(
+        textTheme: GoogleFonts.dmSansTextTheme(
           ThemeData.light().textTheme,
-        ).copyWith(
-          displayLarge: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500),
-          headlineMedium: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500),
-          titleLarge: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500),
-          bodyLarge: GoogleFonts.sourceSerif4(fontSize: 17, height: 1.6),
         ),
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,
@@ -52,11 +47,6 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: const Color(0xFF111111), // Black
         textTheme: GoogleFonts.interTextTheme(
           ThemeData.dark().textTheme,
-        ).copyWith(
-          displayLarge: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500, color: Colors.white),
-          headlineMedium: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500, color: Colors.white),
-          titleLarge: GoogleFonts.sourceSerif4(fontWeight: FontWeight.w500, color: Colors.white),
-          bodyLarge: GoogleFonts.sourceSerif4(fontSize: 17, height: 1.6, color: Colors.white),
         ),
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,

@@ -46,8 +46,9 @@ class _ExercisesTabState extends State<ExercisesTab> {
           child: Text(
             'Track Exercises',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontSize: 28,
+              fontSize: 32,
               color: context.colors.nearBlack,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -98,6 +99,35 @@ class _ExercisesTabState extends State<ExercisesTab> {
                 );
               }
             },
+          ),
+        ),
+        // Add the horizontal button here:
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+          child: SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: ElevatedButton(
+              onPressed: () {
+                // Action to perform on press (e.g., Navigate to add exercise)
+                context.push('/add_exercise');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.colors.brandPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 4,
+              ),
+              child: const Text(
+                'Add Exercise',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
           ),
         ),
       ],

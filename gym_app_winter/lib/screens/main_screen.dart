@@ -64,15 +64,6 @@ class _MainScreenState extends State<MainScreen> {
           children: _tabs,
         ),
       ),
-      floatingActionButton: Visibility(
-        visible: _selectedIndex == 0,
-        child: CustomFloatingButton(
-          onPressed: () {
-            GoRouter.of(context).push("/add_exercise");
-          },
-          label: "Add Exercise",
-        ),
-      ),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _selectedIndex,
         onTabSelected: _onTabSelected,
