@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class _ExerciseDummyTabState extends StatefulWidget {
-  const _ExerciseDummyTabState({super.key});
+  const _ExerciseDummyTabState();
 
   @override
   State<_ExerciseDummyTabState> createState() => __ExerciseDummyTabStateState();
