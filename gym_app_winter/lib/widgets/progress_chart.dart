@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
-import 'package:figma_squircle/figma_squircle.dart';
 import 'package:gym_app_winter/widgets/history_tile.dart';
 
 class ProgressChart extends StatefulWidget {
@@ -46,17 +45,20 @@ class _ProgressChartState extends State<ProgressChart> {
   Widget build(BuildContext context) {
     final spots = _getSpots();
     final hasData = spots.isNotEmpty;
+    final isDark = context.colors.isDarkMode;
+    final Color lineTheme = isDark ? const Color(0xFF222222) : const Color(0xFFF0F0F0);
+    final Color borderTheme = isDark ? const Color(0xFF333333) : const Color(0xFFD4D4D4);
+    final Color brandPurple = isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9);
 
     return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: ShapeDecoration(
-        color: context.colors.warmSand,
-        shape: SmoothRectangleBorder(
-          borderRadius: SmoothBorderRadius(
-            cornerRadius: 16,
-            cornerSmoothing: 1,
-          ),
-          side: BorderSide(color: context.colors.borderCream),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF161616) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: borderTheme,
+          width: 1.0,
         ),
       ),
       child: Column(
@@ -67,22 +69,24 @@ class _ProgressChartState extends State<ProgressChart> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                child: Text(
-                  "Progress",
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: 20,
-                    color: context.colors.textBlack,
-                  ),
+              Text(
+                "Progress",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: context.colors.textBlack,
                 ),
               ),
               DropdownButton<String>(
                 value: _selectedMetric,
-                dropdownColor: context.colors.surfaceWhite,
+                dropdownColor: isDark ? const Color(0xFF222222) : Colors.white,
                 iconEnabledColor: context.colors.brandPrimary,
                 underline: const SizedBox(),
-                style: TextStyle(color: context.colors.brandPrimary, fontWeight: FontWeight.w600, fontSize: 14),
+                style: TextStyle(
+                  color: isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
                 items: ['Volume', 'Max Weight']
                     .map((e) => DropdownMenuItem(
                           value: e,
@@ -99,18 +103,16 @@ class _ProgressChartState extends State<ProgressChart> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           // Chart Area
           Container(
             height: 240,
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(8, 24, 24, 16),
             decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark 
-                  ? const Color(0xFF1C1C1E) 
-                  : context.colors.surfaceWhite,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: context.colors.emptyText.withValues(alpha: 0.1)),
+              color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF9F9F9),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: lineTheme),
             ),
             child: Stack(
               alignment: Alignment.center,
@@ -203,7 +205,7 @@ class _ProgressChartState extends State<ProgressChart> {
                             return LineTooltipItem(
                               '${spot.y.toInt()}',
                               TextStyle(
-                                color: context.colors.primaryBlue,
+                                color: brandPurple,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
@@ -217,13 +219,23 @@ class _ProgressChartState extends State<ProgressChart> {
                           LineChartBarData(
                             spots: spots,
                             isCurved: true,
-                            color: context.colors.brandPrimary,
-                            barWidth: 3,
+                            color: brandPurple,
+                            barWidth: 3.5,
                             isStrokeCapRound: true,
-                            dotData: const FlDotData(show: true),
+                            dotData: FlDotData(
+                              show: true,
+                              getDotPainter: (spot, percent, barData, index) {
+                                return FlDotCirclePainter(
+                                  radius: 4,
+                                  color: brandPurple,
+                                  strokeWidth: 2,
+                                  strokeColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                                );
+                              },
+                            ),
                             belowBarData: BarAreaData(
                               show: true,
-                              color: context.colors.brandPrimary.withValues(alpha: 0.1),
+                              color: brandPurple.withValues(alpha: 0.1),
                             ),
                           ),
                         ]

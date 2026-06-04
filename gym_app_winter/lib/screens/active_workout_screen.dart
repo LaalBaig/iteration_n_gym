@@ -227,86 +227,89 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
 
   Widget _buildWorkoutList() {
     return ListView.builder(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(vertical: 24.0),
       itemCount: _workoutExercises.length + 1,
       itemBuilder: (context, index) {
         if (index == _workoutExercises.length) {
-          return Column(
-            children: [
-              const SizedBox(height: 16),
-              // Action Buttons below the list
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _navigateToAddExercise,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: context.colors.textWhite,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: context.colors.primaryBlue, width: 1.5),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.add, color: context.colors.primaryBlue),
-                      SizedBox(width: 8),
-                      Text(
-                        "Add Exercise",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.colors.primaryBlue),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 16),
+                // Action Buttons below the list
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _navigateToAddExercise,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: context.colors.textWhite,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: context.colors.primaryBlue, width: 1.5),
                       ),
-                    ],
+                      elevation: 0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add, color: context.colors.primaryBlue),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Add Exercise",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.colors.primaryBlue),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: context.colors.backgroundGrey,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.colors.backgroundGrey,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
                         ),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        "Settings",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.colors.textBlack),
+                        child: Text(
+                          "Settings",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: context.colors.textBlack),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                          WorkoutManager().discardWorkout();
-                          context.pop();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: context.colors.backgroundGrey,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                            WorkoutManager().discardWorkout();
+                            context.pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: context.colors.backgroundGrey,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
                         ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        "Discard Workout",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.red),
+                        child: const Text(
+                          "Discard Workout",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.red),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
           );
         }
 
@@ -316,12 +319,15 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                exercise.name,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: context.colors.textBlack,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Text(
+                  exercise.name,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: context.colors.textBlack,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

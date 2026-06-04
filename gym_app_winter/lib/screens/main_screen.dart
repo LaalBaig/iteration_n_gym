@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/screens/exercises_tab_landing.dart';
 import 'package:gym_app_winter/screens/profile_tab.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart';
-import 'package:gym_app_winter/widgets/floating_button.dart';
 
 
 

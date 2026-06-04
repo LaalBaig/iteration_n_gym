@@ -85,6 +85,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                       key: ValueKey(filteredExerciseList[index].id),
                       title: filteredExerciseList[index].name,
                       subtitle: filteredExerciseList[index].lastLog,
+                      category: filteredExerciseList[index].category,
                       onTap: () {
                         FocusScope.of(context).unfocus();
                         context.push(
@@ -119,13 +120,20 @@ class _ExercisesTabState extends State<ExercisesTab> {
                 ),
                 elevation: 4,
               ),
-              child: const Text(
-                'Add Exercise',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                Icon(Icons.add, color: Colors.white, size: 24,),
+                SizedBox(width: 4,),
+                  const Text(
+                    'Add Exercise',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

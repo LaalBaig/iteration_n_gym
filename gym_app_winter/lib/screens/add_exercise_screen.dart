@@ -128,7 +128,8 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                   final exercise = filteredExerciseList[index];
                   return ExerciseTile(
                     title: exercise.name,
-                    subtitle: exercise.category,
+                    subtitle: "",
+                    category: exercise.category,
                     onTap: () async {
                       FocusScope.of(context).unfocus();
                       
