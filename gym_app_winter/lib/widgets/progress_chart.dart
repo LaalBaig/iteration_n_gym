@@ -17,10 +17,9 @@ class _ProgressChartState extends State<ProgressChart> {
 
   List<FlSpot> _getSpots() {
     List<FlSpot> spots = [];
-    // Assuming new entries are appended at the end of the list.
-    // If we want chronological order from oldest (left) to newest (right), no reversal is needed if entries are chronological.
-    // However, LogSetCard adds to `history.add(HistoryTile...)`, so oldest is at index 0.
-    final orderedHistory = widget.history;
+    // Reverse the history so that the oldest logs are processed first (left)
+    // and the newest logs are processed last (right).
+    final orderedHistory = widget.history.reversed.toList();
 
     for (int i = 0; i < orderedHistory.length; i++) {
         final sets = orderedHistory[i].setData;

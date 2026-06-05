@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
@@ -7,11 +8,18 @@ import 'package:gym_app_winter/state/workout_manager.dart';
 import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
 
+enum LogSetCardVariant {
+  weighted,
+  bodyweight,
+  timed,
+}
+
 class LogSetCard extends StatefulWidget {
   final String exerciseName;
   final VoidCallback onAddSet;
   final void Function(List<Map<String, int>>) onFinish;
   final bool showLogButton;
+  final LogSetCardVariant variant;
 
   const LogSetCard({
     super.key,
@@ -19,6 +27,7 @@ class LogSetCard extends StatefulWidget {
     required this.onAddSet,
     required this.onFinish,
     this.showLogButton = true,
+    this.variant = LogSetCardVariant.weighted,
   });
 
   @override
@@ -34,17 +43,68 @@ class _SetData {
   final FocusNode weightFocusNode;
   final FocusNode repsFocusNode;
 
-  _SetData({this.weight = 0, this.reps = 0})
-      : isCompleted = false, weightTextController = TextEditingController(text: weight > 0 ? weight.toString() : ''),
+  // Stopwatch state properties
+  int durationMs; // Duration in milliseconds
+  bool isRunning;
+  Timer? stopwatchTimer;
+  DateTime? timerStartTime;
+  int timeBeforeStartMs;
+  final VoidCallback? onTimerTick;
+
+  _SetData({
+    this.weight = 0,
+    this.reps = 0,
+    this.onTimerTick,
+  })  : isCompleted = false,
+        durationMs = 0,
+        isRunning = false,
+        timeBeforeStartMs = 0,
+        weightTextController = TextEditingController(text: weight > 0 ? weight.toString() : ''),
         repsTextController = TextEditingController(text: reps > 0 ? reps.toString() : ''),
         weightFocusNode = FocusNode(),
         repsFocusNode = FocusNode();
+
+  void startTimer(VoidCallback onTick) {
+    if (isRunning) return;
+    isRunning = true;
+    timerStartTime = DateTime.now();
+    stopwatchTimer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      final now = DateTime.now();
+      final elapsed = now.difference(timerStartTime!).inMilliseconds;
+      durationMs = timeBeforeStartMs + elapsed;
+      onTick();
+    });
+  }
+
+  void stopTimer() {
+    if (!isRunning) return;
+    isRunning = false;
+    stopwatchTimer?.cancel();
+    stopwatchTimer = null;
+    timeBeforeStartMs = durationMs;
+  }
+
+  void resetTimer(VoidCallback onTick) {
+    stopTimer();
+    durationMs = 0;
+    timeBeforeStartMs = 0;
+    onTick();
+  }
+
+  String formatDuration() {
+    if (durationMs <= 0) return '—';
+    final minutes = (durationMs ~/ 60000).toString().padLeft(2, '0');
+    final seconds = ((durationMs % 60000) ~/ 1000).toString().padLeft(2, '0');
+    final centiseconds = ((durationMs % 1000) ~/ 10).toString().padLeft(2, '0');
+    return '$minutes:$seconds.$centiseconds';
+  }
 
   void dispose() {
     weightTextController.dispose();
     repsTextController.dispose();
     weightFocusNode.dispose();
     repsFocusNode.dispose();
+    stopwatchTimer?.cancel();
   }
 }
 
@@ -52,13 +112,23 @@ class _LogSetCardState extends State<LogSetCard> {
   final List<_SetData> _sets = [];
   List<ExerciseLog> _previousLogs = [];
 
+  _SetData _createSetData({int weight = 0, int reps = 0}) {
+    return _SetData(
+      weight: weight,
+      reps: reps,
+      onTimerTick: () {
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     _loadPreviousLogs();
     
     // Add initial set
-    _sets.add(_SetData());
+    _sets.add(_createSetData());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       WorkoutManager().incrementSet();
@@ -119,7 +189,7 @@ class _LogSetCardState extends State<LogSetCard> {
         initialReps = _sets.last.reps;
       }
       
-      final newSet = _SetData(weight: initialWeight, reps: initialReps);
+      final newSet = _createSetData(weight: initialWeight, reps: initialReps);
       newSet.weightFocusNode.addListener(() => setState(() {}));
       newSet.repsFocusNode.addListener(() => setState(() {}));
       _sets.add(newSet);
@@ -139,8 +209,266 @@ class _LogSetCardState extends State<LogSetCard> {
     }
   }
 
+  void _toggleTimer(int index) {
+    final setData = _sets[index];
+    setState(() {
+      if (setData.isRunning) {
+        setData.stopTimer();
+        setData.isCompleted = true;
+      } else {
+        // Stop any other running timer
+        for (int i = 0; i < _sets.length; i++) {
+          if (i != index && _sets[i].isRunning) {
+            _sets[i].stopTimer();
+            _sets[i].isCompleted = true;
+          }
+        }
+        setData.startTimer(() {
+          if (mounted) setState(() {});
+        });
+      }
+      _notifyChanges();
+    });
+  }
+
+  void _showTimeAdjustmentBottomSheet(BuildContext context, int index) async {
+    final setData = _sets[index];
+    final isRunningBefore = setData.isRunning;
+    if (isRunningBefore) {
+      setData.stopTimer();
+    }
+
+    final result = await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        final isDark = context.colors.isDarkMode;
+        final Color headerTextColor = isDark ? const Color(0xFF888888) : const Color(0xFF9E9E9E);
+        final Color brandPurple = isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9);
+        final Color borderTheme = isDark ? const Color(0xFF333333) : const Color(0xFFD4D4D4);
+
+        int tempMin = (setData.durationMs ~/ 60000).clamp(0, 99);
+        int tempSec = ((setData.durationMs % 60000) ~/ 1000).clamp(0, 59);
+
+        final minController = TextEditingController(text: tempMin.toString().padLeft(2, '0'));
+        final secController = TextEditingController(text: tempSec.toString().padLeft(2, '0'));
+
+        return StatefulBuilder(
+          builder: (context, sheetSetState) {
+            return Container(
+              padding: EdgeInsets.fromLTRB(24, 20, 24, MediaQuery.of(context).viewInsets.bottom + 24),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF3A3A3C) : const Color(0xFFE5E5EA),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    "Adjust time — set ${index + 1}",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: context.colors.textBlack,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Use the arrows or tap the number to edit",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: headerTextColor,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // MIN Column
+                      Column(
+                        children: [
+                          Text("MIN", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: headerTextColor)),
+                          const SizedBox(height: 8),
+                          IconButton(
+                            onPressed: () {
+                              tempMin = (tempMin + 1).clamp(0, 99);
+                              minController.text = tempMin.toString().padLeft(2, '0');
+                              sheetSetState(() {});
+                            },
+                            icon: Icon(Icons.keyboard_arrow_up, color: context.colors.textBlack),
+                          ),
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF5F5F5),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: TextField(
+                              controller: minController,
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: context.colors.textBlack),
+                              decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.symmetric(vertical: 16)),
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
+                              onChanged: (val) {
+                                tempMin = (int.tryParse(val) ?? 0).clamp(0, 99);
+                              },
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              tempMin = (tempMin - 1).clamp(0, 99);
+                              minController.text = tempMin.toString().padLeft(2, '0');
+                              sheetSetState(() {});
+                            },
+                            icon: Icon(Icons.keyboard_arrow_down, color: context.colors.textBlack),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 16),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: Text(":", style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: headerTextColor)),
+                      ),
+                      const SizedBox(width: 16),
+                      // SEC Column
+                      Column(
+                        children: [
+                          Text("SEC", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: headerTextColor)),
+                          const SizedBox(height: 8),
+                          IconButton(
+                            onPressed: () {
+                              tempSec = (tempSec + 1).clamp(0, 59);
+                              secController.text = tempSec.toString().padLeft(2, '0');
+                              sheetSetState(() {});
+                            },
+                            icon: Icon(Icons.keyboard_arrow_up, color: context.colors.textBlack),
+                          ),
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF5F5F5),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: TextField(
+                              controller: secController,
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: context.colors.textBlack),
+                              decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.symmetric(vertical: 16)),
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
+                              onChanged: (val) {
+                                tempSec = (int.tryParse(val) ?? 0).clamp(0, 59);
+                              },
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              tempSec = (tempSec - 1).clamp(0, 59);
+                              secController.text = tempSec.toString().padLeft(2, '0');
+                              sheetSetState(() {});
+                            },
+                            icon: Icon(Icons.keyboard_arrow_down, color: context.colors.textBlack),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: borderTheme),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: Text(
+                            "Cancel",
+                            style: TextStyle(
+                              color: context.colors.textBlack,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            final totalMs = (tempMin * 60 + tempSec) * 1000;
+                            Navigator.pop(context, totalMs);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: brandPurple,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            "Save",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        setData.durationMs = result;
+        setData.timeBeforeStartMs = result;
+        setData.isCompleted = true;
+        _notifyChanges();
+      });
+    } else if (isRunningBefore) {
+      setData.startTimer(() {
+        if (mounted) setState(() {});
+      });
+    }
+  }
+
   void _notifyChanges() {
-    final setsData = _sets.map((s) => {'weight': s.weight, 'reps': s.reps}).toList();
+    final setsData = _sets.map((s) {
+      if (widget.variant == LogSetCardVariant.timed) {
+        return {'weight': s.durationMs ~/ 1000, 'reps': 0};
+      } else if (widget.variant == LogSetCardVariant.bodyweight) {
+        return {'weight': 0, 'reps': s.reps};
+      } else {
+        return {'weight': s.weight, 'reps': s.reps};
+      }
+    }).toList();
     WorkoutManager().addLogsForExercise(widget.exerciseName, setsData);
   }
 
@@ -163,7 +491,6 @@ class _LogSetCardState extends State<LogSetCard> {
           color: borderTheme,
           width: 1.0,
         ),
-        
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,25 +553,47 @@ class _LogSetCardState extends State<LogSetCard> {
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: headerTextColor),
                   ),
                 ),
-                Expanded(
-                  flex: 3,
-                  child: Center(
-                    child: Text(
-                      "KG",
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: headerTextColor),
+                if (widget.variant == LogSetCardVariant.timed) ...[
+                  Expanded(
+                    flex: 6,
+                    child: Center(
+                      child: Text(
+                        "TIME",
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: headerTextColor),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 3,
-                  child: Center(
-                    child: Text(
-                      "REPS",
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: headerTextColor),
+                ] else if (widget.variant == LogSetCardVariant.bodyweight) ...[
+                  Expanded(
+                    flex: 6,
+                    child: Center(
+                      child: Text(
+                        "REPS",
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: headerTextColor),
+                      ),
                     ),
                   ),
-                ),
+                ] else ...[
+                  Expanded(
+                    flex: 3,
+                    child: Center(
+                      child: Text(
+                        "KG",
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: headerTextColor),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    flex: 3,
+                    child: Center(
+                      child: Text(
+                        "REPS",
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: headerTextColor),
+                      ),
+                    ),
+                  ),
+                ],
                 const SizedBox(width: 52), // Matches checkmark column
               ],
             ),
@@ -268,7 +617,16 @@ class _LogSetCardState extends State<LogSetCard> {
               String previousText = "-";
               if (index < _previousLogs.length) {
                 final log = _previousLogs[index];
-                previousText = "${log.weight.toInt()} × ${log.reps}";
+                if (widget.variant == LogSetCardVariant.timed) {
+                  final seconds = log.weight.toInt();
+                  final min = (seconds ~/ 60).toString().padLeft(2, '0');
+                  final sec = (seconds % 60).toString().padLeft(2, '0');
+                  previousText = "$min:$sec";
+                } else if (widget.variant == LogSetCardVariant.bodyweight) {
+                  previousText = "${log.reps}";
+                } else {
+                  previousText = "${log.weight.toInt()} × ${log.reps}";
+                }
               }
 
               // Background row color highlighted if checked (greenish accent)
@@ -291,155 +649,7 @@ class _LogSetCardState extends State<LogSetCard> {
                 child: Container(
                   color: rowColor,
                   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                  child: Row(
-                    children: [
-                      // Set number
-                      SizedBox(
-                        width: 42,
-                        child: Text(
-                          "${index + 1}",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: context.colors.textBlack,
-                          ),
-                        ),
-                      ),
-
-                      // Previous set info
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          previousText,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: context.colors.stoneGray,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-
-                      // KG Input Box
-                      Expanded(
-                        flex: 3,
-                        child: TextField(
-                          controller: setData.weightTextController,
-                          focusNode: setData.weightFocusNode,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          textAlignVertical: TextAlignVertical.center,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: context.colors.textBlack,
-                          ),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
-                            contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
-                            isDense: true,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0),
-                                width: 1.5,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: brandPurple,
-                                width: 1.5,
-                              ),
-                            ),
-                          ),
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          onChanged: (val) {
-                            setState(() {
-                              setData.weight = int.tryParse(val) ?? 0;
-                              _notifyChanges();
-                            });
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-
-                      // REPS Input Box
-                      Expanded(
-                        flex: 3,
-                        child: TextField(
-                          controller: setData.repsTextController,
-                          focusNode: setData.repsFocusNode,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          textAlignVertical: TextAlignVertical.center,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: context.colors.textBlack,
-                          ),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
-                            contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
-                            isDense: true,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0),
-                                width: 1.5,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: brandPurple,
-                                width: 1.5,
-                              ),
-                            ),
-                          ),
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          onChanged: (val) {
-                            setState(() {
-                              setData.reps = int.tryParse(val) ?? 0;
-                              _notifyChanges();
-                            });
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-
-                      // Checkmark Status Button
-                      SizedBox(
-                        width: 44,
-                        height: 40,
-                        child: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              setData.isCompleted = !setData.isCompleted;
-                              _notifyChanges();
-                            });
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: setData.isCompleted
-                                ? const Color(0xFF10B981) // Green accent on click
-                                : (isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5)),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: Icon(
-                            Icons.check,
-                            color: setData.isCompleted
-                                ? Colors.white
-                                : (isDark ? const Color(0xFF555555) : const Color(0xFF888888)),
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: _buildRowContent(context, index, setData, previousText, brandPurple, borderTheme, lineTheme, isDark),
                 ),
               );
             },
@@ -467,7 +677,15 @@ class _LogSetCardState extends State<LogSetCard> {
                     
                     if (shouldLog == true) {
                       final setData = _sets
-                          .map((set) => {'weight': set.weight, 'reps': set.reps})
+                          .map((set) {
+                            if (widget.variant == LogSetCardVariant.timed) {
+                              return {'weight': set.durationMs ~/ 1000, 'reps': 0};
+                            } else if (widget.variant == LogSetCardVariant.bodyweight) {
+                              return {'weight': 0, 'reps': set.reps};
+                            } else {
+                              return {'weight': set.weight, 'reps': set.reps};
+                            }
+                          })
                           .toList();
                       widget.onFinish(setData);
                     }
@@ -495,6 +713,409 @@ class _LogSetCardState extends State<LogSetCard> {
           ],
         ],
       ),
+    );
+  }
+
+  Widget _buildRowContent(
+    BuildContext context,
+    int index,
+    _SetData setData,
+    String previousText,
+    Color brandPurple,
+    Color borderTheme,
+    Color lineTheme,
+    bool isDark,
+  ) {
+    if (widget.variant == LogSetCardVariant.timed) {
+      return _buildTimedRow(context, index, setData, previousText, brandPurple, borderTheme, lineTheme, isDark);
+    } else if (widget.variant == LogSetCardVariant.bodyweight) {
+      return _buildBodyweightRow(context, index, setData, previousText, brandPurple, borderTheme, lineTheme, isDark);
+    } else {
+      return _buildWeightedRow(context, index, setData, previousText, brandPurple, borderTheme, lineTheme, isDark);
+    }
+  }
+
+  Widget _buildWeightedRow(
+    BuildContext context,
+    int index,
+    _SetData setData,
+    String previousText,
+    Color brandPurple,
+    Color borderTheme,
+    Color lineTheme,
+    bool isDark,
+  ) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 42,
+          child: Text(
+            "${index + 1}",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: context.colors.textBlack,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Text(
+            previousText,
+            style: TextStyle(
+              fontSize: 14,
+              color: context.colors.stoneGray,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: TextField(
+            controller: setData.weightTextController,
+            focusNode: setData.weightFocusNode,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            textAlignVertical: TextAlignVertical.center,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: context.colors.textBlack,
+            ),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+              contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
+              isDense: true,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0),
+                  width: 1.5,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: brandPurple,
+                  width: 1.5,
+                ),
+              ),
+            ),
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onChanged: (val) {
+              setState(() {
+                setData.weight = int.tryParse(val) ?? 0;
+                _notifyChanges();
+              });
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          flex: 3,
+          child: TextField(
+            controller: setData.repsTextController,
+            focusNode: setData.repsFocusNode,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            textAlignVertical: TextAlignVertical.center,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: context.colors.textBlack,
+            ),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+              contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
+              isDense: true,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0),
+                  width: 1.5,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: brandPurple,
+                  width: 1.5,
+                ),
+              ),
+            ),
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onChanged: (val) {
+              setState(() {
+                setData.reps = int.tryParse(val) ?? 0;
+                _notifyChanges();
+              });
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 44,
+          height: 40,
+          child: TextButton(
+            onPressed: () {
+              setState(() {
+                setData.isCompleted = !setData.isCompleted;
+                _notifyChanges();
+              });
+            },
+            style: TextButton.styleFrom(
+              backgroundColor: setData.isCompleted
+                  ? const Color(0xFF10B981)
+                  : (isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: EdgeInsets.zero,
+            ),
+            child: Icon(
+              Icons.check,
+              color: setData.isCompleted
+                  ? Colors.white
+                  : (isDark ? const Color(0xFF555555) : const Color(0xFF888888)),
+              size: 18,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBodyweightRow(
+    BuildContext context,
+    int index,
+    _SetData setData,
+    String previousText,
+    Color brandPurple,
+    Color borderTheme,
+    Color lineTheme,
+    bool isDark,
+  ) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 42,
+          child: Text(
+            "${index + 1}",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: context.colors.textBlack,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Text(
+            previousText,
+            style: TextStyle(
+              fontSize: 14,
+              color: context.colors.stoneGray,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 6,
+          child: TextField(
+            controller: setData.repsTextController,
+            focusNode: setData.repsFocusNode,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            textAlignVertical: TextAlignVertical.center,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: context.colors.textBlack,
+            ),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+              contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
+              isDense: true,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0),
+                  width: 1.5,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: brandPurple,
+                  width: 1.5,
+                ),
+              ),
+            ),
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onChanged: (val) {
+              setState(() {
+                setData.reps = int.tryParse(val) ?? 0;
+                _notifyChanges();
+              });
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 44,
+          height: 40,
+          child: TextButton(
+            onPressed: () {
+              setState(() {
+                setData.isCompleted = !setData.isCompleted;
+                _notifyChanges();
+              });
+            },
+            style: TextButton.styleFrom(
+              backgroundColor: setData.isCompleted
+                  ? const Color(0xFF10B981)
+                  : (isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: EdgeInsets.zero,
+            ),
+            child: Icon(
+              Icons.check,
+              color: setData.isCompleted
+                  ? Colors.white
+                  : (isDark ? const Color(0xFF555555) : const Color(0xFF888888)),
+              size: 18,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTimedRow(
+    BuildContext context,
+    int index,
+    _SetData setData,
+    String previousText,
+    Color brandPurple,
+    Color borderTheme,
+    Color lineTheme,
+    bool isDark,
+  ) {
+    final timeStr = setData.formatDuration();
+    final isRunning = setData.isRunning;
+    final isCompleted = setData.isCompleted;
+
+    return Row(
+      children: [
+        SizedBox(
+          width: 42,
+          child: Text(
+            "${index + 1}",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: context.colors.textBlack,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Text(
+            previousText,
+            style: TextStyle(
+              fontSize: 14,
+              color: context.colors.stoneGray,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 6,
+          child: GestureDetector(
+            onTap: () => _showTimeAdjustmentBottomSheet(context, index),
+            child: Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isRunning
+                      ? brandPurple
+                      : (isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0)),
+                  width: 1.5,
+                ),
+              ),
+              child: Text(
+                timeStr,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: isRunning
+                      ? brandPurple
+                      : (timeStr == '—' ? context.colors.stoneGray : context.colors.textBlack),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 44,
+          height: 40,
+          child: isCompleted && !isRunning
+              ? TextButton(
+                  onPressed: () {
+                    setState(() {
+                      setData.isCompleted = false;
+                      _notifyChanges();
+                    });
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                )
+              : TextButton(
+                  onPressed: () => _toggleTimer(index),
+                  style: TextButton.styleFrom(
+                    backgroundColor: isRunning
+                        ? (isDark ? const Color(0xFF2A1616) : const Color(0xFFFEE2E2))
+                        : (isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5)),
+                    side: BorderSide(
+                      color: isRunning
+                          ? Colors.red
+                          : (isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0)),
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: Icon(
+                    isRunning ? Icons.stop : Icons.play_arrow,
+                    color: isRunning
+                        ? Colors.red
+                        : (isDark ? const Color(0xFF888888) : const Color(0xFF555555)),
+                    size: 18,
+                  ),
+                ),
+        ),
+      ],
     );
   }
 }

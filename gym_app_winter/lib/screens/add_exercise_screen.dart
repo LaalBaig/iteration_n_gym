@@ -35,6 +35,8 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
       Exercise(id: "id6", name: "Pull-Ups", lastLog: "", category: "Bodyweight"),
       Exercise(id: "id7", name: "Bicep Curls", lastLog: "", category: "Arms"),
       Exercise(id: "id8", name: "Tricep Extensions", lastLog: "", category: "Arms"),
+      Exercise(id: "id9", name: "Plank", lastLog: "", category: "Timed"),
+      Exercise(id: "id10", name: "Running", lastLog: "", category: "Cardio"),
     ];
   }
 

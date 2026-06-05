@@ -19,6 +19,24 @@ class ExercisePage extends StatefulWidget {
 }
 
 class _ExercisePageState extends State<ExercisePage> {
+  Exercise? _exercise;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExercise();
+  }
+
+  void _loadExercise() async {
+    final db = DatabaseService().db;
+    final list = await (db.select(db.exercises)..where((t) => t.name.equals(widget.exerciseName))).get();
+    if (list.isNotEmpty && mounted) {
+      setState(() {
+        _exercise = list.first;
+      });
+    }
+  }
+
   void onChanged(String e) {
     print("hello world");
   }
@@ -27,6 +45,15 @@ class _ExercisePageState extends State<ExercisePage> {
 
   @override
   Widget build(BuildContext context) {
+    LogSetCardVariant variant = LogSetCardVariant.weighted;
+    if (_exercise != null) {
+      if (_exercise!.category.toLowerCase() == 'bodyweight') {
+        variant = LogSetCardVariant.bodyweight;
+      } else if (_exercise!.category.toLowerCase() == 'timed' || _exercise!.category.toLowerCase() == 'cardio') {
+        variant = LogSetCardVariant.timed;
+      }
+    }
+
     return Scaffold(
       backgroundColor: context.colors.backgroundGrey,
       body: GestureDetector(
@@ -54,7 +81,7 @@ class _ExercisePageState extends State<ExercisePage> {
                     'weight': e.log.weight.toInt(),
                     'reps': e.log.reps,
                   }).toList(),
-                  // We could pass date here if HistoryTile supported it, but it seems hardcoded for now
+                  variant: variant,
                 );
               }).toList();
 
@@ -84,6 +111,7 @@ class _ExercisePageState extends State<ExercisePage> {
                   SizedBox(height: 24),
                   LogSetCard(
                     exerciseName: widget.exerciseName,
+                    variant: variant,
                     onFinish: (setData) async {
                       // Create a new workout for this log (standalone log)
                       final workoutId = DateTime.now().millisecondsSinceEpoch.toString();

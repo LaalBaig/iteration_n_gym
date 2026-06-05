@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
+import 'package:gym_app_winter/widgets/log_set_card.dart';
 
 class HistoryTile extends StatelessWidget {
-  const HistoryTile({super.key, required this.setData});
+  const HistoryTile({
+    super.key,
+    required this.setData,
+    this.variant = LogSetCardVariant.weighted,
+  });
 
   final List<Map<String, int>> setData;
+  final LogSetCardVariant variant;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +84,7 @@ class HistoryTile extends StatelessWidget {
                           ),
                           SizedBox(width: 12),
                           Text(
-                            "${setData[i]['reps']}  reps  x  ${setData[i]['weight']} kg",
+                            _formatSet(setData[i]),
                             style: TextStyle(fontWeight: FontWeight.w400),
                           ),
                         ],
@@ -103,6 +109,19 @@ class HistoryTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatSet(Map<String, int> set) {
+    if (variant == LogSetCardVariant.timed) {
+      final seconds = set['weight'] ?? 0;
+      final min = (seconds ~/ 60).toString().padLeft(2, '0');
+      final sec = (seconds % 60).toString().padLeft(2, '0');
+      return "$min:$sec";
+    } else if (variant == LogSetCardVariant.bodyweight) {
+      return "${set['reps']}  reps";
+    } else {
+      return "${set['reps']}  reps  x  ${set['weight']} kg";
+    }
   }
 
   void _showFullHistoryDialog(BuildContext context) {
@@ -162,7 +181,7 @@ class HistoryTile extends StatelessWidget {
                             ),
                             const SizedBox(width: 16),
                             Text(
-                              "${setData[i]['reps']}  reps  x  ${setData[i]['weight']} kg",
+                              _formatSet(setData[i]),
                               style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                             ),
                           ],

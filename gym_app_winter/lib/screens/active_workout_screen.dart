@@ -314,6 +314,13 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
         }
 
         final exercise = _workoutExercises[index];
+        LogSetCardVariant variant = LogSetCardVariant.weighted;
+        if (exercise.category.toLowerCase() == 'bodyweight') {
+          variant = LogSetCardVariant.bodyweight;
+        } else if (exercise.category.toLowerCase() == 'timed' || exercise.category.toLowerCase() == 'cardio') {
+          variant = LogSetCardVariant.timed;
+        }
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 24.0),
           child: Column(
@@ -333,6 +340,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               const SizedBox(height: 12),
               LogSetCard(
                 exerciseName: exercise.name,
+                variant: variant,
                 showLogButton: false,
                 onAddSet: () {},
                 onFinish: (sets) {},
