@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class _ExerciseDummyTabState extends StatefulWidget {
-  const _ExerciseDummyTabState();
+class MyWidget extends StatefulWidget {
+  const MyWidget({super.key});
 
   @override
-  State<_ExerciseDummyTabState> createState() => __ExerciseDummyTabStateState();
+  State<MyWidget> createState() => _MyWidgetState();
 }
 
-class __ExerciseDummyTabStateState extends State<_ExerciseDummyTabState> {
+class _MyWidgetState extends State<MyWidget> {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();

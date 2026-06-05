@@ -263,8 +263,6 @@ class _LogSetCardState extends State<LogSetCard> {
             itemCount: _sets.length,
             itemBuilder: (context, index) {
               final setData = _sets[index];
-              final isWeightActive = setData.weightFocusNode.hasFocus;
-              final isRepsActive = setData.repsFocusNode.hasFocus;
 
               // Determine previous set text
               String previousText = "-";
@@ -292,12 +290,12 @@ class _LogSetCardState extends State<LogSetCard> {
                 },
                 child: Container(
                   color: rowColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                   child: Row(
                     children: [
                       // Set number
                       SizedBox(
-                        width: 45,
+                        width: 42,
                         child: Text(
                           "${index + 1}",
                           style: TextStyle(
@@ -324,41 +322,44 @@ class _LogSetCardState extends State<LogSetCard> {
                       // KG Input Box
                       Expanded(
                         flex: 3,
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: isWeightActive
-                                  ? brandPurple
-                                  : (isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0)),
-                              width: 1.5,
+                        child: TextField(
+                          controller: setData.weightTextController,
+                          focusNode: setData.weightFocusNode,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          textAlignVertical: TextAlignVertical.center,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: context.colors.textBlack,
+                          ),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
+                            isDense: true,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0),
+                                width: 1.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: brandPurple,
+                                width: 1.5,
+                              ),
                             ),
                           ),
-                          child: TextField(
-                            controller: setData.weightTextController,
-                            focusNode: setData.weightFocusNode,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: context.colors.textBlack,
-                            ),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                              isDense: true,
-                            ),
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                            onChanged: (val) {
-                              setState(() {
-                                setData.weight = int.tryParse(val) ?? 0;
-                                _notifyChanges();
-                              });
-                            },
-                          ),
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          onChanged: (val) {
+                            setState(() {
+                              setData.weight = int.tryParse(val) ?? 0;
+                              _notifyChanges();
+                            });
+                          },
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -366,41 +367,44 @@ class _LogSetCardState extends State<LogSetCard> {
                       // REPS Input Box
                       Expanded(
                         flex: 3,
-                        child: Container(
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: isRepsActive
-                                  ? brandPurple
-                                  : (isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0)),
-                              width: 1.5,
+                        child: TextField(
+                          controller: setData.repsTextController,
+                          focusNode: setData.repsFocusNode,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          textAlignVertical: TextAlignVertical.center,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: context.colors.textBlack,
+                          ),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
+                            isDense: true,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0),
+                                width: 1.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: brandPurple,
+                                width: 1.5,
+                              ),
                             ),
                           ),
-                          child: TextField(
-                            controller: setData.repsTextController,
-                            focusNode: setData.repsFocusNode,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: context.colors.textBlack,
-                            ),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                              isDense: true,
-                            ),
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                            onChanged: (val) {
-                              setState(() {
-                                setData.reps = int.tryParse(val) ?? 0;
-                                _notifyChanges();
-                              });
-                            },
-                          ),
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          onChanged: (val) {
+                            setState(() {
+                              setData.reps = int.tryParse(val) ?? 0;
+                              _notifyChanges();
+                            });
+                          },
                         ),
                       ),
                       const SizedBox(width: 8),
