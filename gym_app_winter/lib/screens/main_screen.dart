@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/screens/exercises_tab_landing.dart';
+import 'package:gym_app_winter/screens/stats_tab.dart';
 import 'package:gym_app_winter/screens/profile_tab.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart';
@@ -33,6 +34,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _tabs = const [
     ExercisesTab(),
+    StatsTab(),
     ProfileTab(),
   ];
 
@@ -51,7 +53,9 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.colors.backgroundGrey,
+      extendBody: true,
       body: SafeArea(
+        bottom: false,
         child: PageView(
           controller: _pageController,
           onPageChanged: (index) {

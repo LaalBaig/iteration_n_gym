@@ -37,6 +37,9 @@ class _ExercisesTabState extends State<ExercisesTab> {
 
   @override
   Widget build(BuildContext context) {
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
+    final double bottomInset = 56 + (bottomPadding > 0 ? bottomPadding * 0.6 : 8.0) + 2;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,10 +75,13 @@ class _ExercisesTabState extends State<ExercisesTab> {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (filteredExerciseList.isEmpty && _searchQuery.isNotEmpty && exerciseList.isNotEmpty) {
-                return NotFound(exercise: _searchQuery);
-              } else if (filteredExerciseList.isEmpty) {
-                return const EmptyExerciseScreen();
+              if (filteredExerciseList.isEmpty) {
+                final bool isSearchNotFound = _searchQuery.isNotEmpty && exerciseList.isNotEmpty;
+                return Center(
+                  child: isSearchNotFound
+                      ? NotFound(exercise: _searchQuery)
+                      : const EmptyExerciseScreen(),
+                );
               } else {
                 return ListView.builder(
                   itemCount: filteredExerciseList.length,
@@ -102,15 +108,14 @@ class _ExercisesTabState extends State<ExercisesTab> {
             },
           ),
         ),
-        // Add the horizontal button here:
+        // Anchored above bottom nav bar
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+          padding: EdgeInsets.fromLTRB(24, 8, 24, bottomInset),
           child: SizedBox(
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
               onPressed: () {
-                // Action to perform on press (e.g., Navigate to add exercise)
                 context.push('/add_exercise');
               },
               style: ElevatedButton.styleFrom(
@@ -120,12 +125,12 @@ class _ExercisesTabState extends State<ExercisesTab> {
                 ),
                 elevation: 4,
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                Icon(Icons.add, color: Colors.white, size: 24,),
-                SizedBox(width: 4,),
-                  const Text(
+                  Icon(Icons.add, color: Colors.white, size: 24),
+                  SizedBox(width: 4),
+                  Text(
                     'Add Exercise',
                     style: TextStyle(
                       color: Colors.white,
