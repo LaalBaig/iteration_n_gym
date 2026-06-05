@@ -78,7 +78,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                       final double totalWidth = constraints.maxWidth;
                       final double tabWidth = totalWidth / 3;
                       final double highlightWidth = 100;
-                      final double highlightHeight = 56;
+                      final double highlightHeight = 60;
                       // Calculate exact pixel offset to center the active highlight over active tab mathematically
                       final double activeLeft = currentIndex * tabWidth + (tabWidth - highlightWidth) / 2;
 
@@ -90,7 +90,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                           // Sliding active background indicator centered mathematically and vertically
                           AnimatedPositioned(
                             duration: const Duration(milliseconds: 320),
-                            curve: Curves.easeOutBack, // Organic elastic bounce curve
+                            curve: const CustomBackOutCurve(0.6), // Custom subtle organic elastic bounce curve that stays within container bounds
                             left: activeLeft,
                             top: activeTop,
                             width: highlightWidth,
@@ -98,7 +98,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                             child: Container(
                               decoration: BoxDecoration(
                                 color: badgeBgColor,
-                                borderRadius: BorderRadius.circular(28), // Matches half of height (56) for a perfect pill shape
+                                borderRadius: BorderRadius.circular(30), // Matches half of height (60) for a perfect pill shape
                               ),
                             ),
                           ),
@@ -206,5 +206,17 @@ class CustomBottomNavigationBar extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class CustomBackOutCurve extends Curve {
+  final double period;
+
+  const CustomBackOutCurve([this.period = 1.70158]);
+
+  @override
+  double transformInternal(double t) {
+    final double nt = t - 1.0;
+    return nt * nt * ((period + 1.0) * nt + period) + 1.0;
   }
 }

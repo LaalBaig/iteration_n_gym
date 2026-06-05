@@ -19,6 +19,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   late final PageController _pageController;
+  bool _isProgrammaticScroll = false;
 
   @override
   void initState() {
@@ -41,12 +42,17 @@ class _MainScreenState extends State<MainScreen> {
   void _onTabSelected(int index) {
     setState(() {
       _selectedIndex = index;
+      _isProgrammaticScroll = true;
     });
     _pageController.animateToPage(
       index,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-    );
+    ).then((_) {
+      if (mounted) {
+        _isProgrammaticScroll = false;
+      }
+    });
   }
 
   @override
@@ -59,9 +65,11 @@ class _MainScreenState extends State<MainScreen> {
         child: PageView(
           controller: _pageController,
           onPageChanged: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
+            if (!_isProgrammaticScroll) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            }
           },
           children: _tabs,
         ),
