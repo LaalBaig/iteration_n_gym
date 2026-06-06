@@ -57,6 +57,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     return Scaffold(
       backgroundColor: context.colors.backgroundGrey,
       extendBody: true,
@@ -74,10 +75,12 @@ class _MainScreenState extends State<MainScreen> {
           children: _tabs,
         ),
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTabSelected: _onTabSelected,
-      ),
+      bottomNavigationBar: isKeyboardOpen
+          ? null
+          : CustomBottomNavigationBar(
+              currentIndex: _selectedIndex,
+              onTabSelected: _onTabSelected,
+            ),
     );
   }
 }

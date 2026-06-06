@@ -53,8 +53,29 @@ class $ExercisesTable extends Exercises
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, name, category, lastLog];
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    category,
+    lastLog,
+    isDeleted,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -96,6 +117,12 @@ class $ExercisesTable extends Exercises
     } else if (isInserting) {
       context.missing(_lastLogMeta);
     }
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
     return context;
   }
 
@@ -121,6 +148,10 @@ class $ExercisesTable extends Exercises
         DriftSqlType.string,
         data['${effectivePrefix}last_log'],
       )!,
+      isDeleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_deleted'],
+      )!,
     );
   }
 
@@ -135,11 +166,13 @@ class Exercise extends DataClass implements Insertable<Exercise> {
   final String name;
   final String category;
   final String lastLog;
+  final bool isDeleted;
   const Exercise({
     required this.id,
     required this.name,
     required this.category,
     required this.lastLog,
+    required this.isDeleted,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -148,6 +181,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     map['name'] = Variable<String>(name);
     map['category'] = Variable<String>(category);
     map['last_log'] = Variable<String>(lastLog);
+    map['is_deleted'] = Variable<bool>(isDeleted);
     return map;
   }
 
@@ -157,6 +191,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       name: Value(name),
       category: Value(category),
       lastLog: Value(lastLog),
+      isDeleted: Value(isDeleted),
     );
   }
 
@@ -170,6 +205,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       name: serializer.fromJson<String>(json['name']),
       category: serializer.fromJson<String>(json['category']),
       lastLog: serializer.fromJson<String>(json['lastLog']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
     );
   }
   @override
@@ -180,6 +216,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       'name': serializer.toJson<String>(name),
       'category': serializer.toJson<String>(category),
       'lastLog': serializer.toJson<String>(lastLog),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
     };
   }
 
@@ -188,11 +225,13 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     String? name,
     String? category,
     String? lastLog,
+    bool? isDeleted,
   }) => Exercise(
     id: id ?? this.id,
     name: name ?? this.name,
     category: category ?? this.category,
     lastLog: lastLog ?? this.lastLog,
+    isDeleted: isDeleted ?? this.isDeleted,
   );
   Exercise copyWithCompanion(ExercisesCompanion data) {
     return Exercise(
@@ -200,6 +239,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       name: data.name.present ? data.name.value : this.name,
       category: data.category.present ? data.category.value : this.category,
       lastLog: data.lastLog.present ? data.lastLog.value : this.lastLog,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
     );
   }
 
@@ -209,13 +249,14 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('category: $category, ')
-          ..write('lastLog: $lastLog')
+          ..write('lastLog: $lastLog, ')
+          ..write('isDeleted: $isDeleted')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, category, lastLog);
+  int get hashCode => Object.hash(id, name, category, lastLog, isDeleted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -223,7 +264,8 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           other.id == this.id &&
           other.name == this.name &&
           other.category == this.category &&
-          other.lastLog == this.lastLog);
+          other.lastLog == this.lastLog &&
+          other.isDeleted == this.isDeleted);
 }
 
 class ExercisesCompanion extends UpdateCompanion<Exercise> {
@@ -231,12 +273,14 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
   final Value<String> name;
   final Value<String> category;
   final Value<String> lastLog;
+  final Value<bool> isDeleted;
   final Value<int> rowid;
   const ExercisesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.category = const Value.absent(),
     this.lastLog = const Value.absent(),
+    this.isDeleted = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ExercisesCompanion.insert({
@@ -244,6 +288,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     required String name,
     required String category,
     required String lastLog,
+    this.isDeleted = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -254,6 +299,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     Expression<String>? name,
     Expression<String>? category,
     Expression<String>? lastLog,
+    Expression<bool>? isDeleted,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -261,6 +307,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
       if (name != null) 'name': name,
       if (category != null) 'category': category,
       if (lastLog != null) 'last_log': lastLog,
+      if (isDeleted != null) 'is_deleted': isDeleted,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -270,6 +317,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     Value<String>? name,
     Value<String>? category,
     Value<String>? lastLog,
+    Value<bool>? isDeleted,
     Value<int>? rowid,
   }) {
     return ExercisesCompanion(
@@ -277,6 +325,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
       name: name ?? this.name,
       category: category ?? this.category,
       lastLog: lastLog ?? this.lastLog,
+      isDeleted: isDeleted ?? this.isDeleted,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -296,6 +345,9 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     if (lastLog.present) {
       map['last_log'] = Variable<String>(lastLog.value);
     }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -309,6 +361,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
           ..write('name: $name, ')
           ..write('category: $category, ')
           ..write('lastLog: $lastLog, ')
+          ..write('isDeleted: $isDeleted, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -604,9 +657,6 @@ class $ExerciseLogsTable extends ExerciseLogs
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES workouts (id)',
-    ),
   );
   static const VerificationMeta _exerciseNameMeta = const VerificationMeta(
     'exerciseName',
@@ -1002,6 +1052,7 @@ typedef $$ExercisesTableCreateCompanionBuilder =
       required String name,
       required String category,
       required String lastLog,
+      Value<bool> isDeleted,
       Value<int> rowid,
     });
 typedef $$ExercisesTableUpdateCompanionBuilder =
@@ -1010,6 +1061,7 @@ typedef $$ExercisesTableUpdateCompanionBuilder =
       Value<String> name,
       Value<String> category,
       Value<String> lastLog,
+      Value<bool> isDeleted,
       Value<int> rowid,
     });
 
@@ -1039,6 +1091,11 @@ class $$ExercisesTableFilterComposer
 
   ColumnFilters<String> get lastLog => $composableBuilder(
     column: $table.lastLog,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1071,6 +1128,11 @@ class $$ExercisesTableOrderingComposer
     column: $table.lastLog,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ExercisesTableAnnotationComposer
@@ -1093,6 +1155,9 @@ class $$ExercisesTableAnnotationComposer
 
   GeneratedColumn<String> get lastLog =>
       $composableBuilder(column: $table.lastLog, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
 }
 
 class $$ExercisesTableTableManager
@@ -1127,12 +1192,14 @@ class $$ExercisesTableTableManager
                 Value<String> name = const Value.absent(),
                 Value<String> category = const Value.absent(),
                 Value<String> lastLog = const Value.absent(),
+                Value<bool> isDeleted = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ExercisesCompanion(
                 id: id,
                 name: name,
                 category: category,
                 lastLog: lastLog,
+                isDeleted: isDeleted,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1141,12 +1208,14 @@ class $$ExercisesTableTableManager
                 required String name,
                 required String category,
                 required String lastLog,
+                Value<bool> isDeleted = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ExercisesCompanion.insert(
                 id: id,
                 name: name,
                 category: category,
                 lastLog: lastLog,
+                isDeleted: isDeleted,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -1186,29 +1255,6 @@ typedef $$WorkoutsTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-final class $$WorkoutsTableReferences
-    extends BaseReferences<_$AppDatabase, $WorkoutsTable, Workout> {
-  $$WorkoutsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$ExerciseLogsTable, List<ExerciseLog>>
-  _exerciseLogsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.exerciseLogs,
-    aliasName: $_aliasNameGenerator(db.workouts.id, db.exerciseLogs.workoutId),
-  );
-
-  $$ExerciseLogsTableProcessedTableManager get exerciseLogsRefs {
-    final manager = $$ExerciseLogsTableTableManager(
-      $_db,
-      $_db.exerciseLogs,
-    ).filter((f) => f.workoutId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_exerciseLogsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
 class $$WorkoutsTableFilterComposer
     extends Composer<_$AppDatabase, $WorkoutsTable> {
   $$WorkoutsTableFilterComposer({
@@ -1232,31 +1278,6 @@ class $$WorkoutsTableFilterComposer
     column: $table.endTime,
     builder: (column) => ColumnFilters(column),
   );
-
-  Expression<bool> exerciseLogsRefs(
-    Expression<bool> Function($$ExerciseLogsTableFilterComposer f) f,
-  ) {
-    final $$ExerciseLogsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.exerciseLogs,
-      getReferencedColumn: (t) => t.workoutId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ExerciseLogsTableFilterComposer(
-            $db: $db,
-            $table: $db.exerciseLogs,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$WorkoutsTableOrderingComposer
@@ -1301,31 +1322,6 @@ class $$WorkoutsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get endTime =>
       $composableBuilder(column: $table.endTime, builder: (column) => column);
-
-  Expression<T> exerciseLogsRefs<T extends Object>(
-    Expression<T> Function($$ExerciseLogsTableAnnotationComposer a) f,
-  ) {
-    final $$ExerciseLogsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.exerciseLogs,
-      getReferencedColumn: (t) => t.workoutId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ExerciseLogsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.exerciseLogs,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$WorkoutsTableTableManager
@@ -1339,9 +1335,9 @@ class $$WorkoutsTableTableManager
           $$WorkoutsTableAnnotationComposer,
           $$WorkoutsTableCreateCompanionBuilder,
           $$WorkoutsTableUpdateCompanionBuilder,
-          (Workout, $$WorkoutsTableReferences),
+          (Workout, BaseReferences<_$AppDatabase, $WorkoutsTable, Workout>),
           Workout,
-          PrefetchHooks Function({bool exerciseLogsRefs})
+          PrefetchHooks Function()
         > {
   $$WorkoutsTableTableManager(_$AppDatabase db, $WorkoutsTable table)
     : super(
@@ -1379,42 +1375,9 @@ class $$WorkoutsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$WorkoutsTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({exerciseLogsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (exerciseLogsRefs) db.exerciseLogs],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (exerciseLogsRefs)
-                    await $_getPrefetchedData<
-                      Workout,
-                      $WorkoutsTable,
-                      ExerciseLog
-                    >(
-                      currentTable: table,
-                      referencedTable: $$WorkoutsTableReferences
-                          ._exerciseLogsRefsTable(db),
-                      managerFromTypedResult: (p0) => $$WorkoutsTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).exerciseLogsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.workoutId == item.id),
-                      typedResults: items,
-                    ),
-                ];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -1429,9 +1392,9 @@ typedef $$WorkoutsTableProcessedTableManager =
       $$WorkoutsTableAnnotationComposer,
       $$WorkoutsTableCreateCompanionBuilder,
       $$WorkoutsTableUpdateCompanionBuilder,
-      (Workout, $$WorkoutsTableReferences),
+      (Workout, BaseReferences<_$AppDatabase, $WorkoutsTable, Workout>),
       Workout,
-      PrefetchHooks Function({bool exerciseLogsRefs})
+      PrefetchHooks Function()
     >;
 typedef $$ExerciseLogsTableCreateCompanionBuilder =
     ExerciseLogsCompanion Function({
@@ -1452,30 +1415,6 @@ typedef $$ExerciseLogsTableUpdateCompanionBuilder =
       Value<int> reps,
     });
 
-final class $$ExerciseLogsTableReferences
-    extends BaseReferences<_$AppDatabase, $ExerciseLogsTable, ExerciseLog> {
-  $$ExerciseLogsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $WorkoutsTable _workoutIdTable(_$AppDatabase db) =>
-      db.workouts.createAlias(
-        $_aliasNameGenerator(db.exerciseLogs.workoutId, db.workouts.id),
-      );
-
-  $$WorkoutsTableProcessedTableManager get workoutId {
-    final $_column = $_itemColumn<String>('workout_id')!;
-
-    final manager = $$WorkoutsTableTableManager(
-      $_db,
-      $_db.workouts,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_workoutIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
 class $$ExerciseLogsTableFilterComposer
     extends Composer<_$AppDatabase, $ExerciseLogsTable> {
   $$ExerciseLogsTableFilterComposer({
@@ -1487,6 +1426,11 @@ class $$ExerciseLogsTableFilterComposer
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workoutId => $composableBuilder(
+    column: $table.workoutId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1509,29 +1453,6 @@ class $$ExerciseLogsTableFilterComposer
     column: $table.reps,
     builder: (column) => ColumnFilters(column),
   );
-
-  $$WorkoutsTableFilterComposer get workoutId {
-    final $$WorkoutsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.workoutId,
-      referencedTable: $db.workouts,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$WorkoutsTableFilterComposer(
-            $db: $db,
-            $table: $db.workouts,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$ExerciseLogsTableOrderingComposer
@@ -1545,6 +1466,11 @@ class $$ExerciseLogsTableOrderingComposer
   });
   ColumnOrderings<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workoutId => $composableBuilder(
+    column: $table.workoutId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1567,29 +1493,6 @@ class $$ExerciseLogsTableOrderingComposer
     column: $table.reps,
     builder: (column) => ColumnOrderings(column),
   );
-
-  $$WorkoutsTableOrderingComposer get workoutId {
-    final $$WorkoutsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.workoutId,
-      referencedTable: $db.workouts,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$WorkoutsTableOrderingComposer(
-            $db: $db,
-            $table: $db.workouts,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$ExerciseLogsTableAnnotationComposer
@@ -1604,6 +1507,9 @@ class $$ExerciseLogsTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get workoutId =>
+      $composableBuilder(column: $table.workoutId, builder: (column) => column);
+
   GeneratedColumn<String> get exerciseName => $composableBuilder(
     column: $table.exerciseName,
     builder: (column) => column,
@@ -1617,29 +1523,6 @@ class $$ExerciseLogsTableAnnotationComposer
 
   GeneratedColumn<int> get reps =>
       $composableBuilder(column: $table.reps, builder: (column) => column);
-
-  $$WorkoutsTableAnnotationComposer get workoutId {
-    final $$WorkoutsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.workoutId,
-      referencedTable: $db.workouts,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$WorkoutsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.workouts,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$ExerciseLogsTableTableManager
@@ -1653,9 +1536,12 @@ class $$ExerciseLogsTableTableManager
           $$ExerciseLogsTableAnnotationComposer,
           $$ExerciseLogsTableCreateCompanionBuilder,
           $$ExerciseLogsTableUpdateCompanionBuilder,
-          (ExerciseLog, $$ExerciseLogsTableReferences),
+          (
+            ExerciseLog,
+            BaseReferences<_$AppDatabase, $ExerciseLogsTable, ExerciseLog>,
+          ),
           ExerciseLog,
-          PrefetchHooks Function({bool workoutId})
+          PrefetchHooks Function()
         > {
   $$ExerciseLogsTableTableManager(_$AppDatabase db, $ExerciseLogsTable table)
     : super(
@@ -1701,54 +1587,9 @@ class $$ExerciseLogsTableTableManager
                 reps: reps,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$ExerciseLogsTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({workoutId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (workoutId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.workoutId,
-                                referencedTable: $$ExerciseLogsTableReferences
-                                    ._workoutIdTable(db),
-                                referencedColumn: $$ExerciseLogsTableReferences
-                                    ._workoutIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -1763,9 +1604,12 @@ typedef $$ExerciseLogsTableProcessedTableManager =
       $$ExerciseLogsTableAnnotationComposer,
       $$ExerciseLogsTableCreateCompanionBuilder,
       $$ExerciseLogsTableUpdateCompanionBuilder,
-      (ExerciseLog, $$ExerciseLogsTableReferences),
+      (
+        ExerciseLog,
+        BaseReferences<_$AppDatabase, $ExerciseLogsTable, ExerciseLog>,
+      ),
       ExerciseLog,
-      PrefetchHooks Function({bool workoutId})
+      PrefetchHooks Function()
     >;
 
 class $AppDatabaseManager {

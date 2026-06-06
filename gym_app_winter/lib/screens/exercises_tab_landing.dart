@@ -38,7 +38,10 @@ class _ExercisesTabState extends State<ExercisesTab> {
   @override
   Widget build(BuildContext context) {
     final double bottomPadding = MediaQuery.of(context).padding.bottom;
-    final double bottomInset = 56 + (bottomPadding > 0 ? bottomPadding * 0.6 : 8.0) + 2;
+    final bool isKeyboardOpen = View.of(context).viewInsets.bottom > 0;
+    final double bottomInset = isKeyboardOpen
+        ? 12.0
+        : 48 + (bottomPadding > 0 ? bottomPadding * 0.6 : 8.0) + 2;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -46,13 +49,64 @@ class _ExercisesTabState extends State<ExercisesTab> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-          child: Text(
-            'Track Exercises',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontSize: 32,
-              color: context.colors.nearBlack,
-              fontWeight: FontWeight.bold,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Track Exercises',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 32,
+                  color: context.colors.nearBlack,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              StreamBuilder<List<Exercise>>(
+                stream: DatabaseService().db.watchRecentlyDeletedExercises(),
+                builder: (context, snapshot) {
+                  final deletedCount = snapshot.data?.length ?? 0;
+                  return IconButton(
+                    icon: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Icon(
+                          Icons.delete_outline,
+                          color: context.colors.nearBlack,
+                          size: 28,
+                        ),
+                        if (deletedCount > 0)
+                          Positioned(
+                            right: -2,
+                            top: -2,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              constraints: const BoxConstraints(
+                                minWidth: 16,
+                                minHeight: 16,
+                              ),
+                              child: Text(
+                                '$deletedCount',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    onPressed: () {
+                      context.push('/recently_deleted');
+                    },
+                  );
+                },
+              ),
+            ],
           ),
         ),
         CustomSearchBar(
@@ -65,18 +119,24 @@ class _ExercisesTabState extends State<ExercisesTab> {
             stream: DatabaseService().db.watchAllExercises(),
             builder: (context, snapshot) {
               final exerciseList = snapshot.data ?? [];
-              final filteredExerciseList = _searchQuery.isEmpty 
-                  ? exerciseList 
-                  : exerciseList.where((exercise) => 
-                      exercise.name.toLowerCase().contains(_searchQuery.toLowerCase())
-                    ).toList();
-    
-              if (snapshot.connectionState == ConnectionState.waiting && exerciseList.isEmpty) {
+              final filteredExerciseList = _searchQuery.isEmpty
+                  ? exerciseList
+                  : exerciseList
+                        .where(
+                          (exercise) => exercise.name.toLowerCase().contains(
+                            _searchQuery.toLowerCase(),
+                          ),
+                        )
+                        .toList();
+
+              if (snapshot.connectionState == ConnectionState.waiting &&
+                  exerciseList.isEmpty) {
                 return const Center(child: CircularProgressIndicator());
               }
 
               if (filteredExerciseList.isEmpty) {
-                final bool isSearchNotFound = _searchQuery.isNotEmpty && exerciseList.isNotEmpty;
+                final bool isSearchNotFound =
+                    _searchQuery.isNotEmpty && exerciseList.isNotEmpty;
                 return Center(
                   child: isSearchNotFound
                       ? NotFound(exercise: _searchQuery)
@@ -87,19 +147,51 @@ class _ExercisesTabState extends State<ExercisesTab> {
                   itemCount: filteredExerciseList.length,
                   padding: const EdgeInsets.fromLTRB(24, 0, 24, 6),
                   itemBuilder: (context, index) {
+                    final exercise = filteredExerciseList[index];
                     return ExerciseTile(
-                      key: ValueKey(filteredExerciseList[index].id),
-                      title: filteredExerciseList[index].name,
-                      subtitle: filteredExerciseList[index].lastLog,
-                      category: filteredExerciseList[index].category,
+                      bottomMargin: 12,
+                      key: ValueKey(exercise.id),
+                      title: exercise.name,
+                      subtitle: exercise.lastLog,
+                      category: exercise.category,
+                      confirmDelete: false,
                       onTap: () {
                         FocusScope.of(context).unfocus();
                         context.push(
-                          '/exercise_page/${Uri.encodeComponent(filteredExerciseList[index].name)}',
+                          '/exercise_page/${Uri.encodeComponent(exercise.name)}',
                         );
                       },
-                      onDelete: () {
-                        DatabaseService().db.deleteExercise(filteredExerciseList[index].id);
+                      onDelete: () async {
+                        final dbService = DatabaseService();
+                        await dbService.db.softDeleteExercise(exercise.id);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text(
+                                "Moved to recently deleted",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: context.colors.brandAccent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                              duration: const Duration(seconds: 4),
+                              action: SnackBarAction(
+                                label: "Undo",
+                                textColor: Colors.white,
+                                onPressed: () {
+                                  dbService.db.restoreExercise(exercise.id);
+                                },
+                              ),
+                            ),
+                          );
+                        }
                       },
                     );
                   },

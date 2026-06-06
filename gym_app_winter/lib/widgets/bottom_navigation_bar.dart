@@ -26,12 +26,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
         ? const Color(0xFF2E2B4A)
         : const Color(0xFFEEECF9);
 
-    final borderColor = isDark
-        ? Colors.white.withValues(alpha: 0.2)
-        : Colors.black.withValues(alpha: 0.15);
-
     final shadowColor = isDark
-        ? Colors.black.withValues(alpha: 0.5)
+        ? Colors.black.withValues(alpha: 0.6)
         : Colors.black.withValues(alpha: 0.12);
 
     final double bottomPadding = MediaQuery.of(context).padding.bottom;
@@ -53,16 +49,12 @@ class CustomBottomNavigationBar extends StatelessWidget {
             height: 72, // Strict height constraints for parent
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(36),
-              border: Border.all(
-                color: borderColor,
-                width: 1.2,
-              ),
               boxShadow: [
                 BoxShadow(
                   color: shadowColor,
-                  blurRadius: 28,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 10),
+                  blurRadius: 36,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 12),
                 ),
               ],
             ),
@@ -72,13 +64,13 @@ class CustomBottomNavigationBar extends StatelessWidget {
                 filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
                 child: Container(
                   color: backgroundColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       final double totalWidth = constraints.maxWidth;
                       final double tabWidth = totalWidth / 3;
-                      final double highlightWidth = 100;
-                      final double highlightHeight = 60;
+                      final double highlightWidth = 96;
+                      final double highlightHeight = 64;
                       // Calculate exact pixel offset to center the active highlight over active tab mathematically
                       final double activeLeft = currentIndex * tabWidth + (tabWidth - highlightWidth) / 2;
 

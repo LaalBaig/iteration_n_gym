@@ -1,160 +1,130 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/database/database_service.dart';
+import 'package:gym_app_winter/database/database.dart';
+import 'package:gym_app_winter/widgets/muscle_volume_heatmap.dart';
 
 class StatsTab extends StatelessWidget {
   const StatsTab({super.key});
 
-  Widget _buildStatCard(BuildContext context, String value, String label, IconData icon) {
-    final bool isDark = context.colors.isDarkMode;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: context.colors.borderCream,
-          width: 1.0,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: context.colors.textBlack,
-                ),
-              ),
-              Icon(icon, color: context.colors.stoneGray, size: 20),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: context.colors.oliveGray,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final bool isDark = context.colors.isDarkMode;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Analytics & Stats',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontSize: 32,
-              color: context.colors.nearBlack,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 24),
-          
-          // Stats Grid
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            childAspectRatio: 1.3,
+    final brandPurple = isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9);
+    
+    return StreamBuilder<List<LogWithWorkoutAndExercise>>(
+      stream: DatabaseService().db.watchAllLogsWithWorkoutAndExercise(),
+      builder: (context, snapshot) {
+        final logs = snapshot.data ?? [];
+        
+        // Weekly Volume Trend calculation
+        final now = DateTime.now();
+        final monday = now.subtract(Duration(days: now.weekday - 1));
+        final startOfWeek = DateTime(monday.year, monday.month, monday.day);
+        final weeklyVolumes = List.filled(7, 0.0);
+        
+        for (var item in logs) {
+          final logDate = item.workout.startTime;
+          if (logDate.isAfter(startOfWeek.subtract(const Duration(seconds: 1))) &&
+              logDate.isBefore(startOfWeek.add(const Duration(days: 7)))) {
+            final dayIndex = logDate.difference(startOfWeek).inDays.clamp(0, 6);
+            final volume = item.log.weight > 0
+                ? item.log.weight * item.log.reps
+                : item.log.reps.toDouble();
+            weeklyVolumes[dayIndex] += volume;
+          }
+        }
+
+        double peakVolume = weeklyVolumes.reduce((a, b) => a > b ? a : b);
+        if (peakVolume == 0) peakVolume = 1.0;
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildStatCard(context, '14', 'Workouts', Icons.fitness_center),
-              _buildStatCard(context, '85%', 'Completion', Icons.check_circle_outline),
-              _buildStatCard(context, '2.4 hrs', 'Avg. Duration', Icons.access_time),
-              _buildStatCard(context, '5', 'Active Days', Icons.calendar_today_outlined),
-            ],
-          ),
-          const SizedBox(height: 24),
-          
-          // Chart Section Placeholder
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: context.colors.borderCream,
-                width: 1.0,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+              Text(
+                'Analytics & Stats',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 32,
+                  color: context.colors.nearBlack,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Weekly Volume Trend',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: context.colors.textBlack,
-                      ),
+              ),
+              const SizedBox(height: 24),
+              
+              // Dynamic Weekly Volume Trend Chart Section
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: context.colors.borderCream,
+                    width: 1.0,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
-                    Icon(Icons.trending_up, color: context.colors.brandPrimary),
                   ],
                 ),
-                const SizedBox(height: 32),
-                
-                // Beautiful Mock Chart bars
-                SizedBox(
-                  height: 120,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      _buildChartBar(context, 0.4, 'Mon'),
-                      _buildChartBar(context, 0.6, 'Tue'),
-                      _buildChartBar(context, 0.3, 'Wed'),
-                      _buildChartBar(context, 0.85, 'Thu'),
-                      _buildChartBar(context, 0.5, 'Fri'),
-                      _buildChartBar(context, 0.7, 'Sat'),
-                      _buildChartBar(context, 0.2, 'Sun'),
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Weekly Volume Trend',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: context.colors.textBlack,
+                          ),
+                        ),
+                        Icon(Icons.trending_up, color: brandPurple),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    
+                    SizedBox(
+                      height: 120,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          _buildChartBar(context, (weeklyVolumes[0] / peakVolume).clamp(0.05, 1.0), 'Mon', weeklyVolumes[0], brandPurple),
+                          _buildChartBar(context, (weeklyVolumes[1] / peakVolume).clamp(0.05, 1.0), 'Tue', weeklyVolumes[1], brandPurple),
+                          _buildChartBar(context, (weeklyVolumes[2] / peakVolume).clamp(0.05, 1.0), 'Wed', weeklyVolumes[2], brandPurple),
+                          _buildChartBar(context, (weeklyVolumes[3] / peakVolume).clamp(0.05, 1.0), 'Thu', weeklyVolumes[3], brandPurple),
+                          _buildChartBar(context, (weeklyVolumes[4] / peakVolume).clamp(0.05, 1.0), 'Fri', weeklyVolumes[4], brandPurple),
+                          _buildChartBar(context, (weeklyVolumes[5] / peakVolume).clamp(0.05, 1.0), 'Sat', weeklyVolumes[5], brandPurple),
+                          _buildChartBar(context, (weeklyVolumes[6] / peakVolume).clamp(0.05, 1.0), 'Sun', weeklyVolumes[6], brandPurple),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 24),
+
+              // Muscle Volume Heatmap Card
+              MuscleVolumeHeatmap(logs: logs),
+
+              // Scroll buffer
+              const SizedBox(height: 120),
+            ],
           ),
-          // Scroll buffer
-          const SizedBox(height: 120),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildChartBar(BuildContext context, double heightFactor, String label) {
+  Widget _buildChartBar(BuildContext context, double heightFactor, String label, double volume, Color brandPurple) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -163,11 +133,15 @@ class StatsTab extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: FractionallySizedBox(
               heightFactor: heightFactor,
-              child: Container(
-                width: 16,
-                decoration: BoxDecoration(
-                  color: context.colors.brandPrimary.withValues(alpha: 0.85),
-                  borderRadius: BorderRadius.circular(4),
+              child: Tooltip(
+                triggerMode: TooltipTriggerMode.tap,
+                message: 'Volume: ${volume.toInt()}',
+                child: Container(
+                  width: 16,
+                  decoration: BoxDecoration(
+                    color: brandPurple.withValues(alpha: 0.85),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
               ),
             ),

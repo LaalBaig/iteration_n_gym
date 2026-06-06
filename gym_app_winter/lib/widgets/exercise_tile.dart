@@ -8,6 +8,8 @@ class ExerciseTile extends StatelessWidget {
   final String? category;
   final VoidCallback onTap;
   final VoidCallback? onDelete;
+  final double bottomMargin;
+  final bool confirmDelete;
 
   const ExerciseTile({
     super.key,
@@ -16,6 +18,8 @@ class ExerciseTile extends StatelessWidget {
     this.category,
     required this.onTap,
     this.onDelete,
+    this.bottomMargin = 8.0,
+    this.confirmDelete = true,
   });
 
   @override
@@ -32,11 +36,12 @@ class ExerciseTile extends StatelessWidget {
 
     return Dismissible(
       key: key ?? ValueKey(title),
-      direction: DismissDirection.endToStart,
+      direction: onDelete == null ? DismissDirection.none : DismissDirection.endToStart,
       onDismissed: (direction) {
         onDelete?.call();
       },
       confirmDismiss: (direction) async {
+        if (!confirmDelete) return true;
         final result = await showDialog<bool>(
           context: context,
           builder: (BuildContext context) {
@@ -60,7 +65,7 @@ class ExerciseTile extends StatelessWidget {
         return result ?? false;
       },
       background: Container(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 12), 
+        margin: EdgeInsets.only(bottom: bottomMargin), 
         padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           color: Colors.red,
@@ -72,11 +77,11 @@ class ExerciseTile extends StatelessWidget {
       child: BouncingButton(
         onTap: onTap,
         child: Container(
-          margin: const EdgeInsets.fromLTRB(0, 0, 0, 12), 
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16), 
+          margin: EdgeInsets.only(bottom: bottomMargin), 
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), 
           decoration: BoxDecoration(
             color: isDark ? context.colors.surfaceWhite : Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isDark ? const Color(0xFF2D2D2D) : context.colors.borderCream,
               width: 1.0,
@@ -86,21 +91,21 @@ class ExerciseTile extends StatelessWidget {
             children: [
               // 1. Dumbbell Icon Badge
               Container(
-                width: 48,
-                height: 48,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: badgeBgColor,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Center(
                   child: Icon(
                     Icons.fitness_center,
                     color: brandPurple,
-                    size: 22, 
+                    size: 18, 
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
 
               // 2. Title & Subtitle + Category Badges
               Expanded(
@@ -111,25 +116,25 @@ class ExerciseTile extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        fontSize: 18, 
+                        fontSize: 16, 
                         fontWeight: FontWeight.bold, 
                         color: context.colors.textBlack,
                       ),
                     ),
-                    const SizedBox(height: 6), 
+                    const SizedBox(height: 4), 
                     Row(
                       children: [
                         if (category != null && category!.isNotEmpty) ...[
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: badgeBgColor,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               category!,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 11,
                                 fontWeight: FontWeight.bold,
                                 color: brandPurple,
                               ),
@@ -137,13 +142,13 @@ class ExerciseTile extends StatelessWidget {
                           ),
                         ],
                         if (category != null && category!.isNotEmpty && subtitle.isNotEmpty)
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                         if (subtitle.isNotEmpty)
                           Expanded(
                             child: Text(
                               subtitle,
                               style: TextStyle(
-                                fontSize: 13, 
+                                fontSize: 12, 
                                 color: context.colors.emptyText,
                               ),
                               overflow: TextOverflow.ellipsis,

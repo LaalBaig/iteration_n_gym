@@ -6,6 +6,7 @@ import 'package:gym_app_winter/screens/exercise_page.dart';
 import 'package:gym_app_winter/screens/workout_page.dart';
 import 'package:gym_app_winter/screens/active_workout_screen.dart';
 import 'package:gym_app_winter/screens/see_all_history_screen.dart';
+import 'package:gym_app_winter/screens/recently_deleted_screen.dart';
 import 'package:gym_app_winter/widgets/history_tile.dart';
 
 class AppRouter {
@@ -24,6 +25,10 @@ class AppRouter {
       GoRoute(
         path: '/add_exercise',
         builder: (context, state) => const AddExerciseScreen(),
+      ),
+      GoRoute(
+        path: '/recently_deleted',
+        builder: (context, state) => const RecentlyDeletedScreen(),
       ),
       GoRoute(
         path: '/workout_page',
