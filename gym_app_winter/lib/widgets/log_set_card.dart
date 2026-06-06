@@ -670,6 +670,37 @@ class _LogSetCardState extends State<LogSetCard> {
                       set.repsFocusNode.unfocus();
                     }
 
+                    // Validation check
+                    for (int i = 0; i < _sets.length; i++) {
+                      final set = _sets[i];
+                      if (widget.variant == LogSetCardVariant.weighted) {
+                        if (set.weightTextController.text.trim().isEmpty ||
+                            set.repsTextController.text.trim().isEmpty) {
+                          final messenger = ScaffoldMessenger.of(context);
+                          messenger.clearSnackBars();
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text("Please fill in weight and reps for set ${i + 1}"),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+                      } else if (widget.variant == LogSetCardVariant.bodyweight) {
+                        if (set.repsTextController.text.trim().isEmpty) {
+                          final messenger = ScaffoldMessenger.of(context);
+                          messenger.clearSnackBars();
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text("Please fill in reps for set ${i + 1}"),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+                      }
+                    }
+
                     final bool? shouldLog = await showDialog<bool>(
                       context: context,
                       builder: (context) => const ConfirmLog(),
@@ -806,6 +837,9 @@ class _LogSetCardState extends State<LogSetCard> {
             onChanged: (val) {
               setState(() {
                 setData.weight = int.tryParse(val) ?? 0;
+                if (val.trim().isEmpty) {
+                  setData.isCompleted = false;
+                }
                 _notifyChanges();
               });
             },
@@ -849,6 +883,9 @@ class _LogSetCardState extends State<LogSetCard> {
             onChanged: (val) {
               setState(() {
                 setData.reps = int.tryParse(val) ?? 0;
+                if (val.trim().isEmpty) {
+                  setData.isCompleted = false;
+                }
                 _notifyChanges();
               });
             },
@@ -860,6 +897,20 @@ class _LogSetCardState extends State<LogSetCard> {
           height: 40,
           child: TextButton(
             onPressed: () {
+              if (!setData.isCompleted) {
+                if (setData.weightTextController.text.trim().isEmpty ||
+                    setData.repsTextController.text.trim().isEmpty) {
+                  final messenger = ScaffoldMessenger.of(context);
+                  messenger.clearSnackBars();
+                  messenger.showSnackBar(
+                    const SnackBar(
+                      content: Text("Weight and reps cannot be empty"),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  return;
+                }
+              }
               setState(() {
                 setData.isCompleted = !setData.isCompleted;
                 _notifyChanges();
@@ -958,6 +1009,9 @@ class _LogSetCardState extends State<LogSetCard> {
             onChanged: (val) {
               setState(() {
                 setData.reps = int.tryParse(val) ?? 0;
+                if (val.trim().isEmpty) {
+                  setData.isCompleted = false;
+                }
                 _notifyChanges();
               });
             },
@@ -969,6 +1023,19 @@ class _LogSetCardState extends State<LogSetCard> {
           height: 40,
           child: TextButton(
             onPressed: () {
+              if (!setData.isCompleted) {
+                if (setData.repsTextController.text.trim().isEmpty) {
+                  final messenger = ScaffoldMessenger.of(context);
+                  messenger.clearSnackBars();
+                  messenger.showSnackBar(
+                    const SnackBar(
+                      content: Text("Reps cannot be empty"),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  return;
+                }
+              }
               setState(() {
                 setData.isCompleted = !setData.isCompleted;
                 _notifyChanges();

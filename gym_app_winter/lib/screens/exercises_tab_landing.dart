@@ -165,8 +165,9 @@ class _ExercisesTabState extends State<ExercisesTab> {
                         final dbService = DatabaseService();
                         await dbService.db.softDeleteExercise(exercise.id);
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).clearSnackBars();
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          final messenger = ScaffoldMessenger.of(context);
+                          messenger.clearSnackBars();
+                          messenger.showSnackBar(
                             SnackBar(
                               content: const Text(
                                 "Moved to recently deleted",
@@ -180,8 +181,13 @@ class _ExercisesTabState extends State<ExercisesTab> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                              duration: const Duration(seconds: 4),
+                              margin: EdgeInsets.fromLTRB(
+                                24,
+                                0,
+                                24,
+                                80 ,
+                              ),
+                              duration: const Duration(seconds: 3),
                               action: SnackBarAction(
                                 label: "Undo",
                                 textColor: Colors.white,
@@ -191,6 +197,11 @@ class _ExercisesTabState extends State<ExercisesTab> {
                               ),
                             ),
                           );
+
+                          // Safeguard: explicitly hide the SnackBar after 3 seconds
+                          Future.delayed(const Duration(seconds: 3), () {
+                            messenger.hideCurrentSnackBar();
+                          });
                         }
                       },
                     );

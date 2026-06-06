@@ -162,7 +162,6 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 children: [
                   _buildChoiceButton('Bodyweight', _selectedExerciseType, (val) => setState(() => _selectedExerciseType = val)),
                   _buildChoiceButton('Weights', _selectedExerciseType, (val) => setState(() => _selectedExerciseType = val)),
-                  _buildChoiceButton('Hybrid', _selectedExerciseType, (val) => setState(() => _selectedExerciseType = val)),
                 ],
               ),
               

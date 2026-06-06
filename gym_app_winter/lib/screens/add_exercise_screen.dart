@@ -58,9 +58,9 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colors.textWhite,
+      backgroundColor: context.colors.backgroundGrey,
       appBar: AppBar(
-        backgroundColor: context.colors.textWhite,
+        backgroundColor: context.colors.backgroundGrey,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
@@ -111,7 +111,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: context.colors.textWhite,
+                    backgroundColor: context.colors.backgroundGrey,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

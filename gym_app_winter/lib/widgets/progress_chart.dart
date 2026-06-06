@@ -14,12 +14,40 @@ class ProgressChart extends StatefulWidget {
 
 class _ProgressChartState extends State<ProgressChart> {
   String _selectedMetric = 'Volume';
+  String _selectedTimeframe = 'All Time';
 
-  List<FlSpot> _getSpots() {
+  List<HistoryTile> _getFilteredHistory() {
+    if (_selectedTimeframe == 'All Time') {
+      return widget.history;
+    }
+    
+    final now = DateTime.now();
+    final Duration duration;
+    switch (_selectedTimeframe) {
+      case 'Past Week':
+        duration = const Duration(days: 7);
+        break;
+      case 'Past Month':
+        duration = const Duration(days: 30);
+        break;
+      case 'Past Year':
+        duration = const Duration(days: 365);
+        break;
+      default:
+        return widget.history;
+    }
+
+    return widget.history.where((tile) {
+      if (tile.date == null) return false;
+      return now.difference(tile.date!) <= duration;
+    }).toList();
+  }
+
+  List<FlSpot> _getSpots(List<HistoryTile> filteredHistory) {
     List<FlSpot> spots = [];
     // Reverse the history so that the oldest logs are processed first (left)
     // and the newest logs are processed last (right).
-    final orderedHistory = widget.history.reversed.toList();
+    final orderedHistory = filteredHistory.reversed.toList();
 
     for (int i = 0; i < orderedHistory.length; i++) {
         final sets = orderedHistory[i].setData;
@@ -42,7 +70,8 @@ class _ProgressChartState extends State<ProgressChart> {
 
   @override
   Widget build(BuildContext context) {
-    final spots = _getSpots();
+    final filteredHistory = _getFilteredHistory();
+    final spots = _getSpots(filteredHistory);
     final hasData = spots.isNotEmpty;
     final isDark = context.colors.isDarkMode;
     final Color lineTheme = isDark ? const Color(0xFF222222) : const Color(0xFFF0F0F0);
@@ -76,29 +105,59 @@ class _ProgressChartState extends State<ProgressChart> {
                   color: context.colors.textBlack,
                 ),
               ),
-              DropdownButton<String>(
-                value: _selectedMetric,
-                dropdownColor: isDark ? const Color(0xFF222222) : Colors.white,
-                iconEnabledColor: context.colors.brandPrimary,
-                underline: const SizedBox(),
-                style: TextStyle(
-                  color: isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-                items: ['Volume', 'Max Weight']
-                    .map((e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e, style: TextStyle(color: context.colors.textBlack)),
-                        ))
-                    .toList(),
-                onChanged: (val) {
-                  if (val != null) {
-                    setState(() {
-                      _selectedMetric = val;
-                    });
-                  }
-                },
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<String>(
+                    value: _selectedMetric,
+                    dropdownColor: isDark ? const Color(0xFF222222) : Colors.white,
+                    iconEnabledColor: context.colors.brandPrimary,
+                    underline: const SizedBox(),
+                    style: TextStyle(
+                      color: isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                    items: ['Volume', 'Max Weight']
+                        .map((e) => DropdownMenuItem(
+                              value: e,
+                              child: Text(e, style: TextStyle(color: context.colors.textBlack, fontSize: 13)),
+                            ))
+                        .toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setState(() {
+                          _selectedMetric = val;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  DropdownButton<String>(
+                    value: _selectedTimeframe,
+                    dropdownColor: isDark ? const Color(0xFF222222) : Colors.white,
+                    iconEnabledColor: context.colors.brandPrimary,
+                    underline: const SizedBox(),
+                    style: TextStyle(
+                      color: isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                    items: ['All Time', 'Past Week', 'Past Month', 'Past Year']
+                        .map((e) => DropdownMenuItem(
+                              value: e,
+                              child: Text(e, style: TextStyle(color: context.colors.textBlack, fontSize: 13)),
+                            ))
+                        .toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setState(() {
+                          _selectedTimeframe = val;
+                        });
+                      }
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -246,7 +305,9 @@ class _ProgressChartState extends State<ProgressChart> {
                     padding: const EdgeInsets.only(left: 60.0, bottom: 24.0),
                     child: Center(
                       child: Text(
-                        "Start logging to see progress",
+                        widget.history.isEmpty
+                            ? "Start logging to see progress"
+                            : "No logs in the selected timeframe",
                         style: TextStyle(color: context.colors.emptyText, fontSize: 14, fontWeight: FontWeight.w500),
                       ),
                     ),

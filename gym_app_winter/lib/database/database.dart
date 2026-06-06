@@ -77,9 +77,27 @@ class AppDatabase extends _$AppDatabase {
 
   // Workout queries
   Future<int> insertWorkout(WorkoutsCompanion entry) => into(workouts).insert(entry);
+  Future<Workout?> getWorkoutById(String workoutId) =>
+      (select(workouts)..where((t) => t.id.equals(workoutId))).getSingleOrNull();
+  Future<void> deleteWorkout(String workoutId) async {
+    await transaction(() async {
+      await (delete(exerciseLogs)..where((t) => t.workoutId.equals(workoutId))).go();
+      await (delete(workouts)..where((t) => t.id.equals(workoutId))).go();
+    });
+  }
+  Future<void> restoreWorkout(Workout workout, List<ExerciseLog> logs) async {
+    await transaction(() async {
+      await into(workouts).insert(workout, mode: InsertMode.insertOrReplace);
+      for (final log in logs) {
+        await into(exerciseLogs).insert(log, mode: InsertMode.insertOrReplace);
+      }
+    });
+  }
   
   // Log queries
   Future<int> insertExerciseLog(ExerciseLogsCompanion entry) => into(exerciseLogs).insert(entry);
+  Future<List<ExerciseLog>> getLogsForWorkout(String workoutId) =>
+      (select(exerciseLogs)..where((t) => t.workoutId.equals(workoutId))).get();
   Stream<List<ExerciseLog>> watchLogsForExercise(String name) {
     return (select(exerciseLogs)..where((t) => t.exerciseName.equals(name))).watch();
   }
@@ -105,6 +123,7 @@ class AppDatabase extends _$AppDatabase {
       innerJoin(workouts, workouts.id.equalsExp(exerciseLogs.workoutId)),
       innerJoin(exercises, exercises.name.equalsExp(exerciseLogs.exerciseName)),
     ]);
+    query.where(exercises.isDeleted.equals(false));
 
     return query.watch().map((rows) {
       return rows.map((row) {

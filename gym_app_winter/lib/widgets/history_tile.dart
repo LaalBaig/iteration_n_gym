@@ -3,19 +3,29 @@ import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
+import 'package:intl/intl.dart';
+import 'package:gym_app_winter/database/database_service.dart';
 
 class HistoryTile extends StatelessWidget {
   const HistoryTile({
     super.key,
     required this.setData,
     this.variant = LogSetCardVariant.weighted,
+    this.workoutId,
+    this.date,
   });
 
   final List<Map<String, int>> setData;
   final LogSetCardVariant variant;
+  final String? workoutId;
+  final DateTime? date;
 
   @override
   Widget build(BuildContext context) {
+    final String dateStr = date != null
+        ? DateFormat('EEEE, MMMM d').format(date!)
+        : "Wednesday, December 23";
+
     return Padding(
       padding: const EdgeInsets.all(0),
       child: BouncingButton(
@@ -51,7 +61,7 @@ class HistoryTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        "Wednesday, December 23",
+                        dateStr,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontSize: 18,
                           color: context.colors.textBlack,
@@ -59,11 +69,19 @@ class HistoryTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Icon(
-                      Icons.delete_outline,
-                      size: 24,
-                      color: context.colors.emptyText,
-                    ),
+                    if (workoutId != null && workoutId!.isNotEmpty)
+                      GestureDetector(
+                        onTap: () => _confirmAndDelete(context),
+                        behavior: HitTestBehavior.opaque,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.delete_outline,
+                            size: 24,
+                            color: context.colors.emptyText,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
                 SizedBox(height: 10),
@@ -125,6 +143,10 @@ class HistoryTile extends StatelessWidget {
   }
 
   void _showFullHistoryDialog(BuildContext context) {
+    final String dateStr = date != null
+        ? DateFormat('EEEE, MMMM d').format(date!)
+        : "Wednesday, December 23";
+
     showDialog(
       context: context,
       builder: (context) {
@@ -152,7 +174,7 @@ class HistoryTile extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          "Wednesday, December 23",
+                          dateStr,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -196,6 +218,104 @@ class HistoryTile extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _confirmAndDelete(BuildContext context) async {
+    final db = DatabaseService().db;
+    final id = workoutId;
+    if (id == null || id.isEmpty) return;
+
+    // Show confirmation dialog
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: context.colors.textWhite,
+          surfaceTintColor: Colors.transparent,
+          shape: SmoothRectangleBorder(
+            borderRadius: SmoothBorderRadius(
+              cornerRadius: 16,
+              cornerSmoothing: 1,
+            ),
+          ),
+          title: Text(
+            "Delete Workout",
+            style: TextStyle(
+              color: context.colors.textBlack,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            "Are you sure you want to delete this workout session?",
+            style: TextStyle(color: context.colors.textBlack),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: context.colors.emptyText),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text(
+                "Delete",
+                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm != true) return;
+
+    // Fetch workout & logs before deleting
+    final workout = await db.getWorkoutById(id);
+    final logs = await db.getLogsForWorkout(id);
+
+    if (workout == null) return;
+
+    // Delete
+    await db.deleteWorkout(id);
+
+    if (!context.mounted) return;
+
+    // Show floating SnackBar with Undo action
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.clearSnackBars();
+    messenger.showSnackBar(
+      SnackBar(
+        content: const Text(
+          "Workout session deleted",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: context.colors.brandAccent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(
+          label: "Undo",
+          textColor: Colors.white,
+          onPressed: () async {
+            await db.restoreWorkout(workout, logs);
+            messenger.hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+
+    // Safeguard: explicitly hide the SnackBar after 3 seconds
+    Future.delayed(const Duration(seconds: 3), () {
+      messenger.hideCurrentSnackBar();
+    });
   }
 }
 

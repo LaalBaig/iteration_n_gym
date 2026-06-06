@@ -151,8 +151,9 @@ class RecentlyDeletedScreen extends StatelessWidget {
                       onPressed: () async {
                         await DatabaseService().db.restoreExercise(exercise.id);
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).clearSnackBars();
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          final messenger = ScaffoldMessenger.of(context);
+                          messenger.clearSnackBars();
+                          messenger.showSnackBar(
                             SnackBar(
                               content: Text(
                                 "Restored '${exercise.name}'",
@@ -163,6 +164,9 @@ class RecentlyDeletedScreen extends StatelessWidget {
                               duration: const Duration(seconds: 2),
                             ),
                           );
+                          Future.delayed(const Duration(seconds: 2), () {
+                            messenger.hideCurrentSnackBar();
+                          });
                         }
                       },
                     ),
@@ -202,8 +206,9 @@ class RecentlyDeletedScreen extends StatelessWidget {
                                 exercise.name,
                               );
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).clearSnackBars();
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            final messenger = ScaffoldMessenger.of(context);
+                            messenger.clearSnackBars();
+                            messenger.showSnackBar(
                               SnackBar(
                                 content: Text(
                                   "Permanently deleted '${exercise.name}' and all associated data.",
@@ -214,6 +219,9 @@ class RecentlyDeletedScreen extends StatelessWidget {
                                 duration: const Duration(seconds: 2),
                               ),
                             );
+                            Future.delayed(const Duration(seconds: 2), () {
+                              messenger.hideCurrentSnackBar();
+                            });
                           }
                         }
                       },

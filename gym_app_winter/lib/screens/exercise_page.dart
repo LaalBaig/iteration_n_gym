@@ -76,12 +76,15 @@ class _ExercisePageState extends State<ExercisePage> {
 
               // Create HistoryTiles from grouped logs
               final List<HistoryTile> history = groupedLogs.entries.map((entry) {
+                final workout = entry.value.first.workout;
                 return HistoryTile(
                   setData: entry.value.map((e) => {
                     'weight': e.log.weight.toInt(),
                     'reps': e.log.reps,
                   }).toList(),
                   variant: variant,
+                  workoutId: entry.key,
+                  date: workout.startTime,
                 );
               }).toList();
 
