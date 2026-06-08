@@ -24,6 +24,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
     'Triceps', 'Biceps', 'Lats', 'Glutes', 'Hamstrings', 'Quads', 'Front Delt'
   ];
   final Set<String> _selectedMuscles = {};
+  bool _showAdvancedOptions = false;
 
   @override
   void dispose() {
@@ -45,33 +46,50 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
     );
   }
 
-  Widget _buildChoiceButton(String title, String groupValue, ValueChanged<String> onChanged) {
+  Widget _buildChoiceButton(String title, String groupValue, ValueChanged<String> onChanged, {bool enabled = true}) {
     final isSelected = title == groupValue;
     final colorScheme = Theme.of(context).colorScheme;
-    return Expanded(
-      child: BouncingButton(
-        onTap: () => onChanged(title),
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4.0),
-          padding: const EdgeInsets.symmetric(vertical: 14.0),
-          decoration: BoxDecoration(
-            color: isSelected ? colorScheme.primary : colorScheme.surface,
-            border: Border.all(
-              color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(
-            child: Text(
-              title,
-              style: TextStyle(
-                color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
+    
+    final Color backgroundColor = !enabled 
+        ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
+        : (isSelected ? colorScheme.primary : colorScheme.surface);
+        
+    final Color borderColor = !enabled
+        ? colorScheme.outlineVariant.withValues(alpha: 0.5)
+        : (isSelected ? colorScheme.primary : colorScheme.outlineVariant);
+        
+    final Color textColor = !enabled
+        ? colorScheme.onSurface.withValues(alpha: 0.3)
+        : (isSelected ? colorScheme.onPrimary : colorScheme.onSurface);
+
+    final Widget buttonChild = Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 14.0),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        border: Border.all(
+          color: borderColor,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: Text(
+          title,
+          style: TextStyle(
+            color: textColor,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
       ),
+    );
+
+    return Expanded(
+      child: enabled
+          ? BouncingButton(
+              onTap: () => onChanged(title),
+              child: buttonChild,
+            )
+          : buttonChild,
     );
   }
 
@@ -207,18 +225,77 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
               _buildSectionTitle("Exercise Type"),
               Row(
                 children: [
-                  _buildChoiceButton('Bodyweight', _selectedExerciseType, (val) => setState(() => _selectedExerciseType = val)),
-                  _buildChoiceButton('Weights', _selectedExerciseType, (val) => setState(() => _selectedExerciseType = val)),
+                  _buildChoiceButton(
+                    'Bodyweight', 
+                    _selectedExerciseType, 
+                    (val) => setState(() => _selectedExerciseType = val),
+                    enabled: _selectedTrackingType != 'Time based',
+                  ),
+                  _buildChoiceButton(
+                    'Weights', 
+                    _selectedExerciseType, 
+                    (val) => setState(() => _selectedExerciseType = val),
+                    enabled: _selectedTrackingType != 'Time based',
+                  ),
                 ],
               ),
               
-              _buildSectionTitle("Time-based?"),
-              Row(
-                children: [
-                  _buildChoiceButton('Yes', _selectedTrackingType == 'Time based' ? 'Yes' : 'No', (val) => setState(() => _selectedTrackingType = 'Time based')),
-                  _buildChoiceButton('No', _selectedTrackingType == 'Time based' ? 'Yes' : 'No', (val) => setState(() => _selectedTrackingType = 'Weight based')),
-                ],
+              const SizedBox(height: 16),
+              BouncingButton(
+                onTap: () {
+                  setState(() {
+                    _showAdvancedOptions = !_showAdvancedOptions;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    border: Border.all(color: colorScheme.outlineVariant),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.tune, color: colorScheme.primary, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Advanced Options",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Icon(
+                        _showAdvancedOptions ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
+                ),
               ),
+              if (_showAdvancedOptions) ...[
+                _buildSectionTitle("Time-based?"),
+                Row(
+                  children: [
+                    _buildChoiceButton(
+                      'Yes', 
+                      _selectedTrackingType == 'Time based' ? 'Yes' : 'No', 
+                      (val) => setState(() => _selectedTrackingType = 'Time based'),
+                    ),
+                    _buildChoiceButton(
+                      'No', 
+                      _selectedTrackingType == 'Time based' ? 'Yes' : 'No', 
+                      (val) => setState(() => _selectedTrackingType = 'Weight based'),
+                    ),
+                  ],
+                ),
+              ],
               
               _buildSectionTitle("Target Muscles"),
               Wrap(
