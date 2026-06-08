@@ -203,8 +203,6 @@ class _LogSetCardState extends State<LogSetCard> {
   }
 
   bool _isPR(_SetData setData) {
-    if (!setData.isCompleted) return false;
-    
     if (widget.variant == LogSetCardVariant.weighted) {
       if (setData.reps > 0 && setData.weight > 0) {
         int previousMax = _repMaxes[setData.reps] ?? 0;

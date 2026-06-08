@@ -72,6 +72,30 @@ class _ExercisePageState extends State<ExercisePage> {
             builder: (context, snapshot) {
               final logs = snapshot.data ?? [];
               
+              // Compute all-time maxes for history PR badges
+              Map<int, int> repMaxes = {};
+              int maxBodyweightReps = 0;
+              int maxTimeSeconds = 0;
+              
+              for (var log in logs) {
+                if (variant == LogSetCardVariant.weighted) {
+                  if (log.log.reps > 0 && log.log.weight > 0) {
+                    int currentMax = repMaxes[log.log.reps] ?? 0;
+                    if (log.log.weight.toInt() > currentMax) {
+                      repMaxes[log.log.reps] = log.log.weight.toInt();
+                    }
+                  }
+                } else if (variant == LogSetCardVariant.bodyweight) {
+                  if (log.log.reps > maxBodyweightReps) {
+                    maxBodyweightReps = log.log.reps;
+                  }
+                } else if (variant == LogSetCardVariant.timed) {
+                  if (log.log.weight.toInt() > maxTimeSeconds) {
+                    maxTimeSeconds = log.log.weight.toInt();
+                  }
+                }
+              }
+
               // Group logs by workoutId
               final Map<String, List<ExerciseLogWithWorkout>> groupedLogs = {};
               for (var log in logs) {
@@ -82,9 +106,26 @@ class _ExercisePageState extends State<ExercisePage> {
               final List<HistoryTile> history = groupedLogs.entries.map((entry) {
                 final workout = entry.value.first.workout;
                 return HistoryTile(
-                  setData: entry.value.map((e) => {
-                    'weight': e.log.weight.toInt(),
-                    'reps': e.log.reps,
+                  setData: entry.value.map((e) {
+                    int isPR = 0;
+                    if (variant == LogSetCardVariant.weighted) {
+                      if (e.log.reps > 0 && e.log.weight.toInt() == repMaxes[e.log.reps]) {
+                        isPR = 1;
+                      }
+                    } else if (variant == LogSetCardVariant.bodyweight) {
+                      if (e.log.reps > 0 && e.log.reps == maxBodyweightReps) {
+                        isPR = 1;
+                      }
+                    } else if (variant == LogSetCardVariant.timed) {
+                      if (e.log.weight.toInt() > 0 && e.log.weight.toInt() == maxTimeSeconds) {
+                        isPR = 1;
+                      }
+                    }
+                    return {
+                      'weight': e.log.weight.toInt(),
+                      'reps': e.log.reps,
+                      'isPR': isPR,
+                    };
                   }).toList(),
                   variant: variant,
                   workoutId: entry.key,

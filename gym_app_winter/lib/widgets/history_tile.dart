@@ -104,6 +104,23 @@ class HistoryTile extends StatelessWidget {
                             _formatSet(setData[i]),
                             style: TextStyle(fontWeight: FontWeight.w400),
                           ),
+                          if (setData[i]['isPR'] == 1)
+                            Container(
+                              margin: const EdgeInsets.only(left: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                "PR",
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                       SizedBox(height: 6),
@@ -205,6 +222,23 @@ class HistoryTile extends StatelessWidget {
                               _formatSet(setData[i]),
                               style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                             ),
+                            if (setData[i]['isPR'] == 1)
+                              Container(
+                                margin: const EdgeInsets.only(left: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primaryContainer,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  "PR",
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                         const SizedBox(height: 10),
