@@ -19,7 +19,7 @@ class WorkoutButtonTop extends StatelessWidget {
         },
         child: Container(
           decoration: ShapeDecoration(
-            color:context.colors.primaryBlue,
+            color: Theme.of(context).colorScheme.primary,
             shape: SmoothRectangleBorder(
               borderRadius: SmoothBorderRadius(
                 cornerRadius: 12,

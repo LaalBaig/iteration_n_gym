@@ -17,25 +17,37 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
+    final double bottomInset = 72 + 16 + (bottomPadding > 0 ? bottomPadding * 0.6 : 8.0);
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Column(
-        mainAxisAlignment: .start,
-        crossAxisAlignment: .start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
             child: Text(
               'Track Workouts',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontSize: 32,
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          WorkoutButtonTop(),
+          const WorkoutButtonTop(),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
             child: Text(
               "Routines",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontSize: 20,
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           Padding(
@@ -48,26 +60,41 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                     child: BouncingButton(
                       onTap: () {},
                       child: Container(
-                        padding: EdgeInsets.all(24),
+                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                         decoration: BoxDecoration(
-                          color: context.colors.backgroundGrey,
-                          borderRadius: BorderRadius.circular(12),
+                          color: colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: colorScheme.outlineVariant,
+                            width: 1.0,
+                          ),
                         ),
                         child: Column(
-                          mainAxisAlignment: .center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FaIcon(
-                              FontAwesomeIcons.plus,
-                              color: const Color.fromARGB(255, 195, 195, 195),
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: FaIcon(
+                                  FontAwesomeIcons.plus,
+                                  color: colorScheme.primary,
+                                  size: 20,
+                                ),
+                              ),
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             Text(
                               "New Routine",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: context.colors.textBlack,
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -75,30 +102,46 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: BouncingButton(
                       onTap: () {},
                       child: Container(
-                        padding: EdgeInsets.all(24),
+                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                         decoration: BoxDecoration(
-                          color: context.colors.backgroundGrey,
-                          borderRadius: BorderRadius.circular(12),
+                          color: colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: colorScheme.outlineVariant,
+                            width: 1.0,
+                          ),
                         ),
                         child: Column(
-                          mainAxisAlignment: .center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FaIcon(
-                              FontAwesomeIcons.magnifyingGlass,
-                              color: const Color.fromARGB(255, 195, 195, 195),
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: FaIcon(
+                                  FontAwesomeIcons.magnifyingGlass,
+                                  color: colorScheme.primary,
+                                  size: 18,
+                                ),
+                              ),
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             Text(
                               "Explore Routines",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.w400,
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -110,7 +153,136 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
+            child: Text(
+              "My Routines",
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontSize: 20,
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(24, 0, 24, bottomInset),
+              children: [
+                _buildRoutineTile(
+                  context,
+                  title: "Upper Body A",
+                  subtitle: "Bench Press, Pull-Ups, Overhead Press, Barbell Row",
+                  exerciseCount: 4,
+                ),
+                const SizedBox(height: 12),
+                _buildRoutineTile(
+                  context,
+                  title: "Lower Body A",
+                  subtitle: "Barbell Squat, Romanian Deadlift, Leg Press, Calf Raise",
+                  exerciseCount: 4,
+                ),
+                const SizedBox(height: 12),
+                _buildRoutineTile(
+                  context,
+                  title: "Core & Cardio",
+                  subtitle: "Plank, Hanging Leg Raise, Ab Wheel, HIIT Run",
+                  exerciseCount: 4,
+                ),
+              ],
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRoutineTile(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required int exerciseCount,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return BouncingButton(
+      onTap: () {
+        // Placeholder tap action
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: colorScheme.outlineVariant,
+            width: 1.0,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Icon Badge
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.assignment_outlined,
+                  color: colorScheme.primary,
+                  size: 20,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Title & Subtitle
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Play Button
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.play_arrow,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
