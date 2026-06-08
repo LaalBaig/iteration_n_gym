@@ -65,10 +65,14 @@ class _SeeAllHistoryScreenState extends State<SeeAllHistoryScreen> {
     }
 
     LogSetCardVariant variant = LogSetCardVariant.weighted;
-    if (_exercise!.category.toLowerCase() == 'bodyweight') {
-      variant = LogSetCardVariant.bodyweight;
-    } else if (_exercise!.category.toLowerCase() == 'timed' || _exercise!.category.toLowerCase() == 'cardio') {
+    final tType = _exercise!.trackingType?.toLowerCase();
+    final eType = _exercise!.exerciseType?.toLowerCase();
+    final cat = _exercise!.category.toLowerCase();
+
+    if (tType == 'time based' || tType == 'timed' || cat == 'timed' || cat == 'cardio') {
       variant = LogSetCardVariant.timed;
+    } else if (eType == 'bodyweight' || cat == 'bodyweight') {
+      variant = LogSetCardVariant.bodyweight;
     }
 
     return Scaffold(

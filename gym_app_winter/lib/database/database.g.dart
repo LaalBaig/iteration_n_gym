@@ -68,6 +68,28 @@ class $ExercisesTable extends Exercises
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _exerciseTypeMeta = const VerificationMeta(
+    'exerciseType',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseType = GeneratedColumn<String>(
+    'exercise_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _trackingTypeMeta = const VerificationMeta(
+    'trackingType',
+  );
+  @override
+  late final GeneratedColumn<String> trackingType = GeneratedColumn<String>(
+    'tracking_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -75,6 +97,8 @@ class $ExercisesTable extends Exercises
     category,
     lastLog,
     isDeleted,
+    exerciseType,
+    trackingType,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -123,6 +147,24 @@ class $ExercisesTable extends Exercises
         isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
       );
     }
+    if (data.containsKey('exercise_type')) {
+      context.handle(
+        _exerciseTypeMeta,
+        exerciseType.isAcceptableOrUnknown(
+          data['exercise_type']!,
+          _exerciseTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tracking_type')) {
+      context.handle(
+        _trackingTypeMeta,
+        trackingType.isAcceptableOrUnknown(
+          data['tracking_type']!,
+          _trackingTypeMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -152,6 +194,14 @@ class $ExercisesTable extends Exercises
         DriftSqlType.bool,
         data['${effectivePrefix}is_deleted'],
       )!,
+      exerciseType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_type'],
+      ),
+      trackingType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tracking_type'],
+      ),
     );
   }
 
@@ -167,12 +217,16 @@ class Exercise extends DataClass implements Insertable<Exercise> {
   final String category;
   final String lastLog;
   final bool isDeleted;
+  final String? exerciseType;
+  final String? trackingType;
   const Exercise({
     required this.id,
     required this.name,
     required this.category,
     required this.lastLog,
     required this.isDeleted,
+    this.exerciseType,
+    this.trackingType,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -182,6 +236,12 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     map['category'] = Variable<String>(category);
     map['last_log'] = Variable<String>(lastLog);
     map['is_deleted'] = Variable<bool>(isDeleted);
+    if (!nullToAbsent || exerciseType != null) {
+      map['exercise_type'] = Variable<String>(exerciseType);
+    }
+    if (!nullToAbsent || trackingType != null) {
+      map['tracking_type'] = Variable<String>(trackingType);
+    }
     return map;
   }
 
@@ -192,6 +252,12 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       category: Value(category),
       lastLog: Value(lastLog),
       isDeleted: Value(isDeleted),
+      exerciseType: exerciseType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exerciseType),
+      trackingType: trackingType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(trackingType),
     );
   }
 
@@ -206,6 +272,8 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       category: serializer.fromJson<String>(json['category']),
       lastLog: serializer.fromJson<String>(json['lastLog']),
       isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      exerciseType: serializer.fromJson<String?>(json['exerciseType']),
+      trackingType: serializer.fromJson<String?>(json['trackingType']),
     );
   }
   @override
@@ -217,6 +285,8 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       'category': serializer.toJson<String>(category),
       'lastLog': serializer.toJson<String>(lastLog),
       'isDeleted': serializer.toJson<bool>(isDeleted),
+      'exerciseType': serializer.toJson<String?>(exerciseType),
+      'trackingType': serializer.toJson<String?>(trackingType),
     };
   }
 
@@ -226,12 +296,16 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     String? category,
     String? lastLog,
     bool? isDeleted,
+    Value<String?> exerciseType = const Value.absent(),
+    Value<String?> trackingType = const Value.absent(),
   }) => Exercise(
     id: id ?? this.id,
     name: name ?? this.name,
     category: category ?? this.category,
     lastLog: lastLog ?? this.lastLog,
     isDeleted: isDeleted ?? this.isDeleted,
+    exerciseType: exerciseType.present ? exerciseType.value : this.exerciseType,
+    trackingType: trackingType.present ? trackingType.value : this.trackingType,
   );
   Exercise copyWithCompanion(ExercisesCompanion data) {
     return Exercise(
@@ -240,6 +314,12 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       category: data.category.present ? data.category.value : this.category,
       lastLog: data.lastLog.present ? data.lastLog.value : this.lastLog,
       isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      exerciseType: data.exerciseType.present
+          ? data.exerciseType.value
+          : this.exerciseType,
+      trackingType: data.trackingType.present
+          ? data.trackingType.value
+          : this.trackingType,
     );
   }
 
@@ -250,13 +330,23 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           ..write('name: $name, ')
           ..write('category: $category, ')
           ..write('lastLog: $lastLog, ')
-          ..write('isDeleted: $isDeleted')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('exerciseType: $exerciseType, ')
+          ..write('trackingType: $trackingType')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, category, lastLog, isDeleted);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    category,
+    lastLog,
+    isDeleted,
+    exerciseType,
+    trackingType,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -265,7 +355,9 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           other.name == this.name &&
           other.category == this.category &&
           other.lastLog == this.lastLog &&
-          other.isDeleted == this.isDeleted);
+          other.isDeleted == this.isDeleted &&
+          other.exerciseType == this.exerciseType &&
+          other.trackingType == this.trackingType);
 }
 
 class ExercisesCompanion extends UpdateCompanion<Exercise> {
@@ -274,6 +366,8 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
   final Value<String> category;
   final Value<String> lastLog;
   final Value<bool> isDeleted;
+  final Value<String?> exerciseType;
+  final Value<String?> trackingType;
   final Value<int> rowid;
   const ExercisesCompanion({
     this.id = const Value.absent(),
@@ -281,6 +375,8 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     this.category = const Value.absent(),
     this.lastLog = const Value.absent(),
     this.isDeleted = const Value.absent(),
+    this.exerciseType = const Value.absent(),
+    this.trackingType = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ExercisesCompanion.insert({
@@ -289,6 +385,8 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     required String category,
     required String lastLog,
     this.isDeleted = const Value.absent(),
+    this.exerciseType = const Value.absent(),
+    this.trackingType = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -300,6 +398,8 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     Expression<String>? category,
     Expression<String>? lastLog,
     Expression<bool>? isDeleted,
+    Expression<String>? exerciseType,
+    Expression<String>? trackingType,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -308,6 +408,8 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
       if (category != null) 'category': category,
       if (lastLog != null) 'last_log': lastLog,
       if (isDeleted != null) 'is_deleted': isDeleted,
+      if (exerciseType != null) 'exercise_type': exerciseType,
+      if (trackingType != null) 'tracking_type': trackingType,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -318,6 +420,8 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     Value<String>? category,
     Value<String>? lastLog,
     Value<bool>? isDeleted,
+    Value<String?>? exerciseType,
+    Value<String?>? trackingType,
     Value<int>? rowid,
   }) {
     return ExercisesCompanion(
@@ -326,6 +430,8 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
       category: category ?? this.category,
       lastLog: lastLog ?? this.lastLog,
       isDeleted: isDeleted ?? this.isDeleted,
+      exerciseType: exerciseType ?? this.exerciseType,
+      trackingType: trackingType ?? this.trackingType,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -348,6 +454,12 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     if (isDeleted.present) {
       map['is_deleted'] = Variable<bool>(isDeleted.value);
     }
+    if (exerciseType.present) {
+      map['exercise_type'] = Variable<String>(exerciseType.value);
+    }
+    if (trackingType.present) {
+      map['tracking_type'] = Variable<String>(trackingType.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -362,6 +474,8 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
           ..write('category: $category, ')
           ..write('lastLog: $lastLog, ')
           ..write('isDeleted: $isDeleted, ')
+          ..write('exerciseType: $exerciseType, ')
+          ..write('trackingType: $trackingType, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1538,6 +1652,8 @@ typedef $$ExercisesTableCreateCompanionBuilder =
       required String category,
       required String lastLog,
       Value<bool> isDeleted,
+      Value<String?> exerciseType,
+      Value<String?> trackingType,
       Value<int> rowid,
     });
 typedef $$ExercisesTableUpdateCompanionBuilder =
@@ -1547,6 +1663,8 @@ typedef $$ExercisesTableUpdateCompanionBuilder =
       Value<String> category,
       Value<String> lastLog,
       Value<bool> isDeleted,
+      Value<String?> exerciseType,
+      Value<String?> trackingType,
       Value<int> rowid,
     });
 
@@ -1581,6 +1699,16 @@ class $$ExercisesTableFilterComposer
 
   ColumnFilters<bool> get isDeleted => $composableBuilder(
     column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exerciseType => $composableBuilder(
+    column: $table.exerciseType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trackingType => $composableBuilder(
+    column: $table.trackingType,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1618,6 +1746,16 @@ class $$ExercisesTableOrderingComposer
     column: $table.isDeleted,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get exerciseType => $composableBuilder(
+    column: $table.exerciseType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get trackingType => $composableBuilder(
+    column: $table.trackingType,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ExercisesTableAnnotationComposer
@@ -1643,6 +1781,16 @@ class $$ExercisesTableAnnotationComposer
 
   GeneratedColumn<bool> get isDeleted =>
       $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<String> get exerciseType => $composableBuilder(
+    column: $table.exerciseType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get trackingType => $composableBuilder(
+    column: $table.trackingType,
+    builder: (column) => column,
+  );
 }
 
 class $$ExercisesTableTableManager
@@ -1678,6 +1826,8 @@ class $$ExercisesTableTableManager
                 Value<String> category = const Value.absent(),
                 Value<String> lastLog = const Value.absent(),
                 Value<bool> isDeleted = const Value.absent(),
+                Value<String?> exerciseType = const Value.absent(),
+                Value<String?> trackingType = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ExercisesCompanion(
                 id: id,
@@ -1685,6 +1835,8 @@ class $$ExercisesTableTableManager
                 category: category,
                 lastLog: lastLog,
                 isDeleted: isDeleted,
+                exerciseType: exerciseType,
+                trackingType: trackingType,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1694,6 +1846,8 @@ class $$ExercisesTableTableManager
                 required String category,
                 required String lastLog,
                 Value<bool> isDeleted = const Value.absent(),
+                Value<String?> exerciseType = const Value.absent(),
+                Value<String?> trackingType = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ExercisesCompanion.insert(
                 id: id,
@@ -1701,6 +1855,8 @@ class $$ExercisesTableTableManager
                 category: category,
                 lastLog: lastLog,
                 isDeleted: isDeleted,
+                exerciseType: exerciseType,
+                trackingType: trackingType,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

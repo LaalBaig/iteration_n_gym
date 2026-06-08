@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gym_app_winter/datamodel/exercise.dart';
+import 'package:gym_app_winter/models/catalog_exercise.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 import 'package:gym_app_winter/state/workout_manager.dart';
@@ -19,11 +20,26 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
 
   void _navigateToAddExercise() async {
     final result = await context.push('/add_exercise');
-    if (result != null && result is Exercise) {
-      setState(() {
-        _workoutExercises.add(result);
-        WorkoutManager().updateExercise(result.name);
-      });
+    if (result != null) {
+      Exercise? exercise;
+      if (result is Exercise) {
+        exercise = result;
+      } else if (result is CatalogExercise) {
+        exercise = Exercise(
+          id: result.id,
+          name: result.name,
+          category: result.category,
+          lastLog: '',
+          exerciseType: result.exerciseType,
+          trackingType: result.trackingType,
+        );
+      }
+      if (exercise != null) {
+        setState(() {
+          _workoutExercises.add(exercise!);
+          WorkoutManager().updateExercise(exercise.name);
+        });
+      }
     }
   }
 
@@ -315,10 +331,14 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
 
         final exercise = _workoutExercises[index];
         LogSetCardVariant variant = LogSetCardVariant.weighted;
-        if (exercise.category.toLowerCase() == 'bodyweight') {
-          variant = LogSetCardVariant.bodyweight;
-        } else if (exercise.category.toLowerCase() == 'timed' || exercise.category.toLowerCase() == 'cardio') {
+        final tType = exercise.trackingType?.toLowerCase();
+        final eType = exercise.exerciseType?.toLowerCase();
+        final cat = exercise.category.toLowerCase();
+
+        if (tType == 'time based' || tType == 'timed' || cat == 'timed' || cat == 'cardio') {
           variant = LogSetCardVariant.timed;
+        } else if (eType == 'bodyweight' || cat == 'bodyweight') {
+          variant = LogSetCardVariant.bodyweight;
         }
 
         return Padding(

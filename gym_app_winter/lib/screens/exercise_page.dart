@@ -47,10 +47,14 @@ class _ExercisePageState extends State<ExercisePage> {
   Widget build(BuildContext context) {
     LogSetCardVariant variant = LogSetCardVariant.weighted;
     if (_exercise != null) {
-      if (_exercise!.category.toLowerCase() == 'bodyweight') {
-        variant = LogSetCardVariant.bodyweight;
-      } else if (_exercise!.category.toLowerCase() == 'timed' || _exercise!.category.toLowerCase() == 'cardio') {
+      final tType = _exercise!.trackingType?.toLowerCase();
+      final eType = _exercise!.exerciseType?.toLowerCase();
+      final cat = _exercise!.category.toLowerCase();
+
+      if (tType == 'time based' || tType == 'timed' || cat == 'timed' || cat == 'cardio') {
         variant = LogSetCardVariant.timed;
+      } else if (eType == 'bodyweight' || cat == 'bodyweight') {
+        variant = LogSetCardVariant.bodyweight;
       }
     }
 
@@ -153,6 +157,8 @@ class _ExercisePageState extends State<ExercisePage> {
                           name: Value(exercise.name),
                           category: Value(exercise.category),
                           lastLog: Value(DateFormat('d MMM h:mm a').format(DateTime.now())),
+                          exerciseType: Value(exercise.exerciseType),
+                          trackingType: Value(exercise.trackingType),
                         ),
                       );
                     },

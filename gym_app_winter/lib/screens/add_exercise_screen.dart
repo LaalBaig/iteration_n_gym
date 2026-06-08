@@ -39,6 +39,8 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
           name: json['name'],
           category: json['category'],
           muscles: List<String>.from(json['muscles'] ?? []),
+          exerciseType: json['exerciseType'],
+          trackingType: json['trackingType'],
         );
       }).toList();
       
@@ -208,6 +210,8 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                                 name: Value(exercise.name),
                                 category: Value(exercise.category),
                                 lastLog: const Value(""),
+                                exerciseType: Value(exercise.exerciseType),
+                                trackingType: Value(exercise.trackingType),
                               ),
                               exercise.muscles,
                             );
@@ -223,6 +227,8 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                               name: Value(exercise.name),
                               category: Value(exercise.category),
                               lastLog: const Value(""),
+                              exerciseType: Value(exercise.exerciseType),
+                              trackingType: Value(exercise.trackingType),
                             ),
                             exercise.muscles,
                           );

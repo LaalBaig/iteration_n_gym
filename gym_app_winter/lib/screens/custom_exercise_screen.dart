@@ -125,6 +125,8 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                     name: Value(name),
                     category: Value(_selectedMuscles.isNotEmpty ? _selectedMuscles.first : 'Custom'),
                     lastLog: const Value(""),
+                    exerciseType: Value(_selectedExerciseType),
+                    trackingType: Value(_selectedTrackingType),
                   ),
                   _selectedMuscles.toList(),
                 );
@@ -135,6 +137,8 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                     name: name,
                     category: _selectedMuscles.isNotEmpty ? _selectedMuscles.first : 'Custom',
                     muscles: _selectedMuscles.toList(),
+                    exerciseType: _selectedExerciseType,
+                    trackingType: _selectedTrackingType,
                   );
                   if (context.canPop()) {
                     context.pop(newExercise);
@@ -208,11 +212,11 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 ],
               ),
               
-              _buildSectionTitle("Tracking Type"),
+              _buildSectionTitle("Time-based?"),
               Row(
                 children: [
-                  _buildChoiceButton('Time based', _selectedTrackingType, (val) => setState(() => _selectedTrackingType = val)),
-                  _buildChoiceButton('Weight based', _selectedTrackingType, (val) => setState(() => _selectedTrackingType = val)),
+                  _buildChoiceButton('Yes', _selectedTrackingType == 'Time based' ? 'Yes' : 'No', (val) => setState(() => _selectedTrackingType = 'Time based')),
+                  _buildChoiceButton('No', _selectedTrackingType == 'Time based' ? 'Yes' : 'No', (val) => setState(() => _selectedTrackingType = 'Weight based')),
                 ],
               ),
               

@@ -11,6 +11,8 @@ class Exercises extends Table {
   TextColumn get category => text()();
   TextColumn get lastLog => text()();
   BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
+  TextColumn get exerciseType => text().nullable()();
+  TextColumn get trackingType => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -65,7 +67,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -102,6 +104,10 @@ class AppDatabase extends _$AppDatabase {
                 ));
               }
             }
+          }
+          if (from < 4) {
+            await m.addColumn(exercises, exercises.exerciseType);
+            await m.addColumn(exercises, exercises.trackingType);
           }
 
         },
