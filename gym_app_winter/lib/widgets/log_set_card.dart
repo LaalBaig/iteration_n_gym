@@ -111,6 +111,10 @@ class _LogSetCardState extends State<LogSetCard> {
   final List<_SetData> _sets = [];
   List<ExerciseLog> _previousLogs = [];
 
+  Map<int, int> _repMaxes = {};
+  int _maxBodyweightReps = 0;
+  int _maxTimeSeconds = 0;
+
   _SetData _createSetData({int weight = 0, int reps = 0}) {
     return _SetData(
       weight: weight,
@@ -153,6 +157,26 @@ class _LogSetCardState extends State<LogSetCard> {
     try {
       final logs = await (db.select(db.exerciseLogs)..where((t) => t.exerciseName.equals(widget.exerciseName))).get();
       if (logs.isNotEmpty) {
+        // Compute historical PRs
+        for (var log in logs) {
+          if (widget.variant == LogSetCardVariant.weighted) {
+            if (log.reps > 0 && log.weight > 0) {
+              int currentMax = _repMaxes[log.reps] ?? 0;
+              if (log.weight.toInt() > currentMax) {
+                _repMaxes[log.reps] = log.weight.toInt();
+              }
+            }
+          } else if (widget.variant == LogSetCardVariant.bodyweight) {
+            if (log.reps > _maxBodyweightReps) {
+              _maxBodyweightReps = log.reps;
+            }
+          } else if (widget.variant == LogSetCardVariant.timed) {
+            if (log.weight.toInt() > _maxTimeSeconds) {
+              _maxTimeSeconds = log.weight.toInt();
+            }
+          }
+        }
+
         final Map<String, List<ExerciseLog>> grouped = {};
         for (var log in logs) {
           grouped.putIfAbsent(log.workoutId, () => []).add(log);
@@ -176,6 +200,30 @@ class _LogSetCardState extends State<LogSetCard> {
     } catch (e) {
       // Handle or ignore gracefully
     }
+  }
+
+  bool _isPR(_SetData setData) {
+    if (!setData.isCompleted) return false;
+    
+    if (widget.variant == LogSetCardVariant.weighted) {
+      if (setData.reps > 0 && setData.weight > 0) {
+        int previousMax = _repMaxes[setData.reps] ?? 0;
+        if (previousMax == 0) return true; // First time doing these reps
+        return setData.weight > previousMax;
+      }
+    } else if (widget.variant == LogSetCardVariant.bodyweight) {
+      if (setData.reps > 0) {
+        if (_maxBodyweightReps == 0) return true;
+        return setData.reps > _maxBodyweightReps;
+      }
+    } else if (widget.variant == LogSetCardVariant.timed) {
+      int durationSec = setData.durationMs ~/ 1000;
+      if (durationSec > 0) {
+        if (_maxTimeSeconds == 0) return true;
+        return durationSec > _maxTimeSeconds;
+      }
+    }
+    return false;
   }
 
   void _addSet() {
@@ -787,13 +835,36 @@ class _LogSetCardState extends State<LogSetCard> {
       children: [
         SizedBox(
           width: 42,
-          child: Text(
-            "${index + 1}",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "${index + 1}",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              if (_isPR(setData))
+                Container(
+                  margin: const EdgeInsets.only(top: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    "PR",
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         Expanded(
@@ -962,13 +1033,36 @@ class _LogSetCardState extends State<LogSetCard> {
       children: [
         SizedBox(
           width: 42,
-          child: Text(
-            "${index + 1}",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "${index + 1}",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              if (_isPR(setData))
+                Container(
+                  margin: const EdgeInsets.only(top: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    "PR",
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         Expanded(
@@ -1093,13 +1187,36 @@ class _LogSetCardState extends State<LogSetCard> {
       children: [
         SizedBox(
           width: 42,
-          child: Text(
-            "${index + 1}",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "${index + 1}",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              if (_isPR(setData))
+                Container(
+                  margin: const EdgeInsets.only(top: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    "PR",
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         Expanded(
