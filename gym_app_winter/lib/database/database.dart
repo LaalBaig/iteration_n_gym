@@ -53,7 +53,14 @@ class ExerciseLogs extends Table {
   IntColumn get reps => integer()();
 }
 
-@DriftDatabase(tables: [Exercises, Workouts, ExerciseLogs, MuscleGroups, ExerciseMuscleGroups])
+
+@DriftDatabase(tables: [
+  Exercises,
+  Workouts,
+  ExerciseLogs,
+  MuscleGroups,
+  ExerciseMuscleGroups
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -96,6 +103,7 @@ class AppDatabase extends _$AppDatabase {
               }
             }
           }
+
         },
       );
 
@@ -247,6 +255,8 @@ class AppDatabase extends _$AppDatabase {
       }).toList();
     });
   }
+
+
 }
 
 class ExerciseLogWithWorkout {

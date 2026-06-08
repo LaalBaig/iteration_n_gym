@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:gym_app_winter/navigation/app_router.dart';
 import 'package:gym_app_winter/widgets/minimized_workout_bar.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/database/database_service.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -22,6 +23,11 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.light;
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
   void toggleTheme(bool isDark) {
     setState(() {
       _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
@@ -33,8 +39,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      scaffoldMessengerKey: scaffoldMessengerKey,
-      title: "Fitness App",
+        scaffoldMessengerKey: scaffoldMessengerKey,
+        title: "Fitness App",
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
       theme: ThemeData(
@@ -116,7 +122,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, child) {
         return Stack(
           children: [
-            ?child,
+            if (child != null) child,
             const Align(
               alignment: Alignment.bottomCenter,
               child: MinimizedWorkoutBar(),

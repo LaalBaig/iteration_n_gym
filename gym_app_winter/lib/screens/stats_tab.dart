@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
 import 'package:gym_app_winter/widgets/muscle_volume_heatmap.dart';
+import 'package:gym_app_winter/widgets/workout_summary_card.dart';
 
 class StatsTab extends StatelessWidget {
   const StatsTab({super.key});
@@ -110,6 +111,9 @@ class StatsTab extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+              // Weekly Summary Card
+              WorkoutSummaryCard(logs: logs),
               const SizedBox(height: 24),
 
               // Muscle Volume Heatmap Card
