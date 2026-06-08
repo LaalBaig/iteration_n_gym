@@ -15,6 +15,26 @@ class Exercises extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
+
+@DataClassName('MuscleGroup')
+class MuscleGroups extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text().unique()();
+  
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('ExerciseMuscleGroup')
+class ExerciseMuscleGroups extends Table {
+  TextColumn get exerciseId => text().references(Exercises, #id)();
+  TextColumn get muscleGroupId => text().references(MuscleGroups, #id)();
+  IntColumn get role => integer()(); // 1 = Primary, 2 = Secondary, 3 = Stabilizer
+
+  @override
+  Set<Column> get primaryKey => {exerciseId, muscleGroupId};
+}
+
 class Workouts extends Table {
   TextColumn get id => text()(); // Your Unix timestamp/ID
   DateTimeColumn get startTime => dateTime()();
@@ -33,18 +53,48 @@ class ExerciseLogs extends Table {
   IntColumn get reps => integer()();
 }
 
-@DriftDatabase(tables: [Exercises, Workouts, ExerciseLogs])
+@DriftDatabase(tables: [Exercises, Workouts, ExerciseLogs, MuscleGroups, ExerciseMuscleGroups])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onUpgrade: (Migrator m, int from, int to) async {
           if (from < 2) {
             await m.addColumn(exercises, exercises.isDeleted);
+          }
+          if (from < 3) {
+            await m.createTable(muscleGroups);
+            await m.createTable(exerciseMuscleGroups);
+            
+            // Migrate existing categories into MuscleGroups
+            final allExercises = await select(exercises).get();
+            final uniqueCategories = allExercises.map((e) => e.category).toSet();
+            
+            final categoryToId = <String, String>{};
+            var counter = 0;
+            for (final category in uniqueCategories) {
+              final id = '${DateTime.now().millisecondsSinceEpoch}_${counter++}';
+              await into(muscleGroups).insert(MuscleGroupsCompanion.insert(
+                id: id,
+                name: category,
+              ));
+              categoryToId[category] = id;
+            }
+            
+            for (final exercise in allExercises) {
+              final muscleId = categoryToId[exercise.category];
+              if (muscleId != null) {
+                await into(exerciseMuscleGroups).insert(ExerciseMuscleGroupsCompanion.insert(
+                  exerciseId: exercise.id,
+                  muscleGroupId: muscleId,
+                  role: 1, // Set migrated categories as Primary (1)
+                ));
+              }
+            }
           }
         },
       );
@@ -59,6 +109,40 @@ class AppDatabase extends _$AppDatabase {
   Future<Exercise?> getDeletedExerciseByName(String name) =>
       (select(exercises)..where((t) => t.name.equals(name) & t.isDeleted.equals(true))).getSingleOrNull();
   Future<int> addExercise(ExercisesCompanion entry) => into(exercises).insert(entry, mode: InsertMode.insertOrReplace);
+  
+  Future<void> addExerciseWithMuscles(ExercisesCompanion entry, List<String> muscleNames) async {
+    await transaction(() async {
+      await into(exercises).insert(entry, mode: InsertMode.insertOrReplace);
+      
+      for (int i = 0; i < muscleNames.length; i++) {
+        final muscleName = muscleNames[i];
+        
+        final existingMuscle = await (select(muscleGroups)..where((t) => t.name.equals(muscleName))).getSingleOrNull();
+        String muscleId;
+        
+        if (existingMuscle == null) {
+           muscleId = '${DateTime.now().millisecondsSinceEpoch}_${muscleName.hashCode}';
+           await into(muscleGroups).insert(MuscleGroupsCompanion.insert(
+             id: muscleId,
+             name: muscleName,
+           ));
+        } else {
+           muscleId = existingMuscle.id;
+        }
+        
+        final existingMapping = await (select(exerciseMuscleGroups)
+           ..where((t) => t.exerciseId.equals(entry.id.value) & t.muscleGroupId.equals(muscleId))).getSingleOrNull();
+           
+        if (existingMapping == null) {
+           await into(exerciseMuscleGroups).insert(ExerciseMuscleGroupsCompanion.insert(
+             exerciseId: entry.id.value,
+             muscleGroupId: muscleId,
+             role: (i == 0) ? 1 : 2,
+           ));
+        }
+      }
+    });
+  }
   Future<void> deleteExercise(String id) => (delete(exercises)..where((t) => t.id.equals(id))).go();
   Future<void> softDeleteExercise(String id) =>
       (update(exercises)..where((t) => t.id.equals(id))).write(
@@ -70,9 +154,37 @@ class AppDatabase extends _$AppDatabase {
       );
   Future<void> deleteExercisePermanently(String id, String name) async {
     await transaction(() async {
+      await (delete(exerciseMuscleGroups)..where((t) => t.exerciseId.equals(id))).go();
       await (delete(exerciseLogs)..where((t) => t.exerciseName.equals(name))).go();
       await (delete(exercises)..where((t) => t.id.equals(id))).go();
     });
+  }
+
+  // Muscle Group queries
+  Future<List<MuscleTarget>> getMusclesForExercise(String exerciseId) {
+    final query = select(exerciseMuscleGroups).join([
+      innerJoin(muscleGroups, muscleGroups.id.equalsExp(exerciseMuscleGroups.muscleGroupId)),
+    ])..where(exerciseMuscleGroups.exerciseId.equals(exerciseId))
+      ..orderBy([OrderingTerm.asc(exerciseMuscleGroups.role)]);
+
+    return query.map((row) {
+      return MuscleTarget(
+        muscle: row.readTable(muscleGroups),
+        role: row.readTable(exerciseMuscleGroups).role,
+      );
+    }).get();
+  }
+
+  Future<List<Exercise>> getExercisesByMuscle(String muscleGroupId, {int? specificRole}) {
+    final query = select(exercises).join([
+      innerJoin(exerciseMuscleGroups, exerciseMuscleGroups.exerciseId.equalsExp(exercises.id)),
+    ])..where(exerciseMuscleGroups.muscleGroupId.equals(muscleGroupId));
+    
+    if (specificRole != null) {
+      query.where(exerciseMuscleGroups.role.equals(specificRole));
+    }
+
+    return query.map((row) => row.readTable(exercises)).get();
   }
 
   // Workout queries
@@ -142,6 +254,13 @@ class ExerciseLogWithWorkout {
   final Workout workout;
 
   ExerciseLogWithWorkout({required this.log, required this.workout});
+}
+
+class MuscleTarget {
+  final MuscleGroup muscle;
+  final int role;
+
+  MuscleTarget({required this.muscle, required this.role});
 }
 
 class LogWithWorkoutAndExercise {

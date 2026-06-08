@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
+import 'package:gym_app_winter/database/database_service.dart';
+import 'package:gym_app_winter/database/database.dart';
+import 'package:drift/drift.dart' hide Column;
+import 'package:gym_app_winter/models/catalog_exercise.dart';
 
 class CustomExerciseScreen extends StatefulWidget {
   const CustomExerciseScreen({super.key});
@@ -15,6 +18,12 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
   
   String _selectedExerciseType = 'Weights'; 
   String _selectedTrackingType = 'Weight based'; 
+  
+  final List<String> _commonMuscles = [
+    'Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core', 'Cardio', 
+    'Triceps', 'Biceps', 'Lats', 'Glutes', 'Hamstrings', 'Quads', 'Front Delt'
+  ];
+  final Set<String> _selectedMuscles = {};
 
   @override
   void dispose() {
@@ -30,7 +39,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: context.colors.textBlack,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );
@@ -38,6 +47,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
 
   Widget _buildChoiceButton(String title, String groupValue, ValueChanged<String> onChanged) {
     final isSelected = title == groupValue;
+    final colorScheme = Theme.of(context).colorScheme;
     return Expanded(
       child: BouncingButton(
         onTap: () => onChanged(title),
@@ -45,9 +55,9 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 4.0),
           padding: const EdgeInsets.symmetric(vertical: 14.0),
           decoration: BoxDecoration(
-            color: isSelected ? context.colors.primaryBlue : context.colors.textWhite,
+            color: isSelected ? colorScheme.primary : colorScheme.surface,
             border: Border.all(
-              color: isSelected ? context.colors.primaryBlue : context.colors.emptyText.withValues(alpha: 0.3),
+              color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
             ),
             borderRadius: BorderRadius.circular(12),
           ),
@@ -55,7 +65,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
             child: Text(
               title,
               style: TextStyle(
-                color: isSelected ? context.colors.textWhite : context.colors.textBlack,
+                color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
@@ -67,14 +77,17 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: context.colors.textWhite,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: context.colors.textWhite,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: context.colors.textBlack),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
           onPressed: () {
             if (context.canPop()) {
               context.pop();
@@ -86,7 +99,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
         title: Text(
           "Create Custom Exercise",
           style: TextStyle(
-            color: context.colors.textBlack,
+            color: colorScheme.onSurface,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -99,15 +112,40 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () {
-                if (context.canPop()) {
-                  context.pop();
-                } else {
-                  context.go('/add');
+              onPressed: () async {
+                final name = _nameController.text.trim();
+                if (name.isEmpty) return;
+                
+                final db = DatabaseService().db;
+                final id = 'custom_${DateTime.now().millisecondsSinceEpoch}';
+                
+                await db.addExerciseWithMuscles(
+                  ExercisesCompanion(
+                    id: Value(id),
+                    name: Value(name),
+                    category: Value(_selectedMuscles.isNotEmpty ? _selectedMuscles.first : 'Custom'),
+                    lastLog: const Value(""),
+                  ),
+                  _selectedMuscles.toList(),
+                );
+
+                if (context.mounted) {
+                  final newExercise = CatalogExercise(
+                    id: id,
+                    name: name,
+                    category: _selectedMuscles.isNotEmpty ? _selectedMuscles.first : 'Custom',
+                    muscles: _selectedMuscles.toList(),
+                  );
+                  if (context.canPop()) {
+                    context.pop(newExercise);
+                  } else {
+                    context.go('/');
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: context.colors.primaryBlue,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
@@ -116,7 +154,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
               child: Text(
                 "Add custom exercise",
                 style: TextStyle(
-                  color: context.colors.textWhite,
+                  color: colorScheme.onPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -136,11 +174,16 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
               _buildSectionTitle("Name of the new exercise"),
               Container(
                 decoration: BoxDecoration(
-                  color: context.colors.backgroundGrey,
+                  color: colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
                   controller: _nameController,
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                   onTapOutside: (PointerDownEvent event) {
                     FocusManager.instance.primaryFocus?.unfocus();
                   },
@@ -151,7 +194,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                     hintStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: context.colors.emptyText,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -173,8 +216,44 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 ],
               ),
               
+              _buildSectionTitle("Target Muscles"),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: _commonMuscles.map((muscle) {
+                  final isSelected = _selectedMuscles.contains(muscle);
+                  return FilterChip(
+                    label: Text(
+                      muscle,
+                      style: TextStyle(
+                        color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+                      ),
+                    ),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        if (selected) {
+                          _selectedMuscles.add(muscle);
+                        } else {
+                          _selectedMuscles.remove(muscle);
+                        }
+                      });
+                    },
+                    selectedColor: colorScheme.primary.withValues(alpha: 0.2),
+                    checkmarkColor: colorScheme.primary,
+                    backgroundColor: colorScheme.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(
+                        color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              
               // Spacing so content doesn't get hidden behind the floating button when scrolling to the very bottom
-              const SizedBox(height: 32),
+              const SizedBox(height: 64),
             ],
           ),
         ),

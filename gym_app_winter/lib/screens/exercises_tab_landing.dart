@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/empty_exercise_screen.dart';
 import 'package:gym_app_winter/widgets/exercise_tile.dart';
 import 'package:gym_app_winter/widgets/not_found.dart';
@@ -56,7 +55,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                 'Track Exercises',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontSize: 32,
-                  color: context.colors.nearBlack,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -70,7 +69,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                       children: [
                         Icon(
                           Icons.delete_outline,
-                          color: context.colors.nearBlack,
+                          color: Theme.of(context).colorScheme.onSurface,
                           size: 28,
                         ),
                         if (deletedCount > 0)
@@ -79,8 +78,8 @@ class _ExercisesTabState extends State<ExercisesTab> {
                             top: -2,
                             child: Container(
                               padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.error,
                                 shape: BoxShape.circle,
                               ),
                               constraints: const BoxConstraints(
@@ -89,8 +88,8 @@ class _ExercisesTabState extends State<ExercisesTab> {
                               ),
                               child: Text(
                                 '$deletedCount',
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onError,
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -148,61 +147,68 @@ class _ExercisesTabState extends State<ExercisesTab> {
                   padding: const EdgeInsets.fromLTRB(24, 0, 24, 6),
                   itemBuilder: (context, index) {
                     final exercise = filteredExerciseList[index];
-                    return ExerciseTile(
-                      bottomMargin: 12,
-                      key: ValueKey(exercise.id),
-                      title: exercise.name,
-                      subtitle: exercise.lastLog,
-                      category: exercise.category,
-                      confirmDelete: false,
-                      onTap: () {
-                        FocusScope.of(context).unfocus();
-                        context.push(
-                          '/exercise_page/${Uri.encodeComponent(exercise.name)}',
-                        );
-                      },
-                      onDelete: () async {
-                        final dbService = DatabaseService();
-                        await dbService.db.softDeleteExercise(exercise.id);
-                        if (context.mounted) {
-                          final messenger = ScaffoldMessenger.of(context);
-                          messenger.clearSnackBars();
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: const Text(
-                                "Moved to recently deleted",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
+                    return FutureBuilder<List<MuscleTarget>>(
+                      future: DatabaseService().db.getMusclesForExercise(exercise.id),
+                      builder: (context, muscleSnapshot) {
+                        final muscles = muscleSnapshot.data?.map((m) => m.muscle.name).toList() ?? [];
+                        return ExerciseTile(
+                          bottomMargin: 12,
+                          key: ValueKey(exercise.id),
+                          title: exercise.name,
+                          subtitle: exercise.lastLog,
+                          category: exercise.category,
+                          muscleGroups: muscles,
+                          confirmDelete: false,
+                          onTap: () {
+                            FocusScope.of(context).unfocus();
+                            context.push(
+                              '/exercise_page/${Uri.encodeComponent(exercise.name)}',
+                            );
+                          },
+                          onDelete: () async {
+                            final dbService = DatabaseService();
+                            await dbService.db.softDeleteExercise(exercise.id);
+                            if (context.mounted) {
+                              final messenger = ScaffoldMessenger.of(context);
+                              messenger.clearSnackBars();
+                              messenger.showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "Moved to recently deleted",
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.onInverseSurface,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Theme.of(context).colorScheme.inverseSurface,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  margin: EdgeInsets.fromLTRB(
+                                    24,
+                                    0,
+                                    24,
+                                    80 ,
+                                  ),
+                                  duration: const Duration(seconds: 3),
+                                  action: SnackBarAction(
+                                    label: "Undo",
+                                    textColor: Theme.of(context).colorScheme.inversePrimary,
+                                    onPressed: () {
+                                      dbService.db.restoreExercise(exercise.id);
+                                    },
+                                  ),
                                 ),
-                              ),
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: context.colors.brandAccent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              margin: EdgeInsets.fromLTRB(
-                                24,
-                                0,
-                                24,
-                                80 ,
-                              ),
-                              duration: const Duration(seconds: 3),
-                              action: SnackBarAction(
-                                label: "Undo",
-                                textColor: Colors.white,
-                                onPressed: () {
-                                  dbService.db.restoreExercise(exercise.id);
-                                },
-                              ),
-                            ),
-                          );
+                              );
 
-                          // Safeguard: explicitly hide the SnackBar after 3 seconds
-                          Future.delayed(const Duration(seconds: 3), () {
-                            messenger.hideCurrentSnackBar();
-                          });
-                        }
+                              // Safeguard: explicitly hide the SnackBar after 3 seconds
+                              Future.delayed(const Duration(seconds: 3), () {
+                                messenger.hideCurrentSnackBar();
+                              });
+                            }
+                          },
+                        );
                       },
                     );
                   },
@@ -222,17 +228,18 @@ class _ExercisesTabState extends State<ExercisesTab> {
                 context.push('/add_exercise');
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: context.colors.brandPrimary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
                 elevation: 4,
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.add, color: Colors.white, size: 24),
-                  SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   Text(
                     'Add Exercise',
                     style: TextStyle(

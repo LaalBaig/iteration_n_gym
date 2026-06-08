@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
 import 'package:gym_app_winter/widgets/muscle_volume_heatmap.dart';
@@ -9,8 +8,9 @@ class StatsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDark = context.colors.isDarkMode;
-    final brandPurple = isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final brandPurple = colorScheme.primary;
     
     return StreamBuilder<List<LogWithWorkoutAndExercise>>(
       stream: DatabaseService().db.watchAllLogsWithWorkoutAndExercise(),
@@ -47,7 +47,7 @@ class StatsTab extends StatelessWidget {
                 'Analytics & Stats',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontSize: 32,
-                  color: context.colors.nearBlack,
+                  color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -58,15 +58,15 @@ class StatsTab extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: context.colors.borderCream,
+                    color: colorScheme.outlineVariant,
                     width: 1.0,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: colorScheme.shadow.withValues(alpha: 0.03),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -83,7 +83,7 @@ class StatsTab extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: context.colors.textBlack,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                         Icon(Icons.trending_up, color: brandPurple),
@@ -152,7 +152,7 @@ class StatsTab extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12,
-            color: context.colors.stoneGray,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w500,
           ),
         ),

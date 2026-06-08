@@ -31,3 +31,79 @@ class AppColors {
   Color get textWhite => isDarkMode ? const Color(0xFF111111) : ivory;
   Color get emptyText => oliveGray;
 }
+
+class RestTimerTheme extends ThemeExtension<RestTimerTheme> {
+  final Color? buttonActiveBg;
+  final Color? buttonInactiveBg;
+  final Color? buttonActiveTextColor;
+  final Color? buttonInactiveTextColor;
+  final Color? popupBg;
+  final Color? popupTextColor;
+  final Color? trackColor;
+  final Color? arcColor;
+  final Color? adjustBtnBg;
+  final Color? adjustBtnTextColor;
+
+  const RestTimerTheme({
+    required this.buttonActiveBg,
+    required this.buttonInactiveBg,
+    required this.buttonActiveTextColor,
+    required this.buttonInactiveTextColor,
+    required this.popupBg,
+    required this.popupTextColor,
+    required this.trackColor,
+    required this.arcColor,
+    required this.adjustBtnBg,
+    required this.adjustBtnTextColor,
+  });
+
+  @override
+  RestTimerTheme copyWith({
+    Color? buttonActiveBg,
+    Color? buttonInactiveBg,
+    Color? buttonActiveTextColor,
+    Color? buttonInactiveTextColor,
+    Color? popupBg,
+    Color? popupTextColor,
+    Color? trackColor,
+    Color? arcColor,
+    Color? adjustBtnBg,
+    Color? adjustBtnTextColor,
+  }) {
+    return RestTimerTheme(
+      buttonActiveBg: buttonActiveBg ?? this.buttonActiveBg,
+      buttonInactiveBg: buttonInactiveBg ?? this.buttonInactiveBg,
+      buttonActiveTextColor: buttonActiveTextColor ?? this.buttonActiveTextColor,
+      buttonInactiveTextColor: buttonInactiveTextColor ?? this.buttonInactiveTextColor,
+      popupBg: popupBg ?? this.popupBg,
+      popupTextColor: popupTextColor ?? this.popupTextColor,
+      trackColor: trackColor ?? this.trackColor,
+      arcColor: arcColor ?? this.arcColor,
+      adjustBtnBg: adjustBtnBg ?? this.adjustBtnBg,
+      adjustBtnTextColor: adjustBtnTextColor ?? this.adjustBtnTextColor,
+    );
+  }
+
+  @override
+  RestTimerTheme lerp(ThemeExtension<RestTimerTheme>? other, double t) {
+    if (other is! RestTimerTheme) {
+      return this;
+    }
+    return RestTimerTheme(
+      buttonActiveBg: Color.lerp(buttonActiveBg, other.buttonActiveBg, t),
+      buttonInactiveBg: Color.lerp(buttonInactiveBg, other.buttonInactiveBg, t),
+      buttonActiveTextColor: Color.lerp(buttonActiveTextColor, other.buttonActiveTextColor, t),
+      buttonInactiveTextColor: Color.lerp(buttonInactiveTextColor, other.buttonInactiveTextColor, t),
+      popupBg: Color.lerp(popupBg, other.popupBg, t),
+      popupTextColor: Color.lerp(popupTextColor, other.popupTextColor, t),
+      trackColor: Color.lerp(trackColor, other.trackColor, t),
+      arcColor: Color.lerp(arcColor, other.arcColor, t),
+      adjustBtnBg: Color.lerp(adjustBtnBg, other.adjustBtnBg, t),
+      adjustBtnTextColor: Color.lerp(adjustBtnTextColor, other.adjustBtnTextColor, t),
+    );
+  }
+}
+
+extension RestTimerThemeContext on BuildContext {
+  RestTimerTheme get timerTheme => Theme.of(this).extension<RestTimerTheme>()!;
+}

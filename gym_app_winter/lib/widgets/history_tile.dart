@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
@@ -37,7 +36,7 @@ class HistoryTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: ShapeDecoration(
-            color: context.colors.warmSand,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             shape: SmoothRectangleBorder(
               borderRadius: SmoothBorderRadius(
                 cornerRadius: 14,
@@ -46,7 +45,7 @@ class HistoryTile extends StatelessWidget {
             ),
             shadows: [
               BoxShadow(
-                color: context.colors.textBlack.withValues(alpha: 0.04),
+                color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.04),
                 blurRadius: 20,
                 offset: const Offset(0, 4),
               ),
@@ -64,7 +63,7 @@ class HistoryTile extends StatelessWidget {
                         dateStr,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontSize: 18,
-                          color: context.colors.textBlack,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -78,14 +77,14 @@ class HistoryTile extends StatelessWidget {
                           child: Icon(
                             Icons.delete_outline,
                             size: 24,
-                            color: context.colors.emptyText,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
                   ],
                 ),
                 SizedBox(height: 10),
-                Text("Sets", style: TextStyle(color: context.colors.emptyText)),
+                Text("Sets", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                 Divider(),
                 for (
                   int i = 0;
@@ -98,7 +97,7 @@ class HistoryTile extends StatelessWidget {
                         children: [
                           Text(
                             "${i + 1} ",
-                            style: TextStyle(color: context.colors.emptyText),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                           SizedBox(width: 12),
                           Text(
@@ -116,7 +115,7 @@ class HistoryTile extends StatelessWidget {
                     child: Text(
                       "View more",
                       style: TextStyle(
-                        color: context.colors.primaryBlue,
+                        color: Theme.of(context).colorScheme.primary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -156,7 +155,7 @@ class HistoryTile extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: ShapeDecoration(
-              color: context.colors.backgroundGrey,
+              color: Theme.of(context).colorScheme.surface,
               shape: SmoothRectangleBorder(
                 borderRadius: SmoothBorderRadius(
                   cornerRadius: 20,
@@ -178,19 +177,19 @@ class HistoryTile extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: context.colors.textBlack,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       BouncingButton(
                         onTap: () => Navigator.pop(context),
-                        child: Icon(Icons.close, color: context.colors.emptyText),
+                        child: Icon(Icons.close, color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Text("Sets", style: TextStyle(color: context.colors.emptyText, fontSize: 16)),
+                  Text("Sets", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 16)),
                   const Divider(),
                   for (int i = 0; i < setData.length; i++)
                     Column(
@@ -199,7 +198,7 @@ class HistoryTile extends StatelessWidget {
                           children: [
                             Text(
                               "${i + 1} ",
-                              style: TextStyle(color: context.colors.emptyText, fontSize: 16),
+                              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 16),
                             ),
                             const SizedBox(width: 16),
                             Text(
@@ -230,7 +229,7 @@ class HistoryTile extends StatelessWidget {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          backgroundColor: context.colors.textWhite,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           surfaceTintColor: Colors.transparent,
           shape: SmoothRectangleBorder(
             borderRadius: SmoothBorderRadius(
@@ -241,27 +240,27 @@ class HistoryTile extends StatelessWidget {
           title: Text(
             "Delete Workout",
             style: TextStyle(
-              color: context.colors.textBlack,
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
           content: Text(
             "Are you sure you want to delete this workout session?",
-            style: TextStyle(color: context.colors.textBlack),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
               child: Text(
                 "Cancel",
-                style: TextStyle(color: context.colors.emptyText),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text(
+              child: Text(
                 "Delete",
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Theme.of(context).colorScheme.error, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -287,15 +286,15 @@ class HistoryTile extends StatelessWidget {
     messenger.clearSnackBars();
     messenger.showSnackBar(
       SnackBar(
-        content: const Text(
+        content: Text(
           "Workout session deleted",
           style: TextStyle(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onInverseSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: context.colors.brandAccent,
+        backgroundColor: Theme.of(context).colorScheme.inverseSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -303,7 +302,7 @@ class HistoryTile extends StatelessWidget {
         duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: "Undo",
-          textColor: Colors.white,
+          textColor: Theme.of(context).colorScheme.inversePrimary,
           onPressed: () async {
             await db.restoreWorkout(workout, logs);
             messenger.hideCurrentSnackBar();

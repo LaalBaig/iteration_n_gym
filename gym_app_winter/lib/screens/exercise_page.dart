@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/history_tile.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
@@ -56,7 +55,7 @@ class _ExercisePageState extends State<ExercisePage> {
     }
 
     return Scaffold(
-      backgroundColor: context.colors.backgroundGrey,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: GestureDetector(
         onTap: () {
           // Dismiss keyboard when tapping outside
@@ -106,7 +105,7 @@ class _ExercisePageState extends State<ExercisePage> {
                           widget.exerciseName,
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontSize: 28,
-                            color: context.colors.nearBlack,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -171,7 +170,7 @@ class _ExercisePageState extends State<ExercisePage> {
                             "History",
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontSize: 24,
-                              color: context.colors.nearBlack,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           BouncingButton(
@@ -188,7 +187,7 @@ class _ExercisePageState extends State<ExercisePage> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: context.colors.primaryBlue,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                             ),
@@ -199,7 +198,7 @@ class _ExercisePageState extends State<ExercisePage> {
                       SizedBox(
                         height: 220,
                         child: history.isEmpty 
-                          ? Center(child: Text("No history yet", style: TextStyle(color: context.colors.emptyText)))
+                          ? Center(child: Text("No history yet", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)))
                           : ListView.builder(
                               scrollDirection: Axis.horizontal,
                               itemCount: history.length,

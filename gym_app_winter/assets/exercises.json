@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ex_bench_press",
+    "name": "Bench Press",
+    "category": "Chest",
+    "muscles": ["Chest", "Triceps", "Front Delt"]
+  },
+  {
+    "id": "ex_deadlift",
+    "name": "Deadlift",
+    "category": "Back",
+    "muscles": ["Hamstrings", "Glutes", "Lower Back"]
+  },
+  {
+    "id": "ex_squat",
+    "name": "Squat",
+    "category": "Legs",
+    "muscles": ["Quads", "Glutes", "Adductors"]
+  },
+  {
+    "id": "ex_overhead_press",
+    "name": "Overhead Press",
+    "category": "Shoulders",
+    "muscles": ["Front Delt", "Triceps"]
+  },
+  {
+    "id": "ex_pull_ups",
+    "name": "Pull-Ups",
+    "category": "Back",
+    "muscles": ["Lats", "Biceps"]
+  },
+  {
+    "id": "ex_bicep_curls",
+    "name": "Bicep Curls",
+    "category": "Arms",
+    "muscles": ["Biceps"]
+  },
+  {
+    "id": "ex_tricep_extensions",
+    "name": "Tricep Extensions",
+    "category": "Arms",
+    "muscles": ["Triceps"]
+  },
+  {
+    "id": "ex_lunges",
+    "name": "Lunges",
+    "category": "Legs",
+    "muscles": ["Quads", "Glutes"]
+  },
+  {
+    "id": "ex_plank",
+    "name": "Plank",
+    "category": "Core",
+    "muscles": ["Core"]
+  },
+  {
+    "id": "ex_running",
+    "name": "Running",
+    "category": "Cardio",
+    "muscles": ["Cardio"]
+  }
+]

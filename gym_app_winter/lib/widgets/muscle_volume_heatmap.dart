@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/database/database.dart';
 
 class MuscleVolumeHeatmap extends StatefulWidget {
@@ -15,9 +14,9 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
   String _selectedRange = 'This Week';
 
   Color getCellColor(double intensity, BuildContext context) {
-    final isDark = context.colors.isDarkMode;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (intensity == 0.0) {
-      return isDark ? const Color(0xFF222222) : const Color(0xFFF0F0F2);
+      return Theme.of(context).colorScheme.surfaceContainerHighest;
     }
     
     // 4 shades of brand purple representing volume intensity
@@ -36,8 +35,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDark = context.colors.isDarkMode;
-    final brandPurple = isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9);
+    final brandPurple = Theme.of(context).colorScheme.primary;
     final now = DateTime.now();
     DateTime rangeStart;
     DateTime rangeEnd;
@@ -129,18 +127,19 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
     const double cellSize = 28.0;
     const double cellPadding = 6.0;
 
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: context.colors.borderCream,
+          color: colorScheme.outlineVariant,
           width: 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: colorScheme.shadow.withValues(alpha: 0.03),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -162,25 +161,25 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: context.colors.textBlack,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                 ],
               ),
               DropdownButton<String>(
                 value: _selectedRange,
-                dropdownColor: isDark ? const Color(0xFF1C1C1E) : Colors.white,
-                iconEnabledColor: context.colors.brandPrimary,
+                dropdownColor: colorScheme.surface,
+                iconEnabledColor: colorScheme.primary,
                 underline: const SizedBox(),
                 style: TextStyle(
-                  color: isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9),
+                  color: colorScheme.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
                 items: ['This Week', 'This Month', 'This Year']
                     .map((e) => DropdownMenuItem(
                           value: e,
-                          child: Text(e, style: TextStyle(color: context.colors.textBlack)),
+                          child: Text(e, style: TextStyle(color: colorScheme.onSurface)),
                         ))
                     .toList(),
                 onChanged: (val) {
@@ -214,7 +213,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: context.colors.oliveGray,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -242,7 +241,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: context.colors.stoneGray,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -296,7 +295,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                 'Less',
                 style: TextStyle(
                   fontSize: 10,
-                  color: context.colors.stoneGray,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -318,7 +317,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                 'More',
                 style: TextStyle(
                   fontSize: 10,
-                  color: context.colors.stoneGray,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               ),

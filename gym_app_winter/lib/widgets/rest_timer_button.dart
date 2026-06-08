@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/state/rest_timer_notifier.dart';
+import 'package:gym_app_winter/palette/color_scheme.dart';
 
 class RestTimerButton extends StatefulWidget {
   const RestTimerButton({super.key});
@@ -96,8 +97,10 @@ class _RestTimerButtonState extends State<RestTimerButton> {
       builder: (context, _) {
         final notifier = RestTimerNotifier();
         final isRunning = notifier.isRunning;
+        final timerTheme = context.timerTheme;
         
-        final bgColor = isRunning ? const Color(0xFF3C3489) : const Color(0xFF5048D4);
+        final bgColor = isRunning ? timerTheme.buttonActiveBg : timerTheme.buttonInactiveBg;
+        final fgColor = isRunning ? timerTheme.buttonActiveTextColor : timerTheme.buttonInactiveTextColor;
         
         String label = "Rest";
         if (isRunning) {
@@ -114,6 +117,7 @@ class _RestTimerButtonState extends State<RestTimerButton> {
               onPressed: _togglePopup,
               style: FilledButton.styleFrom(
                 backgroundColor: bgColor,
+                foregroundColor: fgColor,
                 shape: const StadiumBorder(),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
               ),
@@ -150,16 +154,17 @@ class _RestTimerPopupContent extends StatelessWidget {
     final mins = remainingTime ~/ 60;
     final secs = remainingTime % 60;
     final timeStr = "$mins:${secs.toString().padLeft(2, '0')}";
+    final timerTheme = context.timerTheme;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: timerTheme.popupBg,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.black12, width: 0.5),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -175,8 +180,8 @@ class _RestTimerPopupContent extends StatelessWidget {
             child: CustomPaint(
               painter: _TimerArcPainter(
                 fraction: remainingTime / (totalTime > 0 ? totalTime : 1),
-                trackColor: const Color(0xFFEEEDFE),
-                arcColor: const Color(0xFF5048D4),
+                trackColor: timerTheme.trackColor ?? Colors.transparent,
+                arcColor: timerTheme.arcColor ?? Colors.transparent,
               ),
             ),
           ),
@@ -186,10 +191,10 @@ class _RestTimerPopupContent extends StatelessWidget {
             width: 50,
             child: Text(
               timeStr,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
-                color: Colors.black87,
+                color: timerTheme.popupTextColor,
               ),
             ),
           ),
@@ -209,7 +214,7 @@ class _RestTimerPopupContent extends StatelessWidget {
           // Close Button
           IconButton(
             onPressed: onClose,
-            icon: const Icon(Icons.close, color: Colors.black54),
+            icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onSurfaceVariant),
             constraints: const BoxConstraints(),
             padding: EdgeInsets.zero,
           ),
@@ -227,11 +232,12 @@ class _AdjustButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final timerTheme = context.timerTheme;
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
-        backgroundColor: const Color(0xFFEEEDFE),
-        foregroundColor: const Color(0xFF3C3489),
+        backgroundColor: timerTheme.adjustBtnBg,
+        foregroundColor: timerTheme.adjustBtnTextColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -261,8 +267,6 @@ class _TimerArcPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = min(size.width, size.height) / 2;
 
     final Paint trackPaint = Paint()
       ..color = trackColor

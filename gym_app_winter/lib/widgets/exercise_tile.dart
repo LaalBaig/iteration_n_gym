@@ -6,6 +6,7 @@ class ExerciseTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final String? category;
+  final List<String> muscleGroups;
   final VoidCallback onTap;
   final VoidCallback? onDelete;
   final double bottomMargin;
@@ -16,11 +17,30 @@ class ExerciseTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.category,
+    this.muscleGroups = const [],
     required this.onTap,
     this.onDelete,
     this.bottomMargin = 8.0,
     this.confirmDelete = true,
   });
+
+  Widget _buildTag(String text, Color badgeBgColor, Color brandPurple) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: badgeBgColor,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: brandPurple,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,40 +142,27 @@ class ExerciseTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4), 
-                    Row(
-                      children: [
-                        if (category != null && category!.isNotEmpty) ...[
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: badgeBgColor,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              category!,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: brandPurple,
-                              ),
-                            ),
-                          ),
-                        ],
-                        if (category != null && category!.isNotEmpty && subtitle.isNotEmpty)
-                          const SizedBox(width: 6),
-                        if (subtitle.isNotEmpty)
-                          Expanded(
-                            child: Text(
-                              subtitle,
-                              style: TextStyle(
-                                fontSize: 12, 
-                                color: context.colors.emptyText,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                      ],
-                    ),
+                    if (muscleGroups.isNotEmpty || (category != null && category!.isNotEmpty))
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Wrap(
+                          spacing: 6,
+                          runSpacing: 4,
+                          children: muscleGroups.isNotEmpty 
+                            ? muscleGroups.map((m) => _buildTag(m, badgeBgColor, brandPurple)).toList()
+                            : [_buildTag(category!, badgeBgColor, brandPurple)],
+                        ),
+                      ),
+                    if (subtitle.isNotEmpty)
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 12, 
+                          color: context.colors.emptyText,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                   ],
                 ),
               ),

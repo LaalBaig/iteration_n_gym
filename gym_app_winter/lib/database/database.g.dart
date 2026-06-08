@@ -1029,12 +1029,495 @@ class ExerciseLogsCompanion extends UpdateCompanion<ExerciseLog> {
   }
 }
 
+class $MuscleGroupsTable extends MuscleGroups
+    with TableInfo<$MuscleGroupsTable, MuscleGroup> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MuscleGroupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'muscle_groups';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MuscleGroup> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MuscleGroup map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MuscleGroup(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+    );
+  }
+
+  @override
+  $MuscleGroupsTable createAlias(String alias) {
+    return $MuscleGroupsTable(attachedDatabase, alias);
+  }
+}
+
+class MuscleGroup extends DataClass implements Insertable<MuscleGroup> {
+  final String id;
+  final String name;
+  const MuscleGroup({required this.id, required this.name});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  MuscleGroupsCompanion toCompanion(bool nullToAbsent) {
+    return MuscleGroupsCompanion(id: Value(id), name: Value(name));
+  }
+
+  factory MuscleGroup.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MuscleGroup(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  MuscleGroup copyWith({String? id, String? name}) =>
+      MuscleGroup(id: id ?? this.id, name: name ?? this.name);
+  MuscleGroup copyWithCompanion(MuscleGroupsCompanion data) {
+    return MuscleGroup(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MuscleGroup(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MuscleGroup && other.id == this.id && other.name == this.name);
+}
+
+class MuscleGroupsCompanion extends UpdateCompanion<MuscleGroup> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<int> rowid;
+  const MuscleGroupsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MuscleGroupsCompanion.insert({
+    required String id,
+    required String name,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name);
+  static Insertable<MuscleGroup> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MuscleGroupsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<int>? rowid,
+  }) {
+    return MuscleGroupsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MuscleGroupsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExerciseMuscleGroupsTable extends ExerciseMuscleGroups
+    with TableInfo<$ExerciseMuscleGroupsTable, ExerciseMuscleGroup> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExerciseMuscleGroupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _exerciseIdMeta = const VerificationMeta(
+    'exerciseId',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseId = GeneratedColumn<String>(
+    'exercise_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _muscleGroupIdMeta = const VerificationMeta(
+    'muscleGroupId',
+  );
+  @override
+  late final GeneratedColumn<String> muscleGroupId = GeneratedColumn<String>(
+    'muscle_group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<int> role = GeneratedColumn<int>(
+    'role',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [exerciseId, muscleGroupId, role];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'exercise_muscle_groups';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExerciseMuscleGroup> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('exercise_id')) {
+      context.handle(
+        _exerciseIdMeta,
+        exerciseId.isAcceptableOrUnknown(data['exercise_id']!, _exerciseIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_exerciseIdMeta);
+    }
+    if (data.containsKey('muscle_group_id')) {
+      context.handle(
+        _muscleGroupIdMeta,
+        muscleGroupId.isAcceptableOrUnknown(
+          data['muscle_group_id']!,
+          _muscleGroupIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_muscleGroupIdMeta);
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+        _roleMeta,
+        role.isAcceptableOrUnknown(data['role']!, _roleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_roleMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {exerciseId, muscleGroupId};
+  @override
+  ExerciseMuscleGroup map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExerciseMuscleGroup(
+      exerciseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_id'],
+      )!,
+      muscleGroupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}muscle_group_id'],
+      )!,
+      role: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}role'],
+      )!,
+    );
+  }
+
+  @override
+  $ExerciseMuscleGroupsTable createAlias(String alias) {
+    return $ExerciseMuscleGroupsTable(attachedDatabase, alias);
+  }
+}
+
+class ExerciseMuscleGroup extends DataClass
+    implements Insertable<ExerciseMuscleGroup> {
+  final String exerciseId;
+  final String muscleGroupId;
+  final int role;
+  const ExerciseMuscleGroup({
+    required this.exerciseId,
+    required this.muscleGroupId,
+    required this.role,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['exercise_id'] = Variable<String>(exerciseId);
+    map['muscle_group_id'] = Variable<String>(muscleGroupId);
+    map['role'] = Variable<int>(role);
+    return map;
+  }
+
+  ExerciseMuscleGroupsCompanion toCompanion(bool nullToAbsent) {
+    return ExerciseMuscleGroupsCompanion(
+      exerciseId: Value(exerciseId),
+      muscleGroupId: Value(muscleGroupId),
+      role: Value(role),
+    );
+  }
+
+  factory ExerciseMuscleGroup.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExerciseMuscleGroup(
+      exerciseId: serializer.fromJson<String>(json['exerciseId']),
+      muscleGroupId: serializer.fromJson<String>(json['muscleGroupId']),
+      role: serializer.fromJson<int>(json['role']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'exerciseId': serializer.toJson<String>(exerciseId),
+      'muscleGroupId': serializer.toJson<String>(muscleGroupId),
+      'role': serializer.toJson<int>(role),
+    };
+  }
+
+  ExerciseMuscleGroup copyWith({
+    String? exerciseId,
+    String? muscleGroupId,
+    int? role,
+  }) => ExerciseMuscleGroup(
+    exerciseId: exerciseId ?? this.exerciseId,
+    muscleGroupId: muscleGroupId ?? this.muscleGroupId,
+    role: role ?? this.role,
+  );
+  ExerciseMuscleGroup copyWithCompanion(ExerciseMuscleGroupsCompanion data) {
+    return ExerciseMuscleGroup(
+      exerciseId: data.exerciseId.present
+          ? data.exerciseId.value
+          : this.exerciseId,
+      muscleGroupId: data.muscleGroupId.present
+          ? data.muscleGroupId.value
+          : this.muscleGroupId,
+      role: data.role.present ? data.role.value : this.role,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExerciseMuscleGroup(')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('muscleGroupId: $muscleGroupId, ')
+          ..write('role: $role')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(exerciseId, muscleGroupId, role);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExerciseMuscleGroup &&
+          other.exerciseId == this.exerciseId &&
+          other.muscleGroupId == this.muscleGroupId &&
+          other.role == this.role);
+}
+
+class ExerciseMuscleGroupsCompanion
+    extends UpdateCompanion<ExerciseMuscleGroup> {
+  final Value<String> exerciseId;
+  final Value<String> muscleGroupId;
+  final Value<int> role;
+  final Value<int> rowid;
+  const ExerciseMuscleGroupsCompanion({
+    this.exerciseId = const Value.absent(),
+    this.muscleGroupId = const Value.absent(),
+    this.role = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ExerciseMuscleGroupsCompanion.insert({
+    required String exerciseId,
+    required String muscleGroupId,
+    required int role,
+    this.rowid = const Value.absent(),
+  }) : exerciseId = Value(exerciseId),
+       muscleGroupId = Value(muscleGroupId),
+       role = Value(role);
+  static Insertable<ExerciseMuscleGroup> custom({
+    Expression<String>? exerciseId,
+    Expression<String>? muscleGroupId,
+    Expression<int>? role,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (exerciseId != null) 'exercise_id': exerciseId,
+      if (muscleGroupId != null) 'muscle_group_id': muscleGroupId,
+      if (role != null) 'role': role,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ExerciseMuscleGroupsCompanion copyWith({
+    Value<String>? exerciseId,
+    Value<String>? muscleGroupId,
+    Value<int>? role,
+    Value<int>? rowid,
+  }) {
+    return ExerciseMuscleGroupsCompanion(
+      exerciseId: exerciseId ?? this.exerciseId,
+      muscleGroupId: muscleGroupId ?? this.muscleGroupId,
+      role: role ?? this.role,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (exerciseId.present) {
+      map['exercise_id'] = Variable<String>(exerciseId.value);
+    }
+    if (muscleGroupId.present) {
+      map['muscle_group_id'] = Variable<String>(muscleGroupId.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<int>(role.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExerciseMuscleGroupsCompanion(')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('muscleGroupId: $muscleGroupId, ')
+          ..write('role: $role, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $ExercisesTable exercises = $ExercisesTable(this);
   late final $WorkoutsTable workouts = $WorkoutsTable(this);
   late final $ExerciseLogsTable exerciseLogs = $ExerciseLogsTable(this);
+  late final $MuscleGroupsTable muscleGroups = $MuscleGroupsTable(this);
+  late final $ExerciseMuscleGroupsTable exerciseMuscleGroups =
+      $ExerciseMuscleGroupsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1043,6 +1526,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     exercises,
     workouts,
     exerciseLogs,
+    muscleGroups,
+    exerciseMuscleGroups,
   ];
 }
 
@@ -1611,6 +2096,327 @@ typedef $$ExerciseLogsTableProcessedTableManager =
       ExerciseLog,
       PrefetchHooks Function()
     >;
+typedef $$MuscleGroupsTableCreateCompanionBuilder =
+    MuscleGroupsCompanion Function({
+      required String id,
+      required String name,
+      Value<int> rowid,
+    });
+typedef $$MuscleGroupsTableUpdateCompanionBuilder =
+    MuscleGroupsCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<int> rowid,
+    });
+
+class $$MuscleGroupsTableFilterComposer
+    extends Composer<_$AppDatabase, $MuscleGroupsTable> {
+  $$MuscleGroupsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MuscleGroupsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MuscleGroupsTable> {
+  $$MuscleGroupsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MuscleGroupsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MuscleGroupsTable> {
+  $$MuscleGroupsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+}
+
+class $$MuscleGroupsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MuscleGroupsTable,
+          MuscleGroup,
+          $$MuscleGroupsTableFilterComposer,
+          $$MuscleGroupsTableOrderingComposer,
+          $$MuscleGroupsTableAnnotationComposer,
+          $$MuscleGroupsTableCreateCompanionBuilder,
+          $$MuscleGroupsTableUpdateCompanionBuilder,
+          (
+            MuscleGroup,
+            BaseReferences<_$AppDatabase, $MuscleGroupsTable, MuscleGroup>,
+          ),
+          MuscleGroup,
+          PrefetchHooks Function()
+        > {
+  $$MuscleGroupsTableTableManager(_$AppDatabase db, $MuscleGroupsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MuscleGroupsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MuscleGroupsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MuscleGroupsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MuscleGroupsCompanion(id: id, name: name, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                Value<int> rowid = const Value.absent(),
+              }) => MuscleGroupsCompanion.insert(
+                id: id,
+                name: name,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MuscleGroupsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MuscleGroupsTable,
+      MuscleGroup,
+      $$MuscleGroupsTableFilterComposer,
+      $$MuscleGroupsTableOrderingComposer,
+      $$MuscleGroupsTableAnnotationComposer,
+      $$MuscleGroupsTableCreateCompanionBuilder,
+      $$MuscleGroupsTableUpdateCompanionBuilder,
+      (
+        MuscleGroup,
+        BaseReferences<_$AppDatabase, $MuscleGroupsTable, MuscleGroup>,
+      ),
+      MuscleGroup,
+      PrefetchHooks Function()
+    >;
+typedef $$ExerciseMuscleGroupsTableCreateCompanionBuilder =
+    ExerciseMuscleGroupsCompanion Function({
+      required String exerciseId,
+      required String muscleGroupId,
+      required int role,
+      Value<int> rowid,
+    });
+typedef $$ExerciseMuscleGroupsTableUpdateCompanionBuilder =
+    ExerciseMuscleGroupsCompanion Function({
+      Value<String> exerciseId,
+      Value<String> muscleGroupId,
+      Value<int> role,
+      Value<int> rowid,
+    });
+
+class $$ExerciseMuscleGroupsTableFilterComposer
+    extends Composer<_$AppDatabase, $ExerciseMuscleGroupsTable> {
+  $$ExerciseMuscleGroupsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get muscleGroupId => $composableBuilder(
+    column: $table.muscleGroupId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ExerciseMuscleGroupsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExerciseMuscleGroupsTable> {
+  $$ExerciseMuscleGroupsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get muscleGroupId => $composableBuilder(
+    column: $table.muscleGroupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ExerciseMuscleGroupsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExerciseMuscleGroupsTable> {
+  $$ExerciseMuscleGroupsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get muscleGroupId => $composableBuilder(
+    column: $table.muscleGroupId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+}
+
+class $$ExerciseMuscleGroupsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExerciseMuscleGroupsTable,
+          ExerciseMuscleGroup,
+          $$ExerciseMuscleGroupsTableFilterComposer,
+          $$ExerciseMuscleGroupsTableOrderingComposer,
+          $$ExerciseMuscleGroupsTableAnnotationComposer,
+          $$ExerciseMuscleGroupsTableCreateCompanionBuilder,
+          $$ExerciseMuscleGroupsTableUpdateCompanionBuilder,
+          (
+            ExerciseMuscleGroup,
+            BaseReferences<
+              _$AppDatabase,
+              $ExerciseMuscleGroupsTable,
+              ExerciseMuscleGroup
+            >,
+          ),
+          ExerciseMuscleGroup,
+          PrefetchHooks Function()
+        > {
+  $$ExerciseMuscleGroupsTableTableManager(
+    _$AppDatabase db,
+    $ExerciseMuscleGroupsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExerciseMuscleGroupsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExerciseMuscleGroupsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ExerciseMuscleGroupsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> exerciseId = const Value.absent(),
+                Value<String> muscleGroupId = const Value.absent(),
+                Value<int> role = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ExerciseMuscleGroupsCompanion(
+                exerciseId: exerciseId,
+                muscleGroupId: muscleGroupId,
+                role: role,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String exerciseId,
+                required String muscleGroupId,
+                required int role,
+                Value<int> rowid = const Value.absent(),
+              }) => ExerciseMuscleGroupsCompanion.insert(
+                exerciseId: exerciseId,
+                muscleGroupId: muscleGroupId,
+                role: role,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ExerciseMuscleGroupsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExerciseMuscleGroupsTable,
+      ExerciseMuscleGroup,
+      $$ExerciseMuscleGroupsTableFilterComposer,
+      $$ExerciseMuscleGroupsTableOrderingComposer,
+      $$ExerciseMuscleGroupsTableAnnotationComposer,
+      $$ExerciseMuscleGroupsTableCreateCompanionBuilder,
+      $$ExerciseMuscleGroupsTableUpdateCompanionBuilder,
+      (
+        ExerciseMuscleGroup,
+        BaseReferences<
+          _$AppDatabase,
+          $ExerciseMuscleGroupsTable,
+          ExerciseMuscleGroup
+        >,
+      ),
+      ExerciseMuscleGroup,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1621,4 +2427,8 @@ class $AppDatabaseManager {
       $$WorkoutsTableTableManager(_db, _db.workouts);
   $$ExerciseLogsTableTableManager get exerciseLogs =>
       $$ExerciseLogsTableTableManager(_db, _db.exerciseLogs);
+  $$MuscleGroupsTableTableManager get muscleGroups =>
+      $$MuscleGroupsTableTableManager(_db, _db.muscleGroups);
+  $$ExerciseMuscleGroupsTableTableManager get exerciseMuscleGroups =>
+      $$ExerciseMuscleGroupsTableTableManager(_db, _db.exerciseMuscleGroups);
 }
