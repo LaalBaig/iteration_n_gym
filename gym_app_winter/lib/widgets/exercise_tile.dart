@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
 class ExerciseTile extends StatelessWidget {
@@ -44,15 +43,11 @@ class ExerciseTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.colors.isDarkMode;
+    final colorScheme = Theme.of(context).colorScheme;
 
     // Define colors for the dumbbell badge and category pill
-    final Color badgeBgColor = isDark 
-        ? const Color(0xFF2E2B4A) 
-        : const Color(0xFFEEECF9);
-    final Color brandPurple = isDark 
-        ? const Color(0xFF9F92EC) 
-        : const Color(0xFF4C3BC9);
+    final Color badgeBgColor = colorScheme.primaryContainer;
+    final Color brandPurple = colorScheme.primary;
 
     return Dismissible(
       key: key ?? ValueKey(title),
@@ -66,17 +61,17 @@ class ExerciseTile extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              backgroundColor: context.colors.textWhite,
-              title: const Text("Delete Exercise"),
-              content: const Text("Are you sure you want to delete this exercise?"),
+              backgroundColor: colorScheme.surface,
+              title: Text("Delete Exercise", style: TextStyle(color: colorScheme.onSurface)),
+              content: Text("Are you sure you want to delete this exercise?", style: TextStyle(color: colorScheme.onSurfaceVariant)),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text("Cancel"),
+                  child: Text("Cancel", style: TextStyle(color: colorScheme.onSurfaceVariant)),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text("Delete", style: TextStyle(color: Colors.red)),
+                  child: Text("Delete", style: TextStyle(color: colorScheme.error)),
                 ),
               ],
             );
@@ -88,7 +83,7 @@ class ExerciseTile extends StatelessWidget {
         margin: EdgeInsets.only(bottom: bottomMargin), 
         padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.red,
+          color: colorScheme.error,
           borderRadius: BorderRadius.circular(16),
         ),
         alignment: Alignment.centerRight,
@@ -100,10 +95,10 @@ class ExerciseTile extends StatelessWidget {
           margin: EdgeInsets.only(bottom: bottomMargin), 
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), 
           decoration: BoxDecoration(
-            color: isDark ? context.colors.surfaceWhite : Colors.white,
+            color: colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isDark ? const Color(0xFF2D2D2D) : context.colors.borderCream,
+              color: colorScheme.outlineVariant,
               width: 1.0,
             ),
           ),
@@ -138,7 +133,7 @@ class ExerciseTile extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16, 
                         fontWeight: FontWeight.bold, 
-                        color: context.colors.textBlack,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4), 
@@ -158,7 +153,7 @@ class ExerciseTile extends StatelessWidget {
                         subtitle,
                         style: TextStyle(
                           fontSize: 12, 
-                          color: context.colors.emptyText,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -171,7 +166,7 @@ class ExerciseTile extends StatelessWidget {
               // 3. Chevron Right
               Icon(
                 Icons.chevron_right, 
-                color: context.colors.stoneGray, 
+                color: colorScheme.onSurfaceVariant, 
                 size: 20, 
               ),
             ],

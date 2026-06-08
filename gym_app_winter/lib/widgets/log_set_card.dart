@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/confirm_log.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 import 'package:gym_app_winter/state/workout_manager.dart';
@@ -243,10 +242,12 @@ class _LogSetCardState extends State<LogSetCard> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        final isDark = context.colors.isDarkMode;
-        final Color headerTextColor = isDark ? const Color(0xFF888888) : const Color(0xFF9E9E9E);
-        final Color brandPurple = isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9);
-        final Color borderTheme = isDark ? const Color(0xFF333333) : const Color(0xFFD4D4D4);
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+        
+        final Color headerTextColor = colorScheme.onSurfaceVariant;
+        final Color brandPurple = colorScheme.primary;
+        final Color borderTheme = colorScheme.outlineVariant;
 
         int tempMin = (setData.durationMs ~/ 60000).clamp(0, 99);
         int tempSec = ((setData.durationMs % 60000) ~/ 1000).clamp(0, 59);
@@ -259,7 +260,7 @@ class _LogSetCardState extends State<LogSetCard> {
             return Container(
               padding: EdgeInsets.fromLTRB(24, 20, 24, MediaQuery.of(context).viewInsets.bottom + 24),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
+                color: colorScheme.surface,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
               ),
               child: Column(
@@ -272,7 +273,7 @@ class _LogSetCardState extends State<LogSetCard> {
                       height: 4,
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF3A3A3C) : const Color(0xFFE5E5EA),
+                        color: colorScheme.outlineVariant,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -282,7 +283,7 @@ class _LogSetCardState extends State<LogSetCard> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: context.colors.textBlack,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -308,20 +309,20 @@ class _LogSetCardState extends State<LogSetCard> {
                               minController.text = tempMin.toString().padLeft(2, '0');
                               sheetSetState(() {});
                             },
-                            icon: Icon(Icons.keyboard_arrow_up, color: context.colors.textBlack),
+                            icon: Icon(Icons.keyboard_arrow_up, color: colorScheme.onSurface),
                           ),
                           Container(
                             width: 80,
                             height: 80,
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF5F5F5),
+                              color: colorScheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: TextField(
                               controller: minController,
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: context.colors.textBlack),
+                              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
                               decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.symmetric(vertical: 16)),
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
                               onChanged: (val) {
@@ -335,7 +336,7 @@ class _LogSetCardState extends State<LogSetCard> {
                               minController.text = tempMin.toString().padLeft(2, '0');
                               sheetSetState(() {});
                             },
-                            icon: Icon(Icons.keyboard_arrow_down, color: context.colors.textBlack),
+                            icon: Icon(Icons.keyboard_arrow_down, color: colorScheme.onSurface),
                           ),
                         ],
                       ),
@@ -356,20 +357,20 @@ class _LogSetCardState extends State<LogSetCard> {
                               secController.text = tempSec.toString().padLeft(2, '0');
                               sheetSetState(() {});
                             },
-                            icon: Icon(Icons.keyboard_arrow_up, color: context.colors.textBlack),
+                            icon: Icon(Icons.keyboard_arrow_up, color: colorScheme.onSurface),
                           ),
                           Container(
                             width: 80,
                             height: 80,
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF5F5F5),
+                              color: colorScheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: TextField(
                               controller: secController,
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: context.colors.textBlack),
+                              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
                               decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.symmetric(vertical: 16)),
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
                               onChanged: (val) {
@@ -383,7 +384,7 @@ class _LogSetCardState extends State<LogSetCard> {
                               secController.text = tempSec.toString().padLeft(2, '0');
                               sheetSetState(() {});
                             },
-                            icon: Icon(Icons.keyboard_arrow_down, color: context.colors.textBlack),
+                            icon: Icon(Icons.keyboard_arrow_down, color: colorScheme.onSurface),
                           ),
                         ],
                       ),
@@ -405,7 +406,7 @@ class _LogSetCardState extends State<LogSetCard> {
                           child: Text(
                             "Cancel",
                             style: TextStyle(
-                              color: context.colors.textBlack,
+                              color: colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -426,10 +427,10 @@ class _LogSetCardState extends State<LogSetCard> {
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             elevation: 0,
                           ),
-                          child: const Text(
+                          child: Text(
                             "Save",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: colorScheme.onPrimary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -474,18 +475,21 @@ class _LogSetCardState extends State<LogSetCard> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.colors.isDarkMode;
-    final Color lineTheme = isDark ? const Color(0xFF222222) : const Color(0xFFF0F0F0);
-    final Color borderTheme = isDark ? const Color(0xFF333333) : const Color(0xFFD4D4D4);
-    final Color badgeBg = isDark ? const Color(0xFF2E2B4A) : const Color(0xFFEEECF9);
-    final Color brandPurple = isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9);
-    final Color headerTextColor = isDark ? const Color(0xFF888888) : const Color(0xFF9E9E9E);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+    
+    final Color lineTheme = colorScheme.outlineVariant;
+    final Color borderTheme = colorScheme.outlineVariant;
+    final Color badgeBg = colorScheme.primaryContainer;
+    final Color brandPurple = colorScheme.primary;
+    final Color headerTextColor = colorScheme.onSurfaceVariant;
 
     return Container(
       width: double.infinity,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF161616) : Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: borderTheme,
@@ -506,16 +510,16 @@ class _LogSetCardState extends State<LogSetCard> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: context.colors.textBlack,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 ElevatedButton.icon(
                   onPressed: _addSet,
-                  icon: Icon(Icons.add, size: 16, color: brandPurple),
+                  icon: Icon(Icons.add, size: 16, color: colorScheme.onPrimaryContainer),
                   label: Text(
                     "Add set",
                     style: TextStyle(
-                      color: brandPurple,
+                      color: colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -727,10 +731,10 @@ class _LogSetCardState extends State<LogSetCard> {
                       color: brandPurple,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Log Exercise",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -776,6 +780,9 @@ class _LogSetCardState extends State<LogSetCard> {
     Color lineTheme,
     bool isDark,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Row(
       children: [
         SizedBox(
@@ -785,7 +792,7 @@ class _LogSetCardState extends State<LogSetCard> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: context.colors.textBlack,
+              color: colorScheme.onSurface,
             ),
           ),
         ),
@@ -795,7 +802,7 @@ class _LogSetCardState extends State<LogSetCard> {
             previousText,
             style: TextStyle(
               fontSize: 14,
-              color: context.colors.stoneGray,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -811,17 +818,17 @@ class _LogSetCardState extends State<LogSetCard> {
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: context.colors.textBlack,
+              color: colorScheme.onSurface,
             ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+              fillColor: colorScheme.surfaceContainerHighest,
               contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
               isDense: true,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(
-                  color: isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0),
+                  color: colorScheme.outlineVariant,
                   width: 1.5,
                 ),
               ),
@@ -857,17 +864,17 @@ class _LogSetCardState extends State<LogSetCard> {
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: context.colors.textBlack,
+              color: colorScheme.onSurface,
             ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+              fillColor: colorScheme.surfaceContainerHighest,
               contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
               isDense: true,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(
-                  color: isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0),
+                  color: colorScheme.outlineVariant,
                   width: 1.5,
                 ),
               ),
@@ -919,7 +926,7 @@ class _LogSetCardState extends State<LogSetCard> {
             style: TextButton.styleFrom(
               backgroundColor: setData.isCompleted
                   ? const Color(0xFF10B981)
-                  : (isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5)),
+                  : colorScheme.surfaceContainerHighest,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -929,7 +936,7 @@ class _LogSetCardState extends State<LogSetCard> {
               Icons.check,
               color: setData.isCompleted
                   ? Colors.white
-                  : (isDark ? const Color(0xFF555555) : const Color(0xFF888888)),
+                  : colorScheme.onSurfaceVariant,
               size: 18,
             ),
           ),
@@ -948,6 +955,9 @@ class _LogSetCardState extends State<LogSetCard> {
     Color lineTheme,
     bool isDark,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Row(
       children: [
         SizedBox(
@@ -957,7 +967,7 @@ class _LogSetCardState extends State<LogSetCard> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: context.colors.textBlack,
+              color: colorScheme.onSurface,
             ),
           ),
         ),
@@ -967,7 +977,7 @@ class _LogSetCardState extends State<LogSetCard> {
             previousText,
             style: TextStyle(
               fontSize: 14,
-              color: context.colors.stoneGray,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -983,17 +993,17 @@ class _LogSetCardState extends State<LogSetCard> {
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: context.colors.textBlack,
+              color: colorScheme.onSurface,
             ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+              fillColor: colorScheme.surfaceContainerHighest,
               contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
               isDense: true,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(
-                  color: isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0),
+                  color: colorScheme.outlineVariant,
                   width: 1.5,
                 ),
               ),
@@ -1044,7 +1054,7 @@ class _LogSetCardState extends State<LogSetCard> {
             style: TextButton.styleFrom(
               backgroundColor: setData.isCompleted
                   ? const Color(0xFF10B981)
-                  : (isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5)),
+                  : colorScheme.surfaceContainerHighest,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -1054,7 +1064,7 @@ class _LogSetCardState extends State<LogSetCard> {
               Icons.check,
               color: setData.isCompleted
                   ? Colors.white
-                  : (isDark ? const Color(0xFF555555) : const Color(0xFF888888)),
+                  : colorScheme.onSurfaceVariant,
               size: 18,
             ),
           ),
@@ -1073,6 +1083,8 @@ class _LogSetCardState extends State<LogSetCard> {
     Color lineTheme,
     bool isDark,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final timeStr = setData.formatDuration();
     final isRunning = setData.isRunning;
     final isCompleted = setData.isCompleted;
@@ -1086,7 +1098,7 @@ class _LogSetCardState extends State<LogSetCard> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: context.colors.textBlack,
+              color: colorScheme.onSurface,
             ),
           ),
         ),
@@ -1096,7 +1108,7 @@ class _LogSetCardState extends State<LogSetCard> {
             previousText,
             style: TextStyle(
               fontSize: 14,
-              color: context.colors.stoneGray,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -1109,12 +1121,12 @@ class _LogSetCardState extends State<LogSetCard> {
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+                color: colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: isRunning
                       ? brandPurple
-                      : (isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0)),
+                      : colorScheme.outlineVariant,
                   width: 1.5,
                 ),
               ),
@@ -1125,7 +1137,7 @@ class _LogSetCardState extends State<LogSetCard> {
                   fontWeight: FontWeight.bold,
                   color: isRunning
                       ? brandPurple
-                      : (timeStr == '—' ? context.colors.stoneGray : context.colors.textBlack),
+                      : (timeStr == '—' ? colorScheme.onSurfaceVariant : colorScheme.onSurface),
                 ),
               ),
             ),
@@ -1161,11 +1173,11 @@ class _LogSetCardState extends State<LogSetCard> {
                   style: TextButton.styleFrom(
                     backgroundColor: isRunning
                         ? (isDark ? const Color(0xFF2A1616) : const Color(0xFFFEE2E2))
-                        : (isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5)),
+                        : colorScheme.surfaceContainerHighest,
                     side: BorderSide(
                       color: isRunning
                           ? Colors.red
-                          : (isDark ? const Color(0xFF333333) : const Color(0xFFE0E0E0)),
+                          : colorScheme.outlineVariant,
                       width: 1.5,
                     ),
                     shape: RoundedRectangleBorder(
@@ -1177,7 +1189,7 @@ class _LogSetCardState extends State<LogSetCard> {
                     isRunning ? Icons.stop : Icons.play_arrow,
                     color: isRunning
                         ? Colors.red
-                        : (isDark ? const Color(0xFF888888) : const Color(0xFF555555)),
+                        : colorScheme.onSurfaceVariant,
                     size: 18,
                   ),
                 ),

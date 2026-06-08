@@ -45,7 +45,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
         ),
         child: Center(
           child: Container(
-            width: 320, // Compact, centered bottom bar width for three tabs
+            width: 380, // Compact, centered bottom bar width for four tabs
             height: 72, // Strict height constraints for parent
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(36),
@@ -69,7 +69,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                     builder: (context, constraints) {
                       final double totalWidth = constraints.maxWidth;
                       final double tabWidth = totalWidth / 4;
-                      final double highlightWidth = 96;
+                      final double highlightWidth = tabWidth - 8; // Centered pill with 4px margin on each side
                       final double highlightHeight = 64;
                       // Calculate exact pixel offset to center the active highlight over active tab mathematically
                       final double activeLeft = currentIndex * tabWidth + (tabWidth - highlightWidth) / 2;
@@ -90,7 +90,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                             child: Container(
                               decoration: BoxDecoration(
                                 color: badgeBgColor,
-                                borderRadius: BorderRadius.circular(30), // Matches half of height (60) for a perfect pill shape
+                                borderRadius: BorderRadius.circular(32), // Matches half of height (64) for a perfect pill shape
                               ),
                             ),
                           ),

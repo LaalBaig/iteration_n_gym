@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
 
@@ -9,16 +8,17 @@ class RecentlyDeletedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.colors.isDarkMode;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: context.colors.backgroundGrey,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: context.colors.backgroundGrey,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: context.colors.textBlack),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
           onPressed: () {
             if (context.canPop()) {
               context.pop();
@@ -30,7 +30,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
         title: Text(
           "Recently Deleted",
           style: TextStyle(
-            color: context.colors.textBlack,
+            color: colorScheme.onSurface,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -55,12 +55,12 @@ class RecentlyDeletedScreen extends StatelessWidget {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF222222) : const Color(0xFFF5F5F5),
+                      color: colorScheme.surfaceContainerHighest,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.delete_sweep_outlined,
-                      color: context.colors.stoneGray,
+                      color: colorScheme.onSurfaceVariant,
                       size: 40,
                     ),
                   ),
@@ -70,7 +70,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: context.colors.textBlack,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -78,7 +78,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                     "Exercises you delete will appear here",
                     style: TextStyle(
                       fontSize: 14,
-                      color: context.colors.oliveGray,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -95,10 +95,10 @@ class RecentlyDeletedScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: isDark ? context.colors.surfaceWhite : Colors.white,
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isDark ? const Color(0xFF2D2D2D) : context.colors.borderCream,
+                    color: colorScheme.outlineVariant,
                     width: 1.0,
                   ),
                 ),
@@ -108,13 +108,13 @@ class RecentlyDeletedScreen extends StatelessWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF2E2B4A) : const Color(0xFFEEECF9),
+                        color: colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Icon(
                           Icons.fitness_center,
-                          color: Color(0xFF4C3BC9),
+                          color: colorScheme.primary,
                           size: 18,
                         ),
                       ),
@@ -129,7 +129,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: context.colors.textBlack,
+                              color: colorScheme.onSurface,
                             ),
                           ),
                           if (exercise.category.isNotEmpty) ...[
@@ -138,7 +138,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                               exercise.category,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: context.colors.oliveGray,
+                                color: colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -171,28 +171,29 @@ class RecentlyDeletedScreen extends StatelessWidget {
                       },
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete_forever, color: Colors.red),
+                      icon: Icon(Icons.delete_forever, color: colorScheme.error),
                       tooltip: "Delete permanently",
                       onPressed: () async {
                         final confirm = await showDialog<bool>(
                           context: context,
-                          builder: (context) {
+                          builder: (dialogContext) {
                             return AlertDialog(
-                              backgroundColor: context.colors.textWhite,
-                              title: const Text("Delete Permanently"),
+                              backgroundColor: colorScheme.surface,
+                              title: Text("Delete Permanently", style: TextStyle(color: colorScheme.onSurface)),
                               content: Text(
                                 "Are you sure you want to permanently delete '${exercise.name}'? This will erase all history and data associated with it.",
+                                style: TextStyle(color: colorScheme.onSurfaceVariant),
                               ),
                               actions: [
                                 TextButton(
-                                  onPressed: () => Navigator.pop(context, false),
-                                  child: const Text("Cancel"),
+                                  onPressed: () => Navigator.pop(dialogContext, false),
+                                  child: Text("Cancel", style: TextStyle(color: colorScheme.onSurfaceVariant)),
                                 ),
                                 TextButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  child: const Text(
+                                  onPressed: () => Navigator.pop(dialogContext, true),
+                                  child: Text(
                                     "Delete Permanently",
-                                    style: TextStyle(color: Colors.red),
+                                    style: TextStyle(color: colorScheme.error),
                                   ),
                                 ),
                               ],
@@ -212,10 +213,10 @@ class RecentlyDeletedScreen extends StatelessWidget {
                               SnackBar(
                                 content: Text(
                                   "Permanently deleted '${exercise.name}' and all associated data.",
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(color: colorScheme.onInverseSurface),
                                 ),
                                 behavior: SnackBarBehavior.floating,
-                                backgroundColor: context.colors.nearBlack,
+                                backgroundColor: colorScheme.inverseSurface,
                                 duration: const Duration(seconds: 2),
                               ),
                             );

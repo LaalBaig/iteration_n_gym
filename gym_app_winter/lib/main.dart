@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:gym_app_winter/navigation/app_router.dart';
 import 'package:gym_app_winter/widgets/minimized_workout_bar.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
-import 'package:gym_app_winter/database/database_service.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
