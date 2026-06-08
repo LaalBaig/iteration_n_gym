@@ -68,7 +68,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       final double totalWidth = constraints.maxWidth;
-                      final double tabWidth = totalWidth / 3;
+                      final double tabWidth = totalWidth / 4;
                       final double highlightWidth = 96;
                       final double highlightHeight = 64;
                       // Calculate exact pixel offset to center the active highlight over active tab mathematically
@@ -109,18 +109,26 @@ class CustomBottomNavigationBar extends StatelessWidget {
                                 _buildTabItem(
                                   context: context,
                                   index: 1,
-                                  activeIcon: Icons.bar_chart,
-                                  inactiveIcon: Icons.bar_chart_outlined,
-                                  label: 'Stats',
+                                  activeIcon: Icons.fitness_center,
+                                  inactiveIcon: Icons.fitness_center, // using same since there's no outlined version easily available or just use fitness_center
+                                  label: 'Workout',
                                   isSelected: currentIndex == 1,
                                 ),
                                 _buildTabItem(
                                   context: context,
                                   index: 2,
+                                  activeIcon: Icons.bar_chart,
+                                  inactiveIcon: Icons.bar_chart_outlined,
+                                  label: 'Stats',
+                                  isSelected: currentIndex == 2,
+                                ),
+                                _buildTabItem(
+                                  context: context,
+                                  index: 3,
                                   activeIcon: Icons.person,
                                   inactiveIcon: Icons.person_outline,
                                   label: 'Profile',
-                                  isSelected: currentIndex == 2,
+                                  isSelected: currentIndex == 3,
                                 ),
                               ],
                             ),
