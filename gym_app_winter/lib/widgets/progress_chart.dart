@@ -62,6 +62,10 @@ class _ProgressChartState extends State<ProgressChart> {
              final weight = (s['weight'] ?? 0).toDouble();
              if (weight > yValue) yValue = weight;
            }
+        } else if (_selectedMetric == 'Reps') {
+           for (var s in sets) {
+             yValue += (s['reps'] ?? 0).toDouble();
+           }
         }
         spots.add(FlSpot((i + 1).toDouble(), yValue));
     }
@@ -118,7 +122,7 @@ class _ProgressChartState extends State<ProgressChart> {
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),
-                    items: ['Volume', 'Max Weight']
+                    items: ['Volume', 'Max Weight', 'Reps']
                         .map((e) => DropdownMenuItem(
                               value: e,
                               child: Text(e, style: TextStyle(color: context.colors.textBlack, fontSize: 13)),

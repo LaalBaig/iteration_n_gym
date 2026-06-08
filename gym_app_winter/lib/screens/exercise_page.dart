@@ -9,6 +9,7 @@ import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:intl/intl.dart';
+import 'package:gym_app_winter/widgets/rest_timer_button.dart';
 
 class ExercisePage extends StatefulWidget {
   const ExercisePage({super.key, required this.exerciseName});
@@ -109,6 +110,8 @@ class _ExercisePageState extends State<ExercisePage> {
                           ),
                         ),
                       ),
+                      const Spacer(),
+                      const RestTimerButton(),
                     ],
                   ),
                   SizedBox(height: 24),

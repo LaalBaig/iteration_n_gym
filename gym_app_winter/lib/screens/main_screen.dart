@@ -4,6 +4,7 @@ import 'package:gym_app_winter/screens/stats_tab.dart';
 import 'package:gym_app_winter/screens/profile_tab.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart';
+import 'package:gym_app_winter/state/rest_timer_notifier.dart';
 
 
 
@@ -40,6 +41,9 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   void _onTabSelected(int index) {
+    if (_selectedIndex == 0 && index != 0) {
+      RestTimerNotifier().cancel();
+    }
     setState(() {
       _selectedIndex = index;
       _isProgrammaticScroll = true;
@@ -67,6 +71,9 @@ class _MainScreenState extends State<MainScreen> {
           controller: _pageController,
           onPageChanged: (index) {
             if (!_isProgrammaticScroll) {
+              if (_selectedIndex == 0 && index != 0) {
+                RestTimerNotifier().cancel();
+              }
               setState(() {
                 _selectedIndex = index;
               });
