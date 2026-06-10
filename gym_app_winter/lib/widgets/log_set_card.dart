@@ -20,6 +20,8 @@ class LogSetCard extends StatefulWidget {
   final bool showLogButton;
   final LogSetCardVariant variant;
 
+  final String? headerTitle;
+
   const LogSetCard({
     super.key,
     required this.exerciseName,
@@ -27,6 +29,7 @@ class LogSetCard extends StatefulWidget {
     required this.onFinish,
     this.showLogButton = true,
     this.variant = LogSetCardVariant.weighted,
+    this.headerTitle,
   });
 
   @override
@@ -551,14 +554,18 @@ class _LogSetCardState extends State<LogSetCard> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Log sets",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
+                Expanded(
+                  child: Text(
+                    widget.headerTitle ?? "Log sets",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: 8),
                 ElevatedButton.icon(
                   onPressed: _addSet,
                   icon: Icon(Icons.add, size: 16, color: colorScheme.onPrimaryContainer),
