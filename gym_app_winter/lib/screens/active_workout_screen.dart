@@ -6,6 +6,7 @@ import 'package:gym_app_winter/models/catalog_exercise.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 import 'package:gym_app_winter/state/workout_manager.dart';
+import 'package:gym_app_winter/screens/main_screen.dart';
 
 class ActiveWorkoutScreen extends StatefulWidget {
   const ActiveWorkoutScreen({super.key});
@@ -77,7 +78,12 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               : BouncingButton(
                   onTap: () {
                     WorkoutManager().minimize();
-                    context.pop();
+                    MainScreen.activeTabNotifier.value = 1; // lead to workouts tab
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go('/');
+                    }
                   },
                   child: Row(
                     children: [

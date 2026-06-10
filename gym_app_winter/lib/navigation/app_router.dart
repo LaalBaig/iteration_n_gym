@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/screens/add_exercise_screen.dart';
 import 'package:gym_app_winter/screens/custom_exercise_screen.dart';
@@ -9,7 +10,7 @@ import 'package:gym_app_winter/screens/see_all_history_screen.dart';
 import 'package:gym_app_winter/screens/recently_deleted_screen.dart';
 
 class AppRouter {
-  final GoRouter routeManager = GoRouter(
+  static final GoRouter routeManager = GoRouter(
     routes: [
       GoRoute(
         path: '/',
@@ -35,7 +36,28 @@ class AppRouter {
       ),
       GoRoute(
         path: '/active_workout',
-        builder: (context, state) => const ActiveWorkoutScreen(),
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: const ActiveWorkoutScreen(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.0, 1.0),
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeInOutCubic,
+                  ),
+                ),
+                child: child,
+              );
+            },
+            transitionDuration: const Duration(milliseconds: 350),
+            reverseTransitionDuration: const Duration(milliseconds: 350),
+          );
+        },
       ),
       GoRoute(
         path: '/custom',

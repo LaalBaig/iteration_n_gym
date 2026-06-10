@@ -14,6 +14,8 @@ import 'package:gym_app_winter/state/rest_timer_notifier.dart';
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
+  static final ValueNotifier<int> activeTabNotifier = ValueNotifier<int>(0);
+
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
@@ -26,13 +28,23 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = MainScreen.activeTabNotifier.value;
     _pageController = PageController(initialPage: _selectedIndex);
+    MainScreen.activeTabNotifier.addListener(_onActiveTabChanged);
   }
 
   @override
   void dispose() {
+    MainScreen.activeTabNotifier.removeListener(_onActiveTabChanged);
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _onActiveTabChanged() {
+    final newIndex = MainScreen.activeTabNotifier.value;
+    if (newIndex != _selectedIndex) {
+      _onTabSelected(newIndex);
+    }
   }
 
   final List<Widget> _tabs = const [
@@ -50,6 +62,7 @@ class _MainScreenState extends State<MainScreen> {
       _selectedIndex = index;
       _isProgrammaticScroll = true;
     });
+    MainScreen.activeTabNotifier.value = index;
     _pageController.animateToPage(
       index,
       duration: const Duration(milliseconds: 300),
@@ -79,6 +92,7 @@ class _MainScreenState extends State<MainScreen> {
               setState(() {
                 _selectedIndex = index;
               });
+              MainScreen.activeTabNotifier.value = index;
             }
           },
           children: _tabs,
