@@ -16,6 +16,7 @@ class ActiveWorkoutScreen extends StatefulWidget {
 
 class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
   final List<Exercise> _workoutExercises = [];
+  bool _isReordering = false;
 
   void _navigateToAddExercise() async {
     final result = await context.push('/add_exercise');
@@ -68,79 +69,160 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
           scrolledUnderElevation: 0,
           elevation: 0,
           titleSpacing: 16,
-          title: BouncingButton(
-            onTap: () {
-              WorkoutManager().minimize();
-              context.pop();
-            },
-            child: Row(
-              children: [
-                Icon(Icons.keyboard_arrow_down, color: colorScheme.onSurface),
-                const SizedBox(width: 8),
-                Text(
-                  "Log Workout",
+          title: _isReordering
+              ? Text(
+                  "Reorder Exercises",
                   style: TextStyle(color: colorScheme.onSurface, fontSize: 20, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.timer_outlined, color: colorScheme.onSurface),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  WorkoutManager().finishWorkout();
-                  context.pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                )
+              : BouncingButton(
+                  onTap: () {
+                    WorkoutManager().minimize();
+                    context.pop();
+                  },
+                  child: Row(
+                    children: [
+                      Icon(Icons.keyboard_arrow_down, color: colorScheme.onSurface),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Log Workout",
+                        style: TextStyle(color: colorScheme.onSurface, fontSize: 20, fontWeight: FontWeight.w600),
+                      ),
+                    ],
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
-                child: Text("Finish", style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16)),
-              ),
-            ),
-          ],
-        ),
-        body: ListenableBuilder(
-          listenable: WorkoutManager(),
-          builder: (context, _) {
-            final manager = WorkoutManager();
-            return SafeArea(
-              child: Column(
-                children: [
-                  Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
-                  // Summary Row
+          actions: _isReordering
+              ? [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildSummaryItem("Duration", manager.formattedDuration, true),
-                        _buildSummaryItem("Volume", "0 kg", false),
-                        _buildSummaryItem("Sets", manager.setsCount.toString(), false),
-                      ],
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _isReordering = false;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.primary,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                      child: Text("Done", style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16)),
                     ),
                   ),
-                  Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
-                  
-                  Expanded(
-                    child: _workoutExercises.isEmpty
-                        ? _buildEmptyState()
-                        : _buildWorkoutList(),
+                ]
+              : [
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.timer_outlined, color: colorScheme.onSurface),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        WorkoutManager().finishWorkout(
+                          exerciseOrder: _workoutExercises.map((e) => e.name).toList(),
+                        );
+                        context.pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.primary,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                      child: Text("Finish", style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16)),
+                    ),
                   ),
                 ],
-              ),
-            );
-          },
         ),
+        body: _isReordering
+            ? SafeArea(
+                child: ReorderableListView.builder(
+                  buildDefaultDragHandles: false,
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  itemCount: _workoutExercises.length,
+                  onReorderItem: (oldIndex, newIndex) {
+                    setState(() {
+                      final exercise = _workoutExercises.removeAt(oldIndex);
+                      _workoutExercises.insert(newIndex, exercise);
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    final exercise = _workoutExercises[index];
+                    return Material(
+                      key: ValueKey(exercise.id),
+                      color: Colors.transparent,
+                      child: Card(
+                        margin: const EdgeInsets.only(bottom: 12.0),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(color: colorScheme.outlineVariant, width: 1.0),
+                        ),
+                        color: colorScheme.surface,
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          title: Text(
+                            exercise.name,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                          subtitle: Text(
+                            exercise.category,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          trailing: ReorderableDragStartListener(
+                            index: index,
+                            child: Icon(Icons.drag_handle, color: colorScheme.onSurfaceVariant),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              )
+            : ListenableBuilder(
+                listenable: WorkoutManager(),
+                builder: (context, _) {
+                  final manager = WorkoutManager();
+                  return SafeArea(
+                    child: Column(
+                      children: [
+                        Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
+                        // Summary Row
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildSummaryItem("Duration", manager.formattedDuration, true),
+                              _buildSummaryItem("Volume", "0 kg", false),
+                              _buildSummaryItem("Sets", manager.setsCount.toString(), false),
+                            ],
+                          ),
+                        ),
+                        Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
+                        
+                        Expanded(
+                          child: _workoutExercises.isEmpty
+                              ? _buildEmptyState()
+                              : _buildWorkoutList(),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
       ),
     );
   }
@@ -358,6 +440,41 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             headerTitle: exercise.name,
             onAddSet: () {},
             onFinish: (sets) {},
+            onRemove: () {
+              setState(() {
+                _workoutExercises.removeAt(index);
+                WorkoutManager().removeExercise(exercise.name);
+              });
+            },
+            onReplace: () async {
+              final result = await context.push('/add_exercise');
+              if (result != null) {
+                Exercise? newExercise;
+                if (result is Exercise) {
+                  newExercise = result;
+                } else if (result is CatalogExercise) {
+                  newExercise = Exercise(
+                    id: result.id,
+                    name: result.name,
+                    category: result.category,
+                    lastLog: '',
+                    exerciseType: result.exerciseType,
+                    trackingType: result.trackingType,
+                  );
+                }
+                if (newExercise != null) {
+                  setState(() {
+                    _workoutExercises[index] = newExercise!;
+                    WorkoutManager().replaceExercise(exercise.name, newExercise.name);
+                  });
+                }
+              }
+            },
+            onReorder: () {
+              setState(() {
+                _isReordering = true;
+              });
+            },
           ),
         );
       },

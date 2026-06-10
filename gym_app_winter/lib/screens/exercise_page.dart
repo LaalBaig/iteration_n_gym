@@ -144,13 +144,17 @@ class _ExercisePageState extends State<ExercisePage> {
                         },
                         child: Icon(Icons.arrow_back),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
-                        child: Text(
-                          widget.exerciseName,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontSize: 28,
-                            color: Theme.of(context).colorScheme.onSurface,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
+                          child: Text(
+                            widget.exerciseName,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontSize: 28,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),

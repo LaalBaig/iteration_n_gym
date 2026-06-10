@@ -86,7 +86,26 @@ class WorkoutManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> finishWorkout() async {
+  void removeExercise(String exerciseName) {
+    if (_workoutLogs.containsKey(exerciseName)) {
+      final sets = _workoutLogs[exerciseName] ?? [];
+      _setsCount = (_setsCount - sets.length).clamp(0, double.infinity).toInt();
+      _workoutLogs.remove(exerciseName);
+    }
+    notifyListeners();
+  }
+
+  void replaceExercise(String oldName, String newName) {
+    if (_workoutLogs.containsKey(oldName)) {
+      _workoutLogs[newName] = _workoutLogs.remove(oldName)!;
+    }
+    if (_currentExerciseName == oldName) {
+      _currentExerciseName = newName;
+    }
+    notifyListeners();
+  }
+
+  Future<void> finishWorkout({List<String>? exerciseOrder}) async {
     final workoutId = DateTime.now().millisecondsSinceEpoch.toString();
     
     // Save workout session
@@ -99,9 +118,10 @@ class WorkoutManager extends ChangeNotifier {
     );
 
     // Save all logs
-    for (var entry in _workoutLogs.entries) {
-      final exerciseName = entry.key;
-      final sets = entry.value;
+    final keys = exerciseOrder ?? _workoutLogs.keys.toList();
+    for (var exerciseName in keys) {
+      final sets = _workoutLogs[exerciseName];
+      if (sets == null) continue;
       for (int i = 0; i < sets.length; i++) {
         await DatabaseService().db.insertExerciseLog(
           ExerciseLogsCompanion.insert(

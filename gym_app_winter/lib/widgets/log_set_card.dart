@@ -21,6 +21,9 @@ class LogSetCard extends StatefulWidget {
   final LogSetCardVariant variant;
 
   final String? headerTitle;
+  final VoidCallback? onRemove;
+  final VoidCallback? onReplace;
+  final VoidCallback? onReorder;
 
   const LogSetCard({
     super.key,
@@ -30,6 +33,9 @@ class LogSetCard extends StatefulWidget {
     this.showLogButton = true,
     this.variant = LogSetCardVariant.weighted,
     this.headerTitle,
+    this.onRemove,
+    this.onReplace,
+    this.onReorder,
   });
 
   @override
@@ -522,6 +528,109 @@ class _LogSetCardState extends State<LogSetCard> {
     WorkoutManager().addLogsForExercise(widget.exerciseName, setsData);
   }
 
+  void _showMoreOptionsBottomSheet(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Material(
+          color: colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          clipBehavior: Clip.antiAlias,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 12, bottom: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle pill
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.outlineVariant,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                if (widget.onReorder != null)
+                  ListTile(
+                    leading: Icon(Icons.swap_vert, color: colorScheme.onSurface),
+                    title: Text(
+                      "Reorder Exercises",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      widget.onReorder!();
+                    },
+                  ),
+                if (widget.onReplace != null)
+                  ListTile(
+                    leading: Icon(Icons.sync, color: colorScheme.onSurface),
+                    title: Text(
+                      "Replace Exercise",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      widget.onReplace!();
+                    },
+                  ),
+                ListTile(
+                  leading: Icon(Icons.add, color: colorScheme.onSurface),
+                  title: Text(
+                    "Add To Superset",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Supersets coming soon!"),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                ),
+                if (widget.onRemove != null)
+                  ListTile(
+                    leading: Icon(Icons.close, color: colorScheme.error),
+                    title: Text(
+                      "Remove Exercise",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: colorScheme.error,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      widget.onRemove!();
+                    },
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -587,6 +696,16 @@ class _LogSetCardState extends State<LogSetCard> {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
+                if (!widget.showLogButton &&
+                    (widget.onRemove != null || widget.onReplace != null || widget.onReorder != null)) ...[
+                  const SizedBox(width: 4),
+                  IconButton(
+                    onPressed: () => _showMoreOptionsBottomSheet(context),
+                    icon: Icon(Icons.more_vert, color: colorScheme.onSurface),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
               ],
             ),
           ),
