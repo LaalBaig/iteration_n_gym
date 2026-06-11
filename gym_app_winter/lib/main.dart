@@ -96,7 +96,7 @@ class _MyAppState extends State<MyApp> {
           error: Colors.redAccent,
           onError: Colors.white,
         ),
-        textTheme: GoogleFonts.interTextTheme(
+        textTheme: GoogleFonts.dmSansTextTheme(
           ThemeData.dark().textTheme,
         ),
         splashFactory: NoSplash.splashFactory,

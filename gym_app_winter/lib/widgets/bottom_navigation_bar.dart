@@ -193,7 +193,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                 const SizedBox(height: 4),
                 AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 200),
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.dmSans(
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     color: isSelected ? activeColor : inactiveColor,

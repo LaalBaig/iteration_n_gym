@@ -16,7 +16,7 @@ enum LogSetCardVariant {
 class LogSetCard extends StatefulWidget {
   final String exerciseName;
   final VoidCallback onAddSet;
-  final void Function(List<Map<String, int>>) onFinish;
+  final FutureOr<void> Function(List<Map<String, int>>) onFinish;
   final bool showLogButton;
   final LogSetCardVariant variant;
 
@@ -183,6 +183,13 @@ class _LogSetCardState extends State<LogSetCard> {
     final db = DatabaseService().db;
     try {
       final logs = await (db.select(db.exerciseLogs)..where((t) => t.exerciseName.equals(widget.exerciseName))).get();
+      if (mounted) {
+        setState(() {
+          _repMaxes.clear();
+          _maxBodyweightReps = 0;
+          _maxTimeSeconds = 0;
+        });
+      }
       if (logs.isNotEmpty) {
         // Compute historical PRs
         for (var log in logs) {
@@ -558,6 +565,30 @@ class _LogSetCardState extends State<LogSetCard> {
     WorkoutManager().addLogsForExercise(widget.exerciseName, setsData);
   }
 
+  void _copyPreviousToCurrent(int index) {
+    if (index < _previousLogs.length) {
+      final log = _previousLogs[index];
+      final setData = _sets[index];
+      setState(() {
+        if (widget.variant == LogSetCardVariant.timed) {
+          final seconds = log.weight.toInt();
+          setData.durationMs = seconds * 1000;
+          setData.timeBeforeStartMs = seconds * 1000;
+          setData.isCompleted = true;
+        } else if (widget.variant == LogSetCardVariant.bodyweight) {
+          setData.reps = log.reps;
+          setData.repsTextController.text = log.reps > 0 ? log.reps.toString() : '';
+        } else {
+          setData.weight = log.weight.toInt();
+          setData.reps = log.reps;
+          setData.weightTextController.text = log.weight > 0 ? log.weight.toInt().toString() : '';
+          setData.repsTextController.text = log.reps > 0 ? log.reps.toString() : '';
+        }
+        _notifyChanges();
+      });
+    }
+  }
+
   void _showMoreOptionsBottomSheet(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -924,7 +955,26 @@ class _LogSetCardState extends State<LogSetCard> {
                             }
                           })
                           .toList();
-                      widget.onFinish(setData);
+                      await widget.onFinish(setData);
+
+                      WorkoutManager().removeExercise(widget.exerciseName);
+
+                      setState(() {
+                        for (var set in _sets) {
+                          set.dispose();
+                        }
+                        _sets.clear();
+
+                        final defaultSet = _createSetData();
+                        defaultSet.weightFocusNode.addListener(() => setState(() {}));
+                        defaultSet.repsFocusNode.addListener(() => setState(() {}));
+                        _sets.add(defaultSet);
+
+                        _loadPreviousLogs();
+                      });
+
+                      WorkoutManager().incrementSet();
+                      _notifyChanges();
                     }
                   },
                   child: Container(
@@ -1023,12 +1073,16 @@ class _LogSetCardState extends State<LogSetCard> {
         ),
         Expanded(
           flex: 3,
-          child: Text(
-            previousText,
-            style: TextStyle(
-              fontSize: 14,
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: index < _previousLogs.length ? () => _copyPreviousToCurrent(index) : null,
+            child: Text(
+              previousText,
+              style: TextStyle(
+                fontSize: 14,
+                color: index < _previousLogs.length ? brandPurple : colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),
@@ -1221,12 +1275,16 @@ class _LogSetCardState extends State<LogSetCard> {
         ),
         Expanded(
           flex: 3,
-          child: Text(
-            previousText,
-            style: TextStyle(
-              fontSize: 14,
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: index < _previousLogs.length ? () => _copyPreviousToCurrent(index) : null,
+            child: Text(
+              previousText,
+              style: TextStyle(
+                fontSize: 14,
+                color: index < _previousLogs.length ? brandPurple : colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),
@@ -1375,12 +1433,16 @@ class _LogSetCardState extends State<LogSetCard> {
         ),
         Expanded(
           flex: 3,
-          child: Text(
-            previousText,
-            style: TextStyle(
-              fontSize: 14,
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: index < _previousLogs.length ? () => _copyPreviousToCurrent(index) : null,
+            child: Text(
+              previousText,
+              style: TextStyle(
+                fontSize: 14,
+                color: index < _previousLogs.length ? brandPurple : colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),
