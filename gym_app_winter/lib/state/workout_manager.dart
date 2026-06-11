@@ -79,6 +79,20 @@ class WorkoutManager extends ChangeNotifier {
     return list;
   }
 
+  double get totalVolume {
+    double volume = 0.0;
+    _workoutLogs.forEach((exerciseName, sets) {
+      for (var set in sets) {
+        if (_isSetLogged(exerciseName, set)) {
+          final w = (set['weight'] ?? 0).toDouble();
+          final r = set['reps'] ?? 0;
+          volume += w * r;
+        }
+      }
+    });
+    return volume;
+  }
+
   String get formattedDuration {
     if (_elapsedSeconds < 60) return "${_elapsedSeconds}s";
     final minutes = _elapsedSeconds ~/ 60;

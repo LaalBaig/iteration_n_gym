@@ -231,7 +231,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _buildSummaryItem("Duration", manager.formattedDuration, true),
-                        _buildSummaryItem("Volume", "0 kg", false),
+                        _buildSummaryItem("Volume", "${manager.totalVolume.round()} kg", false),
                         _buildSummaryItem("Sets", manager.setsCount.toString(), false),
                       ],
                     ),
