@@ -130,6 +130,7 @@ class _ExercisePageState extends State<ExercisePage> {
                   variant: variant,
                   workoutId: entry.key,
                   date: workout.startTime,
+                  isWorkout: !workout.isStandalone,
                 );
               }).toList();
 

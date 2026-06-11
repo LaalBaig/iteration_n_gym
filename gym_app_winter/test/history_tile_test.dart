@@ -34,4 +34,29 @@ void main() {
     ));
     expect(find.byIcon(Icons.delete_outline), findsNothing);
   });
+
+  testWidgets('Test HistoryTile rendering with Workout badge when isWorkout is true', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(
+      home: Scaffold(
+        body: HistoryTile(
+          setData: [{'weight': 100, 'reps': 10}],
+          isWorkout: true,
+        ),
+      ),
+    ));
+    expect(find.text('Workout'), findsOneWidget);
+  });
+
+  testWidgets('Test HistoryTile rendering without delete icon when isWorkout is true and workoutId is present', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(
+      home: Scaffold(
+        body: HistoryTile(
+          setData: [{'weight': 100, 'reps': 10}],
+          workoutId: '12345',
+          isWorkout: true,
+        ),
+      ),
+    ));
+    expect(find.byIcon(Icons.delete_outline), findsNothing);
+  });
 }

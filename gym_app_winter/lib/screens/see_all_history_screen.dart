@@ -120,6 +120,7 @@ class _SeeAllHistoryScreenState extends State<SeeAllHistoryScreen> {
               variant: variant,
               workoutId: entry.key,
               date: workout.startTime,
+              isWorkout: !workout.isStandalone,
             );
           }).toList();
 

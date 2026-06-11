@@ -12,12 +12,14 @@ class HistoryTile extends StatelessWidget {
     this.variant = LogSetCardVariant.weighted,
     this.workoutId,
     this.date,
+    this.isWorkout = false,
   });
 
   final List<Map<String, int>> setData;
   final LogSetCardVariant variant;
   final String? workoutId;
   final DateTime? date;
+  final bool isWorkout;
 
   @override
   Widget build(BuildContext context) {
@@ -59,16 +61,41 @@ class HistoryTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(
-                        dateStr,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontSize: 18,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              dateStr,
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontSize: 18,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (isWorkout) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.secondaryContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                "Workout",
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
-                    if (workoutId != null && workoutId!.isNotEmpty)
+                    if (workoutId != null && workoutId!.isNotEmpty && !isWorkout)
                       GestureDetector(
                         onTap: () => _confirmAndDelete(context),
                         behavior: HitTestBehavior.opaque,
