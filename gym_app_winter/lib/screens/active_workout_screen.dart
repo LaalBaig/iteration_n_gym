@@ -7,6 +7,7 @@ import 'package:gym_app_winter/widgets/log_set_card.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 import 'package:gym_app_winter/state/workout_manager.dart';
 import 'package:gym_app_winter/screens/main_screen.dart';
+import 'package:gym_app_winter/widgets/rest_timer_button.dart';
 
 class ActiveWorkoutScreen extends StatefulWidget {
   const ActiveWorkoutScreen({super.key});
@@ -119,10 +120,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   ),
                 ]
               : [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.timer_outlined, color: colorScheme.onSurface),
-                  ),
+                  const RestTimerButton(),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: ElevatedButton(
