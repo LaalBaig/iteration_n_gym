@@ -217,6 +217,16 @@ class AppDatabase extends _$AppDatabase {
       await (delete(workouts)..where((t) => t.id.equals(workoutId))).go();
     });
   }
+
+  Future<void> clearAllHistory() async {
+    await transaction(() async {
+      await delete(exerciseLogs).go();
+      await delete(workouts).go();
+      await (update(exercises)).write(
+        const ExercisesCompanion(lastLog: Value('')),
+      );
+    });
+  }
   Future<void> restoreWorkout(Workout workout, List<ExerciseLog> logs) async {
     await transaction(() async {
       await into(workouts).insert(workout, mode: InsertMode.insertOrReplace);
