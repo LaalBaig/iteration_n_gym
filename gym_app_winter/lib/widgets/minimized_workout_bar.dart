@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/state/workout_manager.dart';
 import 'package:gym_app_winter/navigation/app_router.dart';
+import 'package:gym_app_winter/widgets/discard_workout_dialog.dart';
 
 class MinimizedWorkoutBar extends StatelessWidget {
   const MinimizedWorkoutBar({super.key});
@@ -116,8 +117,14 @@ class MinimizedWorkoutBar extends StatelessWidget {
   
                     // Discard Button
                     GestureDetector(
-                      onTap: () {
-                        manager.discardWorkout();
+                      onTap: () async {
+                        final navigatorContext = AppRouter.navigatorKey.currentContext;
+                        if (navigatorContext != null) {
+                          final confirm = await showDiscardWorkoutDialog(navigatorContext);
+                          if (confirm == true) {
+                            manager.discardWorkout();
+                          }
+                        }
                       },
                       child: Container(
                         width: 44,

@@ -11,7 +11,10 @@ import 'package:gym_app_winter/screens/recently_deleted_screen.dart';
 import 'package:gym_app_winter/screens/workout_summary_screen.dart';
 
 class AppRouter {
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   static final GoRouter routeManager = GoRouter(
+    navigatorKey: navigatorKey,
     routes: [
       GoRoute(
         path: '/',

@@ -8,6 +8,7 @@ import 'package:gym_app_winter/widgets/bouncing_button.dart';
 import 'package:gym_app_winter/state/workout_manager.dart';
 import 'package:gym_app_winter/screens/main_screen.dart';
 import 'package:gym_app_winter/widgets/rest_timer_button.dart';
+import 'package:gym_app_winter/widgets/discard_workout_dialog.dart';
 
 class ActiveWorkoutScreen extends StatefulWidget {
   const ActiveWorkoutScreen({super.key});
@@ -146,9 +147,8 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
 
                         summaryData['workoutId'] = workoutId;
 
-                        if (context.mounted) {
-                          context.pushReplacement('/workout_summary', extra: summaryData);
-                        }
+                        if (!mounted) return;
+                        this.context.pushReplacement('/workout_summary', extra: summaryData);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primary,
@@ -327,9 +327,12 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    final confirm = await showDiscardWorkoutDialog(context);
+                    if (confirm == true && mounted) {
                       WorkoutManager().discardWorkout();
                       context.pop();
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.surfaceContainerHighest,
@@ -360,7 +363,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 24.0),
       itemCount: workoutExercises.length + 1,
-      itemBuilder: (context, index) {
+      itemBuilder: (itemContext, index) {
         if (index == workoutExercises.length) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -418,9 +421,12 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          final confirm = await showDiscardWorkoutDialog(itemContext);
+                          if (confirm == true && itemContext.mounted) {
                             WorkoutManager().discardWorkout();
-                            context.pop();
+                            itemContext.pop();
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.surfaceContainerHighest,
@@ -470,7 +476,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               WorkoutManager().removeExercise(exercise.name);
             },
             onReplace: () async {
-              final result = await context.push('/add_exercise');
+              final result = await itemContext.push('/add_exercise');
               if (result != null) {
                 Exercise? newExercise;
                 if (result is Exercise) {
