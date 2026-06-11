@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/workout_button_top.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 // Workouts Tab Content
 class WorkoutsTab extends StatefulWidget {
@@ -29,13 +29,28 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-            child: Text(
-              'Track Workouts',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontSize: 32,
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Track Workouts',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 32,
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.history,
+                    color: colorScheme.onSurface,
+                    size: 28,
+                  ),
+                  onPressed: () {
+                    context.push('/workout_history');
+                  },
+                ),
+              ],
             ),
           ),
           const WorkoutButtonTop(),

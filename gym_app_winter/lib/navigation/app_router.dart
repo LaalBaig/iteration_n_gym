@@ -9,6 +9,7 @@ import 'package:gym_app_winter/screens/active_workout_screen.dart';
 import 'package:gym_app_winter/screens/see_all_history_screen.dart';
 import 'package:gym_app_winter/screens/recently_deleted_screen.dart';
 import 'package:gym_app_winter/screens/workout_summary_screen.dart';
+import 'package:gym_app_winter/screens/workout_history_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -87,6 +88,10 @@ class AppRouter {
             exercises: List<String>.from(extra['exercises'] ?? []),
           );
         },
+      ),
+      GoRoute(
+        path: '/workout_history',
+        builder: (context, state) => const WorkoutHistoryScreen(),
       ),
     ],
   );

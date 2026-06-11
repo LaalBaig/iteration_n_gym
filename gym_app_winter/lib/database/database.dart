@@ -41,6 +41,7 @@ class Workouts extends Table {
   TextColumn get id => text()(); // Your Unix timestamp/ID
   DateTimeColumn get startTime => dateTime()();
   DateTimeColumn get endTime => dateTime().nullable()();
+  BoolColumn get isStandalone => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -67,7 +68,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -108,6 +109,9 @@ class AppDatabase extends _$AppDatabase {
           if (from < 4) {
             await m.addColumn(exercises, exercises.exerciseType);
             await m.addColumn(exercises, exercises.trackingType);
+          }
+          if (from < 5) {
+            await m.addColumn(workouts, workouts.isStandalone);
           }
 
         },
@@ -202,6 +206,8 @@ class AppDatabase extends _$AppDatabase {
   }
 
   // Workout queries
+  Stream<List<Workout>> watchAllWorkouts() =>
+      (select(workouts)..where((t) => t.isStandalone.equals(false))..orderBy([(t) => OrderingTerm.desc(t.startTime)])).watch();
   Future<int> insertWorkout(WorkoutsCompanion entry) => into(workouts).insert(entry);
   Future<Workout?> getWorkoutById(String workoutId) =>
       (select(workouts)..where((t) => t.id.equals(workoutId))).getSingleOrNull();

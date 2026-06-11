@@ -212,6 +212,7 @@ class WorkoutManager extends ChangeNotifier {
         id: workoutId,
         startTime: _startTime ?? DateTime.now(),
         endTime: Value(DateTime.now()),
+        isStandalone: const Value(false),
       ),
     );
 

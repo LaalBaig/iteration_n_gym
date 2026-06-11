@@ -174,6 +174,7 @@ class _ExercisePageState extends State<ExercisePage> {
                           id: workoutId,
                           startTime: DateTime.now(),
                           endTime: Value(DateTime.now()),
+                          isStandalone: const Value(true),
                         ),
                       );
 
