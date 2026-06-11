@@ -139,13 +139,31 @@ class _LogSetCardState extends State<LogSetCard> {
     super.initState();
     _loadPreviousLogs();
     
-    // Add initial set
-    _sets.add(_createSetData());
+    // Check if there are existing active workout sets for this exercise
+    final activeSets = WorkoutManager().getLogsForExercise(widget.exerciseName);
+    if (activeSets != null && activeSets.isNotEmpty) {
+      for (var setMap in activeSets) {
+        int w = setMap['weight'] ?? 0;
+        int r = setMap['reps'] ?? 0;
+        bool completed = setMap['isCompleted'] == 1;
+        
+        final setData = _createSetData(weight: w, reps: r);
+        setData.isCompleted = completed;
+        if (widget.variant == LogSetCardVariant.timed) {
+          setData.durationMs = w * 1000;
+          setData.timeBeforeStartMs = w * 1000;
+        }
+        _sets.add(setData);
+      }
+    } else {
+      // Add initial set
+      _sets.add(_createSetData());
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      WorkoutManager().incrementSet();
-      _notifyChanges();
-    });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        WorkoutManager().incrementSet();
+        _notifyChanges();
+      });
+    }
 
     for (var set in _sets) {
       set.weightFocusNode.addListener(() => setState(() {}));
@@ -518,11 +536,23 @@ class _LogSetCardState extends State<LogSetCard> {
   void _notifyChanges() {
     final setsData = _sets.map((s) {
       if (widget.variant == LogSetCardVariant.timed) {
-        return {'weight': s.durationMs ~/ 1000, 'reps': 0};
+        return {
+          'weight': s.durationMs ~/ 1000,
+          'reps': 0,
+          'isCompleted': s.isCompleted ? 1 : 0,
+        };
       } else if (widget.variant == LogSetCardVariant.bodyweight) {
-        return {'weight': 0, 'reps': s.reps};
+        return {
+          'weight': 0,
+          'reps': s.reps,
+          'isCompleted': s.isCompleted ? 1 : 0,
+        };
       } else {
-        return {'weight': s.weight, 'reps': s.reps};
+        return {
+          'weight': s.weight,
+          'reps': s.reps,
+          'isCompleted': s.isCompleted ? 1 : 0,
+        };
       }
     }).toList();
     WorkoutManager().addLogsForExercise(widget.exerciseName, setsData);

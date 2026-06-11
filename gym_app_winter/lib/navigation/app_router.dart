@@ -8,6 +8,7 @@ import 'package:gym_app_winter/screens/workout_page.dart';
 import 'package:gym_app_winter/screens/active_workout_screen.dart';
 import 'package:gym_app_winter/screens/see_all_history_screen.dart';
 import 'package:gym_app_winter/screens/recently_deleted_screen.dart';
+import 'package:gym_app_winter/screens/workout_summary_screen.dart';
 
 class AppRouter {
   static final GoRouter routeManager = GoRouter(
@@ -68,6 +69,19 @@ class AppRouter {
         builder: (context, state) {
           return SeeAllHistoryScreen(
             exerciseName: state.pathParameters['exerciseName'] ?? '',
+          );
+        },
+      ),
+      GoRoute(
+        path: '/workout_summary',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return WorkoutSummaryScreen(
+            workoutId: extra['workoutId'] ?? '',
+            duration: extra['duration'] ?? '',
+            exerciseCount: extra['exerciseCount'] ?? 0,
+            setsCount: extra['setsCount'] ?? 0,
+            exercises: List<String>.from(extra['exercises'] ?? []),
           );
         },
       ),

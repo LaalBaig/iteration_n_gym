@@ -17,7 +17,6 @@ class ActiveWorkoutScreen extends StatefulWidget {
 }
 
 class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
-  final List<Exercise> _workoutExercises = [];
   bool _isReordering = false;
 
   void _navigateToAddExercise() async {
@@ -37,10 +36,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
         );
       }
       if (exercise != null) {
-        setState(() {
-          _workoutExercises.add(exercise!);
-          WorkoutManager().updateExercise(exercise.name);
-        });
+        WorkoutManager().addExercise(exercise);
       }
     }
   }
@@ -72,9 +68,9 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
           elevation: 0,
           titleSpacing: 16,
           title: _isReordering
-              ? Text(
+              ? const Text(
                   "Reorder Exercises",
-                  style: TextStyle(color: colorScheme.onSurface, fontSize: 20, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                 )
               : BouncingButton(
                   onTap: () {
@@ -124,11 +120,35 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        WorkoutManager().finishWorkout(
-                          exerciseOrder: _workoutExercises.map((e) => e.name).toList(),
+                      onPressed: () async {
+                        final manager = WorkoutManager();
+                        if (manager.completedSetsCount == 0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Cannot finish an empty workout. Complete at least one set."),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+
+                        final order = manager.activeExercises.map((e) => e.name).toList();
+                        final summaryData = {
+                          'duration': manager.formattedDuration,
+                          'exerciseCount': manager.completedExerciseNames.length,
+                          'setsCount': manager.completedSetsCount,
+                          'exercises': manager.completedExerciseNames,
+                        };
+
+                        final workoutId = await manager.finishWorkout(
+                          exerciseOrder: order,
                         );
-                        context.pop();
+
+                        summaryData['workoutId'] = workoutId;
+
+                        if (context.mounted) {
+                          context.pushReplacement('/workout_summary', extra: summaryData);
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primary,
@@ -143,20 +163,23 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   ),
                 ],
         ),
-        body: _isReordering
-            ? SafeArea(
+        body: ListenableBuilder(
+          listenable: WorkoutManager(),
+          builder: (context, _) {
+            final manager = WorkoutManager();
+            final workoutExercises = manager.activeExercises;
+
+            if (_isReordering) {
+              return SafeArea(
                 child: ReorderableListView.builder(
                   buildDefaultDragHandles: false,
                   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-                  itemCount: _workoutExercises.length,
+                  itemCount: workoutExercises.length,
                   onReorderItem: (oldIndex, newIndex) {
-                    setState(() {
-                      final exercise = _workoutExercises.removeAt(oldIndex);
-                      _workoutExercises.insert(newIndex, exercise);
-                    });
+                    manager.reorderExercises(oldIndex, newIndex);
                   },
                   itemBuilder: (context, index) {
-                    final exercise = _workoutExercises[index];
+                    final exercise = workoutExercises[index];
                     return Material(
                       key: ValueKey(exercise.id),
                       color: Colors.transparent,
@@ -194,39 +217,37 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                     );
                   },
                 ),
-              )
-            : ListenableBuilder(
-                listenable: WorkoutManager(),
-                builder: (context, _) {
-                  final manager = WorkoutManager();
-                  return SafeArea(
-                    child: Column(
+              );
+            }
+
+            return SafeArea(
+              child: Column(
+                children: [
+                  Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
+                  // Summary Row
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
-                        // Summary Row
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _buildSummaryItem("Duration", manager.formattedDuration, true),
-                              _buildSummaryItem("Volume", "0 kg", false),
-                              _buildSummaryItem("Sets", manager.setsCount.toString(), false),
-                            ],
-                          ),
-                        ),
-                        Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
-                        
-                        Expanded(
-                          child: _workoutExercises.isEmpty
-                              ? _buildEmptyState()
-                              : _buildWorkoutList(),
-                        ),
+                        _buildSummaryItem("Duration", manager.formattedDuration, true),
+                        _buildSummaryItem("Volume", "0 kg", false),
+                        _buildSummaryItem("Sets", manager.setsCount.toString(), false),
                       ],
                     ),
-                  );
-                },
+                  ),
+                  Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
+                  
+                  Expanded(
+                    child: workoutExercises.isEmpty
+                        ? _buildEmptyState()
+                        : _buildWorkoutList(workoutExercises),
+                  ),
+                ],
               ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -332,15 +353,15 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     );
   }
 
-  Widget _buildWorkoutList() {
+  Widget _buildWorkoutList(List<Exercise> workoutExercises) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 24.0),
-      itemCount: _workoutExercises.length + 1,
+      itemCount: workoutExercises.length + 1,
       itemBuilder: (context, index) {
-        if (index == _workoutExercises.length) {
+        if (index == workoutExercises.length) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
@@ -423,7 +444,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
           );
         }
 
-        final exercise = _workoutExercises[index];
+        final exercise = workoutExercises[index];
         LogSetCardVariant variant = LogSetCardVariant.weighted;
         final tType = exercise.trackingType?.toLowerCase();
         final eType = exercise.exerciseType?.toLowerCase();
@@ -438,6 +459,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
         return Padding(
           padding: const EdgeInsets.only(bottom: 24.0, left: 24.0, right: 24.0),
           child: LogSetCard(
+            key: ValueKey(exercise.id),
             exerciseName: exercise.name,
             variant: variant,
             showLogButton: false,
@@ -445,10 +467,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             onAddSet: () {},
             onFinish: (sets) {},
             onRemove: () {
-              setState(() {
-                _workoutExercises.removeAt(index);
-                WorkoutManager().removeExercise(exercise.name);
-              });
+              WorkoutManager().removeExercise(exercise.name);
             },
             onReplace: () async {
               final result = await context.push('/add_exercise');
@@ -467,10 +486,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   );
                 }
                 if (newExercise != null) {
-                  setState(() {
-                    _workoutExercises[index] = newExercise!;
-                    WorkoutManager().replaceExercise(exercise.name, newExercise.name);
-                  });
+                  WorkoutManager().replaceExercise(exercise.name, newExercise);
                 }
               }
             },
