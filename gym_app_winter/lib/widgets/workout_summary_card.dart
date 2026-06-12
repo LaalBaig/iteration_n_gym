@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/database/database.dart';
 import 'package:intl/intl.dart';
+import 'package:gym_app_winter/palette/color_scheme.dart';
 
 class WorkoutSummaryCard extends StatelessWidget {
   final List<LogWithWorkoutAndExercise> logs;
@@ -9,8 +10,8 @@ class WorkoutSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colors = context.colors;
+    final colorScheme = Theme.of(context).colorScheme;
 
     // 1. Filter logs for the current week
     final now = DateTime.now();
@@ -54,10 +55,10 @@ class WorkoutSummaryCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: colors.surfaceWhite,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: colorScheme.outlineVariant,
+          color: colors.borderCream,
           width: 1.0,
         ),
         boxShadow: [
@@ -79,7 +80,7 @@ class WorkoutSummaryCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
+                  color: colors.textBlack,
                 ),
               ),
               IconButton(
@@ -87,7 +88,7 @@ class WorkoutSummaryCard extends StatelessWidget {
                 onPressed: () {
                   // TODO: Show help dialog explaining the stats
                 },
-                color: colorScheme.onSurfaceVariant,
+                color: colors.emptyText,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
@@ -100,7 +101,7 @@ class WorkoutSummaryCard extends StatelessWidget {
             height: 180,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
+              color: colors.warmSand,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
@@ -111,11 +112,11 @@ class WorkoutSummaryCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     'Anatomical Heatmap Placeholder',
-                    style: TextStyle(color: colorScheme.onSurfaceVariant),
+                    style: TextStyle(color: colors.emptyText),
                   ),
                   Text(
                     '(Requires SVG body assets)',
-                    style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7)),
+                    style: TextStyle(fontSize: 12, color: colors.emptyText.withValues(alpha: 0.7)),
                   ),
                 ],
               ),
@@ -158,6 +159,7 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final colorScheme = Theme.of(context).colorScheme;
     
     return Column(
@@ -167,7 +169,7 @@ class _StatItem extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 13,
-            color: colorScheme.onSurfaceVariant,
+            color: colors.emptyText,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -177,7 +179,7 @@ class _StatItem extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: isHighlight ? colorScheme.primary : colorScheme.onSurface,
+            color: isHighlight ? colorScheme.primary : colors.textBlack,
           ),
         ),
       ],

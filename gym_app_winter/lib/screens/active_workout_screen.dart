@@ -134,7 +134,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                         }
 
                         if (!mounted) return;
-                        context.push('/workout_summary');
+                        context.push('/save_workout');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primary,
