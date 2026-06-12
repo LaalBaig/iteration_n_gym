@@ -533,8 +533,25 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workout> {
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, startTime, endTime, isStandalone];
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    startTime,
+    endTime,
+    isStandalone,
+    description,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -575,6 +592,15 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workout> {
         ),
       );
     }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -600,6 +626,10 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workout> {
         DriftSqlType.bool,
         data['${effectivePrefix}is_standalone'],
       )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
     );
   }
 
@@ -614,11 +644,13 @@ class Workout extends DataClass implements Insertable<Workout> {
   final DateTime startTime;
   final DateTime? endTime;
   final bool isStandalone;
+  final String? description;
   const Workout({
     required this.id,
     required this.startTime,
     this.endTime,
     required this.isStandalone,
+    this.description,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -629,6 +661,9 @@ class Workout extends DataClass implements Insertable<Workout> {
       map['end_time'] = Variable<DateTime>(endTime);
     }
     map['is_standalone'] = Variable<bool>(isStandalone);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
     return map;
   }
 
@@ -640,6 +675,9 @@ class Workout extends DataClass implements Insertable<Workout> {
           ? const Value.absent()
           : Value(endTime),
       isStandalone: Value(isStandalone),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
     );
   }
 
@@ -653,6 +691,7 @@ class Workout extends DataClass implements Insertable<Workout> {
       startTime: serializer.fromJson<DateTime>(json['startTime']),
       endTime: serializer.fromJson<DateTime?>(json['endTime']),
       isStandalone: serializer.fromJson<bool>(json['isStandalone']),
+      description: serializer.fromJson<String?>(json['description']),
     );
   }
   @override
@@ -663,6 +702,7 @@ class Workout extends DataClass implements Insertable<Workout> {
       'startTime': serializer.toJson<DateTime>(startTime),
       'endTime': serializer.toJson<DateTime?>(endTime),
       'isStandalone': serializer.toJson<bool>(isStandalone),
+      'description': serializer.toJson<String?>(description),
     };
   }
 
@@ -671,11 +711,13 @@ class Workout extends DataClass implements Insertable<Workout> {
     DateTime? startTime,
     Value<DateTime?> endTime = const Value.absent(),
     bool? isStandalone,
+    Value<String?> description = const Value.absent(),
   }) => Workout(
     id: id ?? this.id,
     startTime: startTime ?? this.startTime,
     endTime: endTime.present ? endTime.value : this.endTime,
     isStandalone: isStandalone ?? this.isStandalone,
+    description: description.present ? description.value : this.description,
   );
   Workout copyWithCompanion(WorkoutsCompanion data) {
     return Workout(
@@ -685,6 +727,9 @@ class Workout extends DataClass implements Insertable<Workout> {
       isStandalone: data.isStandalone.present
           ? data.isStandalone.value
           : this.isStandalone,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
     );
   }
 
@@ -694,13 +739,15 @@ class Workout extends DataClass implements Insertable<Workout> {
           ..write('id: $id, ')
           ..write('startTime: $startTime, ')
           ..write('endTime: $endTime, ')
-          ..write('isStandalone: $isStandalone')
+          ..write('isStandalone: $isStandalone, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, startTime, endTime, isStandalone);
+  int get hashCode =>
+      Object.hash(id, startTime, endTime, isStandalone, description);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -708,7 +755,8 @@ class Workout extends DataClass implements Insertable<Workout> {
           other.id == this.id &&
           other.startTime == this.startTime &&
           other.endTime == this.endTime &&
-          other.isStandalone == this.isStandalone);
+          other.isStandalone == this.isStandalone &&
+          other.description == this.description);
 }
 
 class WorkoutsCompanion extends UpdateCompanion<Workout> {
@@ -716,12 +764,14 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
   final Value<DateTime> startTime;
   final Value<DateTime?> endTime;
   final Value<bool> isStandalone;
+  final Value<String?> description;
   final Value<int> rowid;
   const WorkoutsCompanion({
     this.id = const Value.absent(),
     this.startTime = const Value.absent(),
     this.endTime = const Value.absent(),
     this.isStandalone = const Value.absent(),
+    this.description = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WorkoutsCompanion.insert({
@@ -729,6 +779,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
     required DateTime startTime,
     this.endTime = const Value.absent(),
     this.isStandalone = const Value.absent(),
+    this.description = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        startTime = Value(startTime);
@@ -737,6 +788,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
     Expression<DateTime>? startTime,
     Expression<DateTime>? endTime,
     Expression<bool>? isStandalone,
+    Expression<String>? description,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -744,6 +796,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
       if (startTime != null) 'start_time': startTime,
       if (endTime != null) 'end_time': endTime,
       if (isStandalone != null) 'is_standalone': isStandalone,
+      if (description != null) 'description': description,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -753,6 +806,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
     Value<DateTime>? startTime,
     Value<DateTime?>? endTime,
     Value<bool>? isStandalone,
+    Value<String?>? description,
     Value<int>? rowid,
   }) {
     return WorkoutsCompanion(
@@ -760,6 +814,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       isStandalone: isStandalone ?? this.isStandalone,
+      description: description ?? this.description,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -779,6 +834,9 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
     if (isStandalone.present) {
       map['is_standalone'] = Variable<bool>(isStandalone.value);
     }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -792,6 +850,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
           ..write('startTime: $startTime, ')
           ..write('endTime: $endTime, ')
           ..write('isStandalone: $isStandalone, ')
+          ..write('description: $description, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1943,6 +2002,7 @@ typedef $$WorkoutsTableCreateCompanionBuilder =
       required DateTime startTime,
       Value<DateTime?> endTime,
       Value<bool> isStandalone,
+      Value<String?> description,
       Value<int> rowid,
     });
 typedef $$WorkoutsTableUpdateCompanionBuilder =
@@ -1951,6 +2011,7 @@ typedef $$WorkoutsTableUpdateCompanionBuilder =
       Value<DateTime> startTime,
       Value<DateTime?> endTime,
       Value<bool> isStandalone,
+      Value<String?> description,
       Value<int> rowid,
     });
 
@@ -1980,6 +2041,11 @@ class $$WorkoutsTableFilterComposer
 
   ColumnFilters<bool> get isStandalone => $composableBuilder(
     column: $table.isStandalone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2012,6 +2078,11 @@ class $$WorkoutsTableOrderingComposer
     column: $table.isStandalone,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$WorkoutsTableAnnotationComposer
@@ -2034,6 +2105,11 @@ class $$WorkoutsTableAnnotationComposer
 
   GeneratedColumn<bool> get isStandalone => $composableBuilder(
     column: $table.isStandalone,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => column,
   );
 }
@@ -2070,12 +2146,14 @@ class $$WorkoutsTableTableManager
                 Value<DateTime> startTime = const Value.absent(),
                 Value<DateTime?> endTime = const Value.absent(),
                 Value<bool> isStandalone = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorkoutsCompanion(
                 id: id,
                 startTime: startTime,
                 endTime: endTime,
                 isStandalone: isStandalone,
+                description: description,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2084,12 +2162,14 @@ class $$WorkoutsTableTableManager
                 required DateTime startTime,
                 Value<DateTime?> endTime = const Value.absent(),
                 Value<bool> isStandalone = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorkoutsCompanion.insert(
                 id: id,
                 startTime: startTime,
                 endTime: endTime,
                 isStandalone: isStandalone,
+                description: description,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

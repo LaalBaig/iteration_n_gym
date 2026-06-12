@@ -13,7 +13,6 @@ class SaveWorkoutScreen extends StatefulWidget {
 
 class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
   final TextEditingController _descriptionController = TextEditingController();
-  String? _selectedPhotoUrl;
 
   DateTime? _adjustedDate;
   int? _adjustedDurationSeconds;
@@ -236,81 +235,7 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
     );
   }
 
-  void _showPhotoPicker(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (BuildContext dialogContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Text(
-                  "Choose a photo",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: Icon(Icons.fitness_center, color: colorScheme.primary),
-                title: Text("Gym Dumbbells", style: TextStyle(color: colorScheme.onSurface)),
-                onTap: () {
-                  setState(() {
-                    _selectedPhotoUrl = "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=300&auto=format&fit=crop&q=80";
-                  });
-                  Navigator.pop(dialogContext);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.location_on, color: colorScheme.primary),
-                title: Text("Gym Studio", style: TextStyle(color: colorScheme.onSurface)),
-                onTap: () {
-                  setState(() {
-                    _selectedPhotoUrl = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&auto=format&fit=crop&q=80";
-                  });
-                  Navigator.pop(dialogContext);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.directions_run, color: colorScheme.primary),
-                title: Text("Athlete Training", style: TextStyle(color: colorScheme.onSurface)),
-                onTap: () {
-                  setState(() {
-                    _selectedPhotoUrl = "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=300&auto=format&fit=crop&q=80";
-                  });
-                  Navigator.pop(dialogContext);
-                },
-              ),
-              if (_selectedPhotoUrl != null)
-                ListTile(
-                  leading: const Icon(Icons.delete, color: Colors.red),
-                  title: const Text("Remove Photo", style: TextStyle(color: Colors.red)),
-                  onTap: () {
-                    setState(() {
-                      _selectedPhotoUrl = null;
-                    });
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -380,11 +305,12 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                     'exercises': manager.completedExerciseNames,
                   };
 
-                  // Finish and save to database with custom adjusted date and time
+                  // Finish and save to database with custom adjusted date and time and description
                   final workoutId = await manager.finishWorkout(
                     exerciseOrder: order,
                     customStartTime: start,
                     customEndTime: end,
+                    description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
                   );
                   summaryData['workoutId'] = workoutId;
 
@@ -486,67 +412,7 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
               Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
               const SizedBox(height: 24),
 
-              // "Add a photo / video" section
-              InkWell(
-                onTap: () => _showPhotoPicker(context),
-                borderRadius: BorderRadius.circular(12),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 84,
-                      height: 84,
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: CustomPaint(
-                          painter: DashedBorderPainter(
-                            color: colorScheme.outlineVariant,
-                            borderRadius: 12.0,
-                            strokeWidth: 1.5,
-                            dashWidth: 6.0,
-                            dashGap: 4.0,
-                          ),
-                          child: _selectedPhotoUrl != null
-                              ? Image.network(
-                                  _selectedPhotoUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Center(
-                                    child: Icon(
-                                      Icons.broken_image_outlined,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                )
-                              : Center(
-                                  child: Icon(
-                                    Icons.add_photo_alternate_outlined,
-                                    color: colorScheme.onSurfaceVariant,
-                                    size: 28,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        _selectedPhotoUrl != null ? "Change photo" : "Add a photo / video",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
-              const SizedBox(height: 24),
+
 
               // Description Section
               Text(

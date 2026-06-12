@@ -207,6 +207,7 @@ class WorkoutManager extends ChangeNotifier {
     List<String>? exerciseOrder,
     DateTime? customStartTime,
     DateTime? customEndTime,
+    String? description,
   }) async {
     final workoutId = DateTime.now().millisecondsSinceEpoch.toString();
     final db = DatabaseService().db;
@@ -221,6 +222,7 @@ class WorkoutManager extends ChangeNotifier {
         startTime: start,
         endTime: Value(end),
         isStandalone: const Value(false),
+        description: Value(description),
       ),
     );
 

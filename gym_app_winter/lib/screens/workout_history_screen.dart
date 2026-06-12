@@ -295,6 +295,17 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                         ),
                       ],
                     ),
+                    if (workout.description != null && workout.description!.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        workout.description!,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     const Divider(height: 1),
                     const SizedBox(height: 12),

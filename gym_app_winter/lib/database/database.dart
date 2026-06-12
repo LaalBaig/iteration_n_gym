@@ -42,6 +42,7 @@ class Workouts extends Table {
   DateTimeColumn get startTime => dateTime()();
   DateTimeColumn get endTime => dateTime().nullable()();
   BoolColumn get isStandalone => boolean().withDefault(const Constant(false))();
+  TextColumn get description => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -68,7 +69,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -112,6 +113,9 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 5) {
             await m.addColumn(workouts, workouts.isStandalone);
+          }
+          if (from < 6) {
+            await m.addColumn(workouts, workouts.description);
           }
 
         },
