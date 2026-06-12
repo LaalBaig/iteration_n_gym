@@ -76,7 +76,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               : BouncingButton(
                   onTap: () {
                     WorkoutManager().minimize();
-                    MainScreen.activeTabNotifier.value = 1; // lead to workouts tab
+                    MainScreen.activeTabNotifier.value = 0; // lead to workouts tab
                     if (context.canPop()) {
                       context.pop();
                     } else {

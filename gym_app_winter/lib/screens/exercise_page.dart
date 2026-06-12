@@ -148,18 +148,34 @@ class _ExercisePageState extends State<ExercisePage> {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
-                          child: Text(
-                            widget.exerciseName,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontSize: 28,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          child: Builder(
+                            builder: (context) {
+                              final titleLen = widget.exerciseName.length;
+                              final hasLongWord = widget.exerciseName.split(' ').any((word) => word.length > 13);
+                              
+                              double fontSize = 24;
+                              if (titleLen > 24) {
+                                fontSize = 16;
+                              } else if (titleLen > 18 || hasLongWord) {
+                                fontSize = 18;
+                              } else if (titleLen > 12) {
+                                fontSize = 22;
+                              }
+
+                              return Text(
+                                widget.exerciseName,
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontSize: fontSize,
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            },
                           ),
                         ),
                       ),
-                      const Spacer(),
                       const RestTimerButton(),
                     ],
                   ),

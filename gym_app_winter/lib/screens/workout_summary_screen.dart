@@ -198,7 +198,7 @@ class WorkoutSummaryScreen extends StatelessWidget {
                 width: double.infinity,
                 child: BouncingButton(
                   onTap: () {
-                    MainScreen.activeTabNotifier.value = 1; // Workouts Tab
+                    MainScreen.activeTabNotifier.value = 0; // Workouts Tab
                     context.go('/');
                   },
                   child: Container(

@@ -103,15 +103,15 @@ class CustomBottomNavigationBar extends StatelessWidget {
                                   index: 0,
                                   activeIcon: Icons.home,
                                   inactiveIcon: Icons.home_outlined,
-                                  label: 'Exercises',
+                                  label: 'Workout',
                                   isSelected: currentIndex == 0,
                                 ),
                                 _buildTabItem(
                                   context: context,
                                   index: 1,
                                   activeIcon: Icons.fitness_center,
-                                  inactiveIcon: Icons.fitness_center, // using same since there's no outlined version easily available or just use fitness_center
-                                  label: 'Workout',
+                                  inactiveIcon: Icons.fitness_center,
+                                  label: 'Exercises',
                                   isSelected: currentIndex == 1,
                                 ),
                                 _buildTabItem(

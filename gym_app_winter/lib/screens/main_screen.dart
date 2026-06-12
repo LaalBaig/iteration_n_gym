@@ -48,14 +48,14 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   final List<Widget> _tabs = const [
-    ExercisesTab(),
     WorkoutsTab(),
+    ExercisesTab(),
     StatsTab(),
     ProfileTab(),
   ];
 
   void _onTabSelected(int index) {
-    if (_selectedIndex == 0 && index != 0) {
+    if (_selectedIndex == 1 && index != 1) {
       RestTimerNotifier().cancel();
     }
     setState(() {
@@ -86,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
           controller: _pageController,
           onPageChanged: (index) {
             if (!_isProgrammaticScroll) {
-              if (_selectedIndex == 0 && index != 0) {
+              if (_selectedIndex == 1 && index != 1) {
                 RestTimerNotifier().cancel();
               }
               setState(() {
