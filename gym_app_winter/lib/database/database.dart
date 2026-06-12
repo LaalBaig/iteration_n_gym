@@ -57,19 +57,48 @@ class ExerciseLogs extends Table {
   IntColumn get reps => integer()();
 }
 
+@DataClassName('Routine')
+class Routines extends Table {
+  TextColumn get id => text()();
+  TextColumn get title => text().withLength(min: 1, max: 100)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('RoutineExercise')
+class RoutineExercises extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get routineId => text().references(Routines, #id)();
+  TextColumn get exerciseName => text()();
+  TextColumn get category => text()();
+  TextColumn get exerciseType => text().nullable()();
+  TextColumn get trackingType => text().nullable()();
+  IntColumn get exerciseOrder => integer()();
+  TextColumn get sets => text().nullable()();
+}
+
+class RoutineWithExercises {
+  final Routine routine;
+  final List<RoutineExercise> exercises;
+
+  RoutineWithExercises({required this.routine, required this.exercises});
+}
 
 @DriftDatabase(tables: [
   Exercises,
   Workouts,
   ExerciseLogs,
   MuscleGroups,
-  ExerciseMuscleGroups
+  ExerciseMuscleGroups,
+  Routines,
+  RoutineExercises
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -117,7 +146,35 @@ class AppDatabase extends _$AppDatabase {
           if (from < 6) {
             await m.addColumn(workouts, workouts.description);
           }
-
+          if (from < 7) {
+            await m.createTable(routines);
+            await m.createTable(routineExercises);
+          }
+          if (from < 8) {
+            try {
+              await m.drop(routines);
+            } catch (_) {}
+            try {
+              await m.drop(routineExercises);
+            } catch (_) {}
+            await m.createTable(routines);
+            await m.createTable(routineExercises);
+          }
+          if (from < 9) {
+            try {
+              await m.drop(routines);
+            } catch (_) {}
+            try {
+              await m.drop(routineExercises);
+            } catch (_) {}
+            await m.createTable(routines);
+            await m.createTable(routineExercises);
+          }
+        },
+        beforeOpen: (details) async {
+          final defaultIds = ['default_upper_body_a', 'default_lower_body_a', 'default_core_cardio'];
+          await (delete(routineExercises)..where((t) => t.routineId.isIn(defaultIds))).go();
+          await (delete(routines)..where((t) => t.id.isIn(defaultIds))).go();
         },
       );
 
@@ -150,7 +207,7 @@ class AppDatabase extends _$AppDatabase {
            ));
         } else {
            muscleId = existingMuscle.id;
-        }
+         }
         
         final existingMapping = await (select(exerciseMuscleGroups)
            ..where((t) => t.exerciseId.equals(entry.id.value) & t.muscleGroupId.equals(muscleId))).getSingleOrNull();
@@ -282,7 +339,63 @@ class AppDatabase extends _$AppDatabase {
     });
   }
 
+  // Routine queries
+  Stream<List<RoutineWithExercises>> watchAllRoutinesWithExercises() {
+    final query = select(routines).join([
+      leftOuterJoin(routineExercises, routineExercises.routineId.equalsExp(routines.id)),
+    ]);
 
+    return query.watch().map((rows) {
+      final map = <Routine, List<RoutineExercise>>{};
+      for (final row in rows) {
+        final routine = row.readTable(routines);
+        final exercise = row.readTableOrNull(routineExercises);
+
+        final list = map.putIfAbsent(routine, () => []);
+        if (exercise != null) {
+          list.add(exercise);
+        }
+      }
+
+      return map.entries.map((entry) {
+        final exercisesList = entry.value..sort((a, b) => a.exerciseOrder.compareTo(b.exerciseOrder));
+        return RoutineWithExercises(
+          routine: entry.key,
+          exercises: exercisesList,
+        );
+      }).toList();
+    });
+  }
+
+  Future<void> insertRoutine(String title, List<Map<String, dynamic>> exercisesList) async {
+    await transaction(() async {
+      final routineId = DateTime.now().millisecondsSinceEpoch.toString();
+      await into(routines).insert(RoutinesCompanion.insert(
+        id: routineId,
+        title: title,
+      ));
+
+      for (int i = 0; i < exercisesList.length; i++) {
+        final exercise = exercisesList[i];
+        await into(routineExercises).insert(RoutineExercisesCompanion.insert(
+          routineId: routineId,
+          exerciseName: exercise['name'] as String,
+          category: exercise['category'] as String,
+          exerciseType: Value(exercise['exerciseType'] as String?),
+          trackingType: Value(exercise['trackingType'] as String?),
+          exerciseOrder: i,
+          sets: Value(exercise['sets'] as String?),
+        ));
+      }
+    });
+  }
+
+  Future<void> deleteRoutine(String routineId) async {
+    await transaction(() async {
+      await (delete(routineExercises)..where((t) => t.routineId.equals(routineId))).go();
+      await (delete(routines)..where((t) => t.id.equals(routineId))).go();
+    });
+  }
 }
 
 class ExerciseLogWithWorkout {

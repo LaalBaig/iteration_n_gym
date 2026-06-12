@@ -25,6 +25,10 @@ class LogSetCard extends StatefulWidget {
   final VoidCallback? onReplace;
   final VoidCallback? onReorder;
 
+  final List<Map<String, int>>? initialSets;
+  final ValueChanged<List<Map<String, int>>>? onChanged;
+  final bool showCheckmark;
+
   const LogSetCard({
     super.key,
     required this.exerciseName,
@@ -36,6 +40,9 @@ class LogSetCard extends StatefulWidget {
     this.onRemove,
     this.onReplace,
     this.onReorder,
+    this.initialSets,
+    this.onChanged,
+    this.showCheckmark = true,
   });
 
   @override
@@ -139,13 +146,11 @@ class _LogSetCardState extends State<LogSetCard> {
     super.initState();
     _loadPreviousLogs();
     
-    // Check if there are existing active workout sets for this exercise
-    final activeSets = WorkoutManager().getLogsForExercise(widget.exerciseName);
-    if (activeSets != null && activeSets.isNotEmpty) {
-      for (var setMap in activeSets) {
+    if (widget.initialSets != null && widget.initialSets!.isNotEmpty) {
+      for (var setMap in widget.initialSets!) {
         int w = setMap['weight'] ?? 0;
         int r = setMap['reps'] ?? 0;
-        bool completed = setMap['isCompleted'] == 1;
+        bool completed = (setMap['isCompleted'] ?? 0) == 1;
         
         final setData = _createSetData(weight: w, reps: r);
         setData.isCompleted = completed;
@@ -156,13 +161,33 @@ class _LogSetCardState extends State<LogSetCard> {
         _sets.add(setData);
       }
     } else {
-      // Add initial set
-      _sets.add(_createSetData());
+      // Check if there are existing active workout sets for this exercise
+      final activeSets = WorkoutManager().getLogsForExercise(widget.exerciseName);
+      if (activeSets != null && activeSets.isNotEmpty) {
+        for (var setMap in activeSets) {
+          int w = setMap['weight'] ?? 0;
+          int r = setMap['reps'] ?? 0;
+          bool completed = setMap['isCompleted'] == 1;
+          
+          final setData = _createSetData(weight: w, reps: r);
+          setData.isCompleted = completed;
+          if (widget.variant == LogSetCardVariant.timed) {
+            setData.durationMs = w * 1000;
+            setData.timeBeforeStartMs = w * 1000;
+          }
+          _sets.add(setData);
+        }
+      } else {
+        // Add initial set
+        _sets.add(_createSetData());
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        WorkoutManager().incrementSet();
-        _notifyChanges();
-      });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (widget.onChanged == null) {
+            WorkoutManager().incrementSet();
+          }
+          _notifyChanges();
+        });
+      }
     }
 
     for (var set in _sets) {
@@ -272,7 +297,9 @@ class _LogSetCardState extends State<LogSetCard> {
       newSet.weightFocusNode.addListener(() => setState(() {}));
       newSet.repsFocusNode.addListener(() => setState(() {}));
       _sets.add(newSet);
-      WorkoutManager().incrementSet();
+      if (widget.onChanged == null) {
+        WorkoutManager().incrementSet();
+      }
       _notifyChanges();
     });
   }
@@ -282,7 +309,9 @@ class _LogSetCardState extends State<LogSetCard> {
       setState(() {
         _sets[index].dispose();
         _sets.removeAt(index);
-        WorkoutManager().decrementSet();
+        if (widget.onChanged == null) {
+          WorkoutManager().decrementSet();
+        }
         _notifyChanges();
       });
     }
@@ -562,7 +591,11 @@ class _LogSetCardState extends State<LogSetCard> {
         };
       }
     }).toList();
-    WorkoutManager().addLogsForExercise(widget.exerciseName, setsData);
+    if (widget.onChanged != null) {
+      widget.onChanged!(setsData);
+    } else {
+      WorkoutManager().addLogsForExercise(widget.exerciseName, setsData);
+    }
   }
 
   void _copyPreviousToCurrent(int index) {
@@ -831,7 +864,8 @@ class _LogSetCardState extends State<LogSetCard> {
                     ),
                   ),
                 ],
-                const SizedBox(width: 52), // Matches checkmark column
+                if (widget.showCheckmark)
+                  const SizedBox(width: 52), // Matches checkmark column
               ],
             ),
           ),
@@ -1177,49 +1211,51 @@ class _LogSetCardState extends State<LogSetCard> {
             },
           ),
         ),
-        const SizedBox(width: 8),
-        SizedBox(
-          width: 44,
-          height: 40,
-          child: TextButton(
-            onPressed: () {
-              if (!setData.isCompleted) {
-                if (setData.weightTextController.text.trim().isEmpty ||
-                    setData.repsTextController.text.trim().isEmpty) {
-                  final messenger = ScaffoldMessenger.of(context);
-                  messenger.clearSnackBars();
-                  messenger.showSnackBar(
-                    const SnackBar(
-                      content: Text("Weight and reps cannot be empty"),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                  return;
+        if (widget.showCheckmark) ...[
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 44,
+            height: 40,
+            child: TextButton(
+              onPressed: () {
+                if (!setData.isCompleted) {
+                  if (setData.weightTextController.text.trim().isEmpty ||
+                      setData.repsTextController.text.trim().isEmpty) {
+                    final messenger = ScaffoldMessenger.of(context);
+                    messenger.clearSnackBars();
+                    messenger.showSnackBar(
+                      const SnackBar(
+                        content: Text("Weight and reps cannot be empty"),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    return;
+                  }
                 }
-              }
-              setState(() {
-                setData.isCompleted = !setData.isCompleted;
-                _notifyChanges();
-              });
-            },
-            style: TextButton.styleFrom(
-              backgroundColor: setData.isCompleted
-                  ? const Color(0xFF10B981)
-                  : colorScheme.surfaceContainerHighest,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                setState(() {
+                  setData.isCompleted = !setData.isCompleted;
+                  _notifyChanges();
+                });
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: setData.isCompleted
+                    ? const Color(0xFF10B981)
+                    : colorScheme.surfaceContainerHighest,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.zero,
               ),
-              padding: EdgeInsets.zero,
-            ),
-            child: Icon(
-              Icons.check,
-              color: setData.isCompleted
-                  ? Colors.white
-                  : colorScheme.onSurfaceVariant,
-              size: 18,
+              child: Icon(
+                Icons.check,
+                color: setData.isCompleted
+                    ? Colors.white
+                    : colorScheme.onSurfaceVariant,
+                size: 18,
+              ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }
@@ -1333,48 +1369,50 @@ class _LogSetCardState extends State<LogSetCard> {
             },
           ),
         ),
-        const SizedBox(width: 8),
-        SizedBox(
-          width: 44,
-          height: 40,
-          child: TextButton(
-            onPressed: () {
-              if (!setData.isCompleted) {
-                if (setData.repsTextController.text.trim().isEmpty) {
-                  final messenger = ScaffoldMessenger.of(context);
-                  messenger.clearSnackBars();
-                  messenger.showSnackBar(
-                    const SnackBar(
-                      content: Text("Reps cannot be empty"),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                  return;
+        if (widget.showCheckmark) ...[
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 44,
+            height: 40,
+            child: TextButton(
+              onPressed: () {
+                if (!setData.isCompleted) {
+                  if (setData.repsTextController.text.trim().isEmpty) {
+                    final messenger = ScaffoldMessenger.of(context);
+                    messenger.clearSnackBars();
+                    messenger.showSnackBar(
+                      const SnackBar(
+                        content: Text("Reps cannot be empty"),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    return;
+                  }
                 }
-              }
-              setState(() {
-                setData.isCompleted = !setData.isCompleted;
-                _notifyChanges();
-              });
-            },
-            style: TextButton.styleFrom(
-              backgroundColor: setData.isCompleted
-                  ? const Color(0xFF10B981)
-                  : colorScheme.surfaceContainerHighest,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                setState(() {
+                  setData.isCompleted = !setData.isCompleted;
+                  _notifyChanges();
+                });
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: setData.isCompleted
+                    ? const Color(0xFF10B981)
+                    : colorScheme.surfaceContainerHighest,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.zero,
               ),
-              padding: EdgeInsets.zero,
-            ),
-            child: Icon(
-              Icons.check,
-              color: setData.isCompleted
-                  ? Colors.white
-                  : colorScheme.onSurfaceVariant,
-              size: 18,
+              child: Icon(
+                Icons.check,
+                color: setData.isCompleted
+                    ? Colors.white
+                    : colorScheme.onSurfaceVariant,
+                size: 18,
+              ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }
@@ -1476,57 +1514,59 @@ class _LogSetCardState extends State<LogSetCard> {
             ),
           ),
         ),
-        const SizedBox(width: 8),
-        SizedBox(
-          width: 44,
-          height: 40,
-          child: isCompleted && !isRunning
-              ? TextButton(
-                  onPressed: () {
-                    setState(() {
-                      setData.isCompleted = false;
-                      _notifyChanges();
-                    });
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xFF10B981),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+        if (widget.showCheckmark) ...[
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 44,
+            height: 40,
+            child: isCompleted && !isRunning
+                ? TextButton(
+                    onPressed: () {
+                      setState(() {
+                        setData.isCompleted = false;
+                        _notifyChanges();
+                      });
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF10B981),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.zero,
                     ),
-                    padding: EdgeInsets.zero,
-                  ),
-                  child: const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                )
-              : TextButton(
-                  onPressed: () => _toggleTimer(index),
-                  style: TextButton.styleFrom(
-                    backgroundColor: isRunning
-                        ? (isDark ? const Color(0xFF2A1616) : const Color(0xFFFEE2E2))
-                        : colorScheme.surfaceContainerHighest,
-                    side: BorderSide(
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  )
+                : TextButton(
+                    onPressed: () => _toggleTimer(index),
+                    style: TextButton.styleFrom(
+                      backgroundColor: isRunning
+                          ? (isDark ? const Color(0xFF2A1616) : const Color(0xFFFEE2E2))
+                          : colorScheme.surfaceContainerHighest,
+                      side: BorderSide(
+                        color: isRunning
+                            ? Colors.red
+                            : colorScheme.outlineVariant,
+                        width: 1.5,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: Icon(
+                      isRunning ? Icons.stop : Icons.play_arrow,
                       color: isRunning
                           ? Colors.red
-                          : colorScheme.outlineVariant,
-                      width: 1.5,
+                          : colorScheme.onSurfaceVariant,
+                      size: 18,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.zero,
                   ),
-                  child: Icon(
-                    isRunning ? Icons.stop : Icons.play_arrow,
-                    color: isRunning
-                        ? Colors.red
-                        : colorScheme.onSurfaceVariant,
-                    size: 18,
-                  ),
-                ),
-        ),
+          ),
+        ],
       ],
     );
   }

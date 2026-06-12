@@ -118,7 +118,7 @@ class MinimizedWorkoutBar extends StatelessWidget {
                     // Discard Button
                     GestureDetector(
                       onTap: () async {
-                        final navigatorContext = AppRouter.navigatorKey.currentContext;
+                        final navigatorContext = AppRouter.navigatorKey.currentState?.overlay?.context;
                         if (navigatorContext != null) {
                           final confirm = await showDiscardWorkoutDialog(navigatorContext);
                           if (confirm == true) {
