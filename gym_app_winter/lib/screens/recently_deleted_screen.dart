@@ -181,7 +181,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                               backgroundColor: colorScheme.surface,
                               title: Text("Delete Permanently", style: TextStyle(color: colorScheme.onSurface)),
                               content: Text(
-                                "Are you sure you want to permanently delete '${exercise.name}'? This will erase all history and data associated with it.",
+                                "Are you sure you want to permanently delete '${exercise.name}'? This will remove it from your exercises, but your workout history will be kept.",
                                 style: TextStyle(color: colorScheme.onSurfaceVariant),
                               ),
                               actions: [
@@ -212,7 +212,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                             messenger.showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  "Permanently deleted '${exercise.name}' and all associated data.",
+                                  "Permanently deleted '${exercise.name}'. Workout history preserved.",
                                   style: TextStyle(color: colorScheme.onInverseSurface),
                                 ),
                                 behavior: SnackBarBehavior.floating,

@@ -43,11 +43,31 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
           trackingType: json['trackingType'],
         );
       }).toList();
+
+      final db = DatabaseService().db;
+      final dbExercises = await db.getAllExercises();
+      
+      final List<CatalogExercise> customCatalog = [];
+      for (final ex in dbExercises) {
+        if (ex.id.startsWith('custom_')) {
+          final muscles = await db.getMusclesForExercise(ex.id);
+          customCatalog.add(CatalogExercise(
+            id: ex.id,
+            name: ex.name,
+            category: ex.category,
+            muscles: muscles.map((m) => m.muscle.name).toList(),
+            exerciseType: ex.exerciseType,
+            trackingType: ex.trackingType,
+          ));
+        }
+      }
+
+      final combined = [...catalog, ...customCatalog];
       
       if (mounted) {
         setState(() {
-          exerciseList = catalog;
-          filteredExerciseList = catalog;
+          exerciseList = combined;
+          filteredExerciseList = combined;
           isLoading = false;
         });
       }

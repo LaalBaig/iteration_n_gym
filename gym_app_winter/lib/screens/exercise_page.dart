@@ -32,7 +32,7 @@ class _ExercisePageState extends State<ExercisePage> {
     final list = await (db.select(db.exercises)..where((t) => t.name.equals(widget.exerciseName))).get();
     if (list.isNotEmpty && mounted) {
       setState(() {
-        _exercise = list.first;
+        _exercise = list.firstWhere((e) => !e.isDeleted, orElse: () => list.first);
       });
     }
   }

@@ -185,8 +185,10 @@ class AppDatabase extends _$AppDatabase {
       (select(exercises)..where((t) => t.isDeleted.equals(false))).get();
   Stream<List<Exercise>> watchRecentlyDeletedExercises() =>
       (select(exercises)..where((t) => t.isDeleted.equals(true))).watch();
-  Future<Exercise?> getDeletedExerciseByName(String name) =>
-      (select(exercises)..where((t) => t.name.equals(name) & t.isDeleted.equals(true))).getSingleOrNull();
+  Future<Exercise?> getDeletedExerciseByName(String name) async {
+    final list = await (select(exercises)..where((t) => t.name.equals(name) & t.isDeleted.equals(true))).get();
+    return list.isEmpty ? null : list.first;
+  }
   Future<int> addExercise(ExercisesCompanion entry) => into(exercises).insert(entry, mode: InsertMode.insertOrReplace);
   
   Future<void> addExerciseWithMuscles(ExercisesCompanion entry, List<String> muscleNames) async {
@@ -234,7 +236,8 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteExercisePermanently(String id, String name) async {
     await transaction(() async {
       await (delete(exerciseMuscleGroups)..where((t) => t.exerciseId.equals(id))).go();
-      await (delete(exerciseLogs)..where((t) => t.exerciseName.equals(name))).go();
+      // Keep workout history logs intact even if exercise template is deleted
+      // await (delete(exerciseLogs)..where((t) => t.exerciseName.equals(name))).go();
       await (delete(exercises)..where((t) => t.id.equals(id))).go();
     });
   }
@@ -324,18 +327,34 @@ class AppDatabase extends _$AppDatabase {
   Stream<List<LogWithWorkoutAndExercise>> watchAllLogsWithWorkoutAndExercise() {
     final query = select(exerciseLogs).join([
       innerJoin(workouts, workouts.id.equalsExp(exerciseLogs.workoutId)),
-      innerJoin(exercises, exercises.name.equalsExp(exerciseLogs.exerciseName)),
+      leftOuterJoin(exercises, exercises.name.equalsExp(exerciseLogs.exerciseName)),
     ]);
-    query.where(exercises.isDeleted.equals(false));
 
     return query.watch().map((rows) {
-      return rows.map((row) {
-        return LogWithWorkoutAndExercise(
-          log: row.readTable(exerciseLogs),
-          workout: row.readTable(workouts),
-          exercise: row.readTable(exercises),
+      final uniqueLogsMap = <int, LogWithWorkoutAndExercise>{};
+      for (final row in rows) {
+        final log = row.readTable(exerciseLogs);
+        final workout = row.readTable(workouts);
+        final exerciseRow = row.readTableOrNull(exercises);
+        final exercise = exerciseRow ?? Exercise(
+          id: '',
+          name: log.exerciseName,
+          category: 'Other',
+          lastLog: '',
+          isDeleted: true,
         );
-      }).toList();
+
+        final existing = uniqueLogsMap[log.id];
+        // Prefer the active exercise template if duplicate templates exist
+        if (existing == null || (existing.exercise.isDeleted && !exercise.isDeleted)) {
+          uniqueLogsMap[log.id] = LogWithWorkoutAndExercise(
+            log: log,
+            workout: workout,
+            exercise: exercise,
+          );
+        }
+      }
+      return uniqueLogsMap.values.toList();
     });
   }
 

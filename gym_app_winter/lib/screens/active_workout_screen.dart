@@ -41,22 +41,32 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
         );
       }
       if (exercise != null) {
-        setState(() {
-          _newlyAddedExerciseId = exercise!.id;
-          _newlyAddedCardKey = GlobalKey();
-        });
-        WorkoutManager().addExercise(exercise);
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_newlyAddedCardKey?.currentContext != null) {
-            Scrollable.ensureVisible(
-              _newlyAddedCardKey!.currentContext!,
-              alignment: 0.16,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          }
-          _newlyAddedExerciseId = null;
-        });
+        final alreadyExists = WorkoutManager().activeExercises.any((e) => e.name == exercise!.name);
+        if (alreadyExists) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("${exercise.name} is already in the list"),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        } else {
+          setState(() {
+            _newlyAddedExerciseId = exercise!.id;
+            _newlyAddedCardKey = GlobalKey();
+          });
+          WorkoutManager().addExercise(exercise);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_newlyAddedCardKey?.currentContext != null) {
+              Scrollable.ensureVisible(
+                _newlyAddedCardKey!.currentContext!,
+                alignment: 0.16,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+              );
+            }
+            _newlyAddedExerciseId = null;
+          });
+        }
       }
     }
   }
@@ -514,7 +524,17 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   );
                 }
                 if (newExercise != null) {
-                  WorkoutManager().replaceExercise(exercise.name, newExercise);
+                  final alreadyExists = WorkoutManager().activeExercises.any((e) => e.name == newExercise!.name);
+                  if (alreadyExists) {
+                    ScaffoldMessenger.of(itemContext).showSnackBar(
+                      SnackBar(
+                        content: Text("${newExercise.name} is already in the list"),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  } else {
+                    WorkoutManager().replaceExercise(exercise.name, newExercise);
+                  }
                 }
               }
             },

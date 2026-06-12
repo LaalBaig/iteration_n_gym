@@ -251,7 +251,10 @@ class WorkoutManager extends ChangeNotifier {
       }
 
       // Add/update exercise in individual exercise database
-      final existing = await (db.select(db.exercises)..where((t) => t.name.equals(exerciseName))).getSingleOrNull();
+      final existingList = await (db.select(db.exercises)..where((t) => t.name.equals(exerciseName))).get();
+      final existing = existingList.isEmpty 
+          ? null 
+          : existingList.firstWhere((e) => !e.isDeleted, orElse: () => existingList.first);
       if (existing != null) {
         await db.addExercise(
           ExercisesCompanion(
