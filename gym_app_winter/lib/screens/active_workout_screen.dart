@@ -19,8 +19,12 @@ class ActiveWorkoutScreen extends StatefulWidget {
 
 class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
   bool _isReordering = false;
+  final ScrollController _scrollController = ScrollController();
+  String? _newlyAddedExerciseId;
+  GlobalKey? _newlyAddedCardKey;
 
   void _navigateToAddExercise() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     final result = await context.push('/add_exercise');
     if (result != null) {
       Exercise? exercise;
@@ -37,7 +41,22 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
         );
       }
       if (exercise != null) {
+        setState(() {
+          _newlyAddedExerciseId = exercise!.id;
+          _newlyAddedCardKey = GlobalKey();
+        });
         WorkoutManager().addExercise(exercise);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_newlyAddedCardKey?.currentContext != null) {
+            Scrollable.ensureVisible(
+              _newlyAddedCardKey!.currentContext!,
+              alignment: 0.16,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+          _newlyAddedExerciseId = null;
+        });
       }
     }
   }
@@ -51,6 +70,13 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
         WorkoutManager().startWorkout();
       });
     }
+  }
+
+  @override
+  void dispose() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -75,6 +101,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                 )
               : BouncingButton(
                   onTap: () {
+                    FocusManager.instance.primaryFocus?.unfocus();
                     WorkoutManager().minimize();
                     MainScreen.activeTabNotifier.value = 0; // lead to workouts tab
                     if (context.canPop()) {
@@ -134,6 +161,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                         }
 
                         if (!mounted) return;
+                        FocusManager.instance.primaryFocus?.unfocus();
                         context.push('/save_workout');
                       },
                       style: ElevatedButton.styleFrom(
@@ -314,6 +342,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () async {
+                    FocusManager.instance.primaryFocus?.unfocus();
                     final confirm = await showDiscardWorkoutDialog(context);
                     if (confirm == true && mounted) {
                       WorkoutManager().discardWorkout();
@@ -347,6 +376,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     final colorScheme = theme.colorScheme;
 
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.symmetric(vertical: 24.0),
       itemCount: workoutExercises.length + 1,
       itemBuilder: (itemContext, index) {
@@ -408,6 +438,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
+                          FocusManager.instance.primaryFocus?.unfocus();
                           final confirm = await showDiscardWorkoutDialog(itemContext);
                           if (confirm == true && itemContext.mounted) {
                             WorkoutManager().discardWorkout();
@@ -431,6 +462,8 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
+                // Extra bottom spacing to allow scrolling the last exercise card to the top
+                SizedBox(height: MediaQuery.of(itemContext).size.height * 0.8),
               ],
             ),
           );
@@ -449,6 +482,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
         }
 
         return Padding(
+          key: exercise.id == _newlyAddedExerciseId ? _newlyAddedCardKey : null,
           padding: const EdgeInsets.only(bottom: 24.0, left: 24.0, right: 24.0),
           child: LogSetCard(
             key: ValueKey(exercise.id),
@@ -456,12 +490,14 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             variant: variant,
             showLogButton: false,
             headerTitle: exercise.name,
+            isHighlighted: exercise.id == _newlyAddedExerciseId,
             onAddSet: () {},
             onFinish: (sets) {},
             onRemove: () {
               WorkoutManager().removeExercise(exercise.name);
             },
             onReplace: () async {
+              FocusManager.instance.primaryFocus?.unfocus();
               final result = await itemContext.push('/add_exercise');
               if (result != null) {
                 Exercise? newExercise;

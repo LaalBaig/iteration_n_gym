@@ -28,6 +28,7 @@ class LogSetCard extends StatefulWidget {
   final List<Map<String, int>>? initialSets;
   final ValueChanged<List<Map<String, int>>>? onChanged;
   final bool showCheckmark;
+  final bool isHighlighted;
 
   const LogSetCard({
     super.key,
@@ -43,6 +44,7 @@ class LogSetCard extends StatefulWidget {
     this.initialSets,
     this.onChanged,
     this.showCheckmark = true,
+    this.isHighlighted = false,
   });
 
   @override
@@ -131,6 +133,8 @@ class _LogSetCardState extends State<LogSetCard> {
   int _maxBodyweightReps = 0;
   int _maxTimeSeconds = 0;
 
+  bool _highlighted = false;
+
   _SetData _createSetData({int weight = 0, int reps = 0}) {
     return _SetData(
       weight: weight,
@@ -144,6 +148,16 @@ class _LogSetCardState extends State<LogSetCard> {
   @override
   void initState() {
     super.initState();
+    _highlighted = widget.isHighlighted;
+    if (_highlighted) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          setState(() {
+            _highlighted = false;
+          });
+        }
+      });
+    }
     _loadPreviousLogs();
     
     if (widget.initialSets != null && widget.initialSets!.isNotEmpty) {
@@ -193,6 +207,18 @@ class _LogSetCardState extends State<LogSetCard> {
     for (var set in _sets) {
       set.weightFocusNode.addListener(() => setState(() {}));
       set.repsFocusNode.addListener(() => setState(() {}));
+    }
+
+    if (widget.isHighlighted && _sets.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (widget.variant == LogSetCardVariant.timed) {
+          // Timed variant has no input fields to focus
+        } else if (widget.variant == LogSetCardVariant.bodyweight) {
+          _sets.first.repsFocusNode.requestFocus();
+        } else {
+          _sets.first.weightFocusNode.requestFocus();
+        }
+      });
     }
   }
 
@@ -737,15 +763,23 @@ class _LogSetCardState extends State<LogSetCard> {
     final Color brandPurple = colorScheme.primary;
     final Color headerTextColor = colorScheme.onSurfaceVariant;
 
-    return Container(
+    final Color currentBorderColor = _highlighted ? brandPurple : borderTheme;
+    final double currentBorderWidth = _highlighted ? 2.5 : 1.0;
+    final Color currentBgColor = _highlighted 
+        ? brandPurple.withOpacity(0.08) 
+        : colorScheme.surface;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 1000),
+      curve: Curves.easeOut,
       width: double.infinity,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: currentBgColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: borderTheme,
-          width: 1.0,
+          color: currentBorderColor,
+          width: currentBorderWidth,
         ),
       ),
       child: Column(
