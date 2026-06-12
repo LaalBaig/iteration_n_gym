@@ -203,21 +203,28 @@ class WorkoutManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> finishWorkout({List<String>? exerciseOrder}) async {
+  Future<String> finishWorkout({
+    List<String>? exerciseOrder,
+    DateTime? customStartTime,
+    DateTime? customEndTime,
+  }) async {
     final workoutId = DateTime.now().millisecondsSinceEpoch.toString();
     final db = DatabaseService().db;
     
+    final start = customStartTime ?? _startTime ?? DateTime.now();
+    final end = customEndTime ?? DateTime.now();
+
     // Save workout session
     await db.insertWorkout(
       WorkoutsCompanion.insert(
         id: workoutId,
-        startTime: _startTime ?? DateTime.now(),
-        endTime: Value(DateTime.now()),
+        startTime: start,
+        endTime: Value(end),
         isStandalone: const Value(false),
       ),
     );
 
-    final formattedDate = DateFormat('d MMM h:mm a').format(DateTime.now());
+    final formattedDate = DateFormat('d MMM h:mm a').format(end);
 
     // Save all logs
     final keys = exerciseOrder ?? _workoutLogs.keys.toList();
