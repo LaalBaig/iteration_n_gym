@@ -1,130 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:gym_app_winter/widgets/bouncing_button.dart';
+import 'package:intl/intl.dart';
+import 'package:gym_app_winter/state/workout_manager.dart';
+import 'package:gym_app_winter/widgets/discard_workout_dialog.dart';
 import 'package:gym_app_winter/screens/main_screen.dart';
 
-class WorkoutSummaryScreen extends StatelessWidget {
-  final String workoutId;
-  final String duration;
-  final int exerciseCount;
-  final int setsCount;
-  final List<String> exercises;
-
-  const WorkoutSummaryScreen({
-    super.key,
-    required this.workoutId,
-    required this.duration,
-    required this.exerciseCount,
-    required this.setsCount,
-    required this.exercises,
-  });
+class WorkoutSummaryScreen extends StatefulWidget {
+  const WorkoutSummaryScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<WorkoutSummaryScreen> createState() => _WorkoutSummaryScreenState();
+}
+
+class _WorkoutSummaryScreenState extends State<WorkoutSummaryScreen> {
+  final TextEditingController _descriptionController = TextEditingController();
+  String? _selectedPhotoUrl;
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  void _showPhotoPicker(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext dialogContext) {
+        return SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const Spacer(flex: 1),
-              
-              // Celebratory Icon and Title
-              TweenAnimationBuilder<double>(
-                tween: Tween<double>(begin: 0.0, end: 1.0),
-                duration: const Duration(milliseconds: 800),
-                curve: Curves.elasticOut,
-                builder: (context, value, child) {
-                  return Transform.scale(
-                    scale: value,
-                    child: child,
-                  );
-                },
-                child: Container(
-                  width: 96,
-                  height: 96,
-                  decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.check_circle_rounded,
-                      color: Colors.green,
-                      size: 64,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                "Workout Complete!",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Awesome job finishing your workout today!",
-                style: TextStyle(
-                  fontSize: 15,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const Spacer(flex: 1),
-
-              // Stats Cards Row
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: "Duration",
-                      value: duration,
-                      icon: Icons.timer_outlined,
-                      iconColor: colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: "Exercises",
-                      value: exerciseCount.toString(),
-                      icon: Icons.fitness_center_outlined,
-                      iconColor: Colors.amber[700]!,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: "Sets Logged",
-                      value: setsCount.toString(),
-                      icon: Icons.layers_outlined,
-                      iconColor: Colors.blue[600]!,
-                    ),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 32),
-
-              // Completed Exercises List Title
-              Align(
-                alignment: Alignment.centerLeft,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Text(
-                  "Exercises Performed",
+                  "Choose a photo",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -132,96 +48,299 @@ class WorkoutSummaryScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
-
-              // Completed Exercises List
-              Expanded(
-                flex: 4,
-                child: exercises.isEmpty
-                    ? Center(
-                        child: Text(
-                          "No exercises logged.",
-                          style: TextStyle(color: colorScheme.onSurfaceVariant),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: exercises.length,
-                        itemBuilder: (context, index) {
-                          final exerciseName = exercises[index];
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            elevation: 0,
-                            color: colorScheme.surfaceContainerHighest,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(
-                                color: colorScheme.outlineVariant,
-                                width: 1.0,
-                              ),
-                            ),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                                vertical: 4.0,
-                              ),
-                              leading: Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: colorScheme.primaryContainer,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.done,
-                                  size: 18,
-                                  color: colorScheme.primary,
-                                ),
-                              ),
-                              title: Text(
-                                exerciseName,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: colorScheme.onSurface,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+              const Divider(height: 1),
+              ListTile(
+                leading: Icon(Icons.fitness_center, color: colorScheme.primary),
+                title: Text("Gym Dumbbells", style: TextStyle(color: colorScheme.onSurface)),
+                onTap: () {
+                  setState(() {
+                    _selectedPhotoUrl = "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=300&auto=format&fit=crop&q=80";
+                  });
+                  Navigator.pop(dialogContext);
+                },
               ),
+              ListTile(
+                leading: Icon(Icons.location_on, color: colorScheme.primary),
+                title: Text("Gym Studio", style: TextStyle(color: colorScheme.onSurface)),
+                onTap: () {
+                  setState(() {
+                    _selectedPhotoUrl = "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&auto=format&fit=crop&q=80";
+                  });
+                  Navigator.pop(dialogContext);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.directions_run, color: colorScheme.primary),
+                title: Text("Athlete Training", style: TextStyle(color: colorScheme.onSurface)),
+                onTap: () {
+                  setState(() {
+                    _selectedPhotoUrl = "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=300&auto=format&fit=crop&q=80";
+                  });
+                  Navigator.pop(dialogContext);
+                },
+              ),
+              if (_selectedPhotoUrl != null)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title: const Text("Remove Photo", style: TextStyle(color: Colors.red)),
+                  onTap: () {
+                    setState(() {
+                      _selectedPhotoUrl = null;
+                    });
+                    Navigator.pop(dialogContext);
+                  },
+                ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final manager = WorkoutManager();
+
+    final isLight = theme.brightness == Brightness.light;
+    final primaryBlue = isLight ? const Color(0xFF007AFF) : colorScheme.primary;
+
+    // Formatting duration as Xmin
+    final durationMinutes = manager.elapsedSeconds ~/ 60;
+    final durationStr = "${durationMinutes}min";
+
+    final formattedDate = DateFormat('d MMM yyyy, h:mm a').format(manager.startTime ?? DateTime.now());
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+          onPressed: () => context.pop(),
+        ),
+        title: Text(
+          "Save Workout",
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: SizedBox(
+              height: 36,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final order = manager.activeExercises.map((e) => e.name).toList();
+                  
+                  // Finish and save to database
+                  await manager.finishWorkout(exerciseOrder: order);
+
+                  if (!context.mounted) return;
+                  
+                  // Show success banner
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text("Workout saved successfully!"),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Colors.green[600],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+
+                  // Navigate back to main screen and select workouts tab
+                  MainScreen.activeTabNotifier.value = 1;
+                  context.go('/');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryBlue,
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
+                child: const Text(
+                  "Save",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Stats Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildStatItem("Duration", durationStr, primaryBlue),
+                  _buildStatItem("Volume", "${manager.totalVolume.round()} kg", colorScheme.onSurface),
+                  _buildStatItem("Sets", manager.setsCount.toString(), colorScheme.onSurface),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
               const SizedBox(height: 24),
 
-              // Action button
-              SizedBox(
-                width: double.infinity,
-                child: BouncingButton(
-                  onTap: () {
-                    MainScreen.activeTabNotifier.value = 1; // Workouts Tab
-                    context.go('/');
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Done",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onPrimary,
+              // "When" section
+              Text(
+                "When",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                formattedDate,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: primaryBlue,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
+              const SizedBox(height: 24),
+
+              // "Add a photo / video" section
+              InkWell(
+                onTap: () => _showPhotoPicker(context),
+                borderRadius: BorderRadius.circular(12),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 84,
+                      height: 84,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: CustomPaint(
+                          painter: DashedBorderPainter(
+                            color: colorScheme.outlineVariant,
+                            borderRadius: 12.0,
+                            strokeWidth: 1.5,
+                            dashWidth: 6.0,
+                            dashGap: 4.0,
+                          ),
+                          child: _selectedPhotoUrl != null
+                              ? Image.network(
+                                  _selectedPhotoUrl!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Center(
+                                    child: Icon(
+                                      Icons.broken_image_outlined,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                )
+                              : Center(
+                                  child: Icon(
+                                    Icons.add_photo_alternate_outlined,
+                                    color: colorScheme.onSurfaceVariant,
+                                    size: 28,
+                                  ),
+                                ),
                         ),
                       ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        _selectedPhotoUrl != null ? "Change photo" : "Add a photo / video",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
+              const SizedBox(height: 24),
+
+              // Description Section
+              Text(
+                "Description",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _descriptionController,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: colorScheme.onSurface,
+                ),
+                decoration: InputDecoration(
+                  hintText: "How did your workout go? Leave some notes here...",
+                  hintStyle: TextStyle(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                    fontSize: 15,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
+              const SizedBox(height: 48),
+
+              // Discard Button
+              Center(
+                child: TextButton(
+                  onPressed: () async {
+                    final confirm = await showDiscardWorkoutDialog(context);
+                    if (confirm == true) {
+                      if (!context.mounted) return;
+                      manager.discardWorkout();
+                      context.go('/');
+                    }
+                  },
+                  child: Text(
+                    "Discard Workout",
+                    style: TextStyle(
+                      color: colorScheme.error,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -229,50 +348,76 @@ class WorkoutSummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(
-    BuildContext context, {
-    required String title,
-    required String value,
-    required IconData icon,
-    required Color iconColor,
-  }) {
+  Widget _buildStatItem(String label, String value, Color valueColor) {
     final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colorScheme.outlineVariant,
-          width: 1.0,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: iconColor, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-            textAlign: TextAlign.center,
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: valueColor,
           ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
+}
+
+class DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double dashWidth;
+  final double dashGap;
+  final double borderRadius;
+
+  DashedBorderPainter({
+    required this.color,
+    this.strokeWidth = 1.0,
+    this.dashWidth = 5.0,
+    this.dashGap = 3.0,
+    this.borderRadius = 8.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final path = Path();
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final rrect = RRect.fromRectAndRadius(rect, Radius.circular(borderRadius));
+    path.addRRect(rrect);
+
+    final dashPath = Path();
+    double distance = 0.0;
+    for (final pathMetric in path.computeMetrics()) {
+      while (distance < pathMetric.length) {
+        final len = dashWidth;
+        final isLast = distance + len >= pathMetric.length;
+        dashPath.addPath(
+          pathMetric.extractPath(distance, isLast ? pathMetric.length : distance + len),
+          Offset.zero,
+        );
+        distance += len + dashGap;
+      }
+    }
+    canvas.drawPath(dashPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

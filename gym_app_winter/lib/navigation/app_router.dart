@@ -78,16 +78,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/workout_summary',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>? ?? {};
-          return WorkoutSummaryScreen(
-            workoutId: extra['workoutId'] ?? '',
-            duration: extra['duration'] ?? '',
-            exerciseCount: extra['exerciseCount'] ?? 0,
-            setsCount: extra['setsCount'] ?? 0,
-            exercises: List<String>.from(extra['exercises'] ?? []),
-          );
-        },
+        builder: (context, state) => const WorkoutSummaryScreen(),
       ),
       GoRoute(
         path: '/workout_history',

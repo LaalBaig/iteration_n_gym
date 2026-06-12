@@ -133,22 +133,8 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                           return;
                         }
 
-                        final order = manager.activeExercises.map((e) => e.name).toList();
-                        final summaryData = {
-                          'duration': manager.formattedDuration,
-                          'exerciseCount': manager.completedExerciseNames.length,
-                          'setsCount': manager.completedSetsCount,
-                          'exercises': manager.completedExerciseNames,
-                        };
-
-                        final workoutId = await manager.finishWorkout(
-                          exerciseOrder: order,
-                        );
-
-                        summaryData['workoutId'] = workoutId;
-
                         if (!mounted) return;
-                        this.context.pushReplacement('/workout_summary', extra: summaryData);
+                        context.push('/workout_summary');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primary,

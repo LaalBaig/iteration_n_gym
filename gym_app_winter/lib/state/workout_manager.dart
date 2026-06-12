@@ -27,6 +27,7 @@ class WorkoutManager extends ChangeNotifier {
 
   bool get isActive => _isActive;
   bool get isMinimized => _isMinimized;
+  DateTime? get startTime => _startTime;
   int get elapsedSeconds => _elapsedSeconds;
   String get currentExerciseName => _currentExerciseName;
   int get setsCount => _setsCount;
