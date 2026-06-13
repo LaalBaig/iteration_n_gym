@@ -31,7 +31,10 @@ class AppRouter {
       ),
       GoRoute(
         path: '/add_exercise',
-        builder: (context, state) => const AddExerciseScreen(),
+        builder: (context, state) {
+          final mode = state.uri.queryParameters['mode'] ?? 'exercises';
+          return AddExerciseScreen(mode: mode);
+        },
       ),
       GoRoute(
         path: '/recently_deleted',

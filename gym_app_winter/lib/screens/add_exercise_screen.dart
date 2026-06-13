@@ -10,7 +10,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:gym_app_winter/models/catalog_exercise.dart';
 
 class AddExerciseScreen extends StatefulWidget {
-  const AddExerciseScreen({super.key});
+  final String mode;
+  const AddExerciseScreen({super.key, this.mode = 'exercises'});
 
   @override
   State<AddExerciseScreen> createState() => _AddExerciseScreenState();
@@ -45,8 +46,10 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
       }).toList();
 
       final db = DatabaseService().db;
-      final dbExercises = await db.getAllExercises();
+      // Get all exercises (both active and deleted) from database
+      final dbExercises = await db.select(db.exercises).get();
       
+      // Load all custom exercises (both active and deleted) from database
       final List<CatalogExercise> customCatalog = [];
       for (final ex in dbExercises) {
         if (ex.id.startsWith('custom_')) {
@@ -188,42 +191,82 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                       FocusScope.of(context).unfocus();
                       
                       final db = DatabaseService().db;
-                      final deletedExercise = await db.getDeletedExerciseByName(exercise.name);
+                      final dbExercises = await db.select(db.exercises).get();
                       
-                      try {
-                        if (context.mounted && deletedExercise != null) {
-                          final String? choice = await showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                backgroundColor: Theme.of(context).colorScheme.surface,
-                                title: Text(
-                                  "Restore Exercise?",
-                                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                                ),
-                                content: Text(
-                                  "An exercise named '${exercise.name}' was recently deleted. "
-                                  "Would you like to restore it with all its previous logs, or start completely anew?",
-                                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop("anew"),
-                                    child: Text("Start New", style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                      if (widget.mode == 'exercises') {
+                        // Check if an active template with the same name already exists in the database
+                        final hasActiveWithName = dbExercises.any(
+                          (ex) => !ex.isDeleted && ex.name.toLowerCase() == exercise.name.toLowerCase()
+                        );
+                        
+                        if (hasActiveWithName) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).clearSnackBars();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("${exercise.name} is already in your exercises list"),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                          return;
+                        }
+                        
+                        // Check if there is a deleted exercise with this name
+                        final deletedExercise = dbExercises.where(
+                          (ex) => ex.isDeleted && ex.name.toLowerCase() == exercise.name.toLowerCase()
+                        ).firstOrNull;
+                        
+                        try {
+                          if (context.mounted && deletedExercise != null) {
+                            final String? choice = await showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  backgroundColor: Theme.of(context).colorScheme.surface,
+                                  title: Text(
+                                    "Restore Exercise?",
+                                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                                   ),
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop("restore"),
-                                    child: const Text("Restore History", style: TextStyle(color: Colors.green)),
+                                  content: Text(
+                                    "An exercise named '${exercise.name}' was recently deleted. "
+                                    "Would you like to restore it with all its previous logs, or start completely anew?",
+                                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                                   ),
-                                ],
-                              );
-                            },
-                          );
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop("anew"),
+                                      child: Text("Start New", style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop("restore"),
+                                      child: const Text("Restore History", style: TextStyle(color: Colors.green)),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
 
-                          if (choice == "restore") {
-                            await db.restoreExercise(deletedExercise.id);
-                          } else if (choice == "anew") {
-                            await db.deleteExercisePermanently(deletedExercise.id, deletedExercise.name);
+                            if (choice == "restore") {
+                              await db.restoreExercise(deletedExercise.id);
+                            } else if (choice == "anew") {
+                              await db.deleteExercisePermanently(deletedExercise.id, deletedExercise.name);
+                              await db.addExerciseWithMuscles(
+                                ExercisesCompanion(
+                                  id: Value(exercise.id),
+                                  name: Value(exercise.name),
+                                  category: Value(exercise.category),
+                                  lastLog: const Value(""),
+                                  exerciseType: Value(exercise.exerciseType),
+                                  trackingType: Value(exercise.trackingType),
+                                ),
+                                exercise.muscles,
+                              );
+                            } else {
+                              return; // Cancelled
+                            }
+                          } else {
+                            // Add as normal
                             await db.addExerciseWithMuscles(
                               ExercisesCompanion(
                                 id: Value(exercise.id),
@@ -235,39 +278,117 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                               ),
                               exercise.muscles,
                             );
-                          } else {
-                            // Cancelled/closed dialog, do nothing
-                            return;
                           }
-                        } else {
-                          // Add as normal
-                          await db.addExerciseWithMuscles(
-                            ExercisesCompanion(
-                              id: Value(exercise.id),
-                              name: Value(exercise.name),
-                              category: Value(exercise.category),
-                              lastLog: const Value(""),
-                              exerciseType: Value(exercise.exerciseType),
-                              trackingType: Value(exercise.trackingType),
-                            ),
-                            exercise.muscles,
-                          );
+                        } catch (e) {
+                          debugPrint('ERROR ADDING EXERCISE: $e');
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Failed to add: $e')),
+                            );
+                          }
+                          return;
                         }
-                      } catch (e) {
-                        debugPrint('ERROR ADDING EXERCISE: $e');
-                        // Show snackbar
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Failed to add: $e')),
-                          );
+                      } else {
+                        // Workout / Routine mode
+                        // If this exact exercise template is already active in the DB by ID
+                        final activeExercise = dbExercises.where((ex) => !ex.isDeleted && ex.id == exercise.id).firstOrNull;
+                        if (activeExercise != null) {
+                          if (context.mounted) {
+                            if (context.canPop()) {
+                              context.pop(CatalogExercise(
+                                id: activeExercise.id,
+                                name: activeExercise.name,
+                                category: activeExercise.category,
+                                muscles: exercise.muscles,
+                                exerciseType: activeExercise.exerciseType,
+                                trackingType: activeExercise.trackingType,
+                              ));
+                            } else {
+                              context.go('/');
+                            }
+                          }
+                          return;
+                        }
+                        
+                        // If it is deleted in the DB by ID, ask to restore it or start anew
+                        final deletedExercise = dbExercises.where((ex) => ex.isDeleted && ex.id == exercise.id).firstOrNull;
+                        try {
+                          if (context.mounted && deletedExercise != null) {
+                            final String? choice = await showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  backgroundColor: Theme.of(context).colorScheme.surface,
+                                  title: Text(
+                                    "Restore Exercise?",
+                                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                                  ),
+                                  content: Text(
+                                    "An exercise named '${exercise.name}' was recently deleted. "
+                                    "Would you like to restore it with all its previous logs, or start completely anew?",
+                                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop("anew"),
+                                      child: Text("Start New", style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop("restore"),
+                                      child: const Text("Restore History", style: TextStyle(color: Colors.green)),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+
+                            if (choice == "restore") {
+                              await db.restoreExercise(deletedExercise.id);
+                            } else if (choice == "anew") {
+                              await db.deleteExercisePermanently(deletedExercise.id, deletedExercise.name);
+                              await db.addExerciseWithMuscles(
+                                ExercisesCompanion(
+                                  id: Value(exercise.id),
+                                  name: Value(exercise.name),
+                                  category: Value(exercise.category),
+                                  lastLog: const Value(""),
+                                  exerciseType: Value(exercise.exerciseType),
+                                  trackingType: Value(exercise.trackingType),
+                                ),
+                                exercise.muscles,
+                              );
+                            } else {
+                              return; // Cancelled
+                            }
+                          } else {
+                            // Not in DB at all, add it as active first
+                            await db.addExerciseWithMuscles(
+                              ExercisesCompanion(
+                                id: Value(exercise.id),
+                                name: Value(exercise.name),
+                                category: Value(exercise.category),
+                                lastLog: const Value(""),
+                                exerciseType: Value(exercise.exerciseType),
+                                trackingType: Value(exercise.trackingType),
+                              ),
+                              exercise.muscles,
+                            );
+                          }
+                        } catch (e) {
+                          debugPrint('ERROR ADDING EXERCISE: $e');
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Failed to add: $e')),
+                            );
+                          }
+                          return;
                         }
                       }
-
+                      
                       if (context.mounted) {
                         if (context.canPop()) {
                           context.pop(exercise);
                         } else {
-                          // Navigate back to the main screen
                           context.go('/');
                         }
                       }

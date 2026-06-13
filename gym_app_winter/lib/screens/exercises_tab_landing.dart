@@ -225,7 +225,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
             height: 56,
             child: ElevatedButton(
               onPressed: () {
-                context.push('/add_exercise');
+                context.push('/add_exercise?mode=exercises');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,

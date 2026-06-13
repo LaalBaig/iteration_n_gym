@@ -25,7 +25,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
 
   void _navigateToAddExercise() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    final result = await context.push('/add_exercise');
+    final result = await context.push('/add_exercise?mode=workout');
     if (result != null) {
       Exercise? exercise;
       if (result is Exercise) {
@@ -508,7 +508,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             },
             onReplace: () async {
               FocusManager.instance.primaryFocus?.unfocus();
-              final result = await itemContext.push('/add_exercise');
+              final result = await itemContext.push('/add_exercise?mode=workout');
               if (result != null) {
                 Exercise? newExercise;
                 if (result is Exercise) {

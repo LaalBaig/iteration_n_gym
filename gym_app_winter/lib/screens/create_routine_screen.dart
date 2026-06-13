@@ -40,7 +40,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
   }
 
   void _navigateToAddExercise() async {
-    final result = await context.push('/add_exercise');
+    final result = await context.push('/add_exercise?mode=routine');
     if (result != null) {
       Exercise? exercise;
       if (result is Exercise) {
@@ -517,7 +517,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
             onFinish: (sets) {},
             onRemove: () => _removeExercise(index),
             onReplace: () async {
-              final result = await context.push('/add_exercise');
+              final result = await context.push('/add_exercise?mode=routine');
               if (result != null) {
                 Exercise? newExercise;
                 if (result is Exercise) {

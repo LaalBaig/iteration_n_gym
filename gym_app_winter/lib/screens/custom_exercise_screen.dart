@@ -25,6 +25,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
   ];
   final Set<String> _selectedMuscles = {};
   bool _showAdvancedOptions = false;
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -130,26 +131,33 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () async {
+              onPressed: _isSaving ? null : () async {
                 final name = _nameController.text.trim();
                 if (name.isEmpty) return;
+                
+                final localContext = context;
+                
+                setState(() {
+                  _isSaving = true;
+                });
                 
                 final db = DatabaseService().db;
                 final id = 'custom_${DateTime.now().millisecondsSinceEpoch}';
                 
-                await db.addExerciseWithMuscles(
-                  ExercisesCompanion(
-                    id: Value(id),
-                    name: Value(name),
-                    category: Value(_selectedMuscles.isNotEmpty ? _selectedMuscles.first : 'Custom'),
-                    lastLog: const Value(""),
-                    exerciseType: Value(_selectedExerciseType),
-                    trackingType: Value(_selectedTrackingType),
-                  ),
-                  _selectedMuscles.toList(),
-                );
+                try {
+                  await db.addExerciseWithMuscles(
+                    ExercisesCompanion(
+                      id: Value(id),
+                      name: Value(name),
+                      category: Value(_selectedMuscles.isNotEmpty ? _selectedMuscles.first : 'Custom'),
+                      lastLog: const Value(""),
+                      exerciseType: Value(_selectedExerciseType),
+                      trackingType: Value(_selectedTrackingType),
+                    ),
+                    _selectedMuscles.toList(),
+                  );
 
-                if (context.mounted) {
+                  if (!localContext.mounted) return;
                   final newExercise = CatalogExercise(
                     id: id,
                     name: name,
@@ -158,11 +166,19 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                     exerciseType: _selectedExerciseType,
                     trackingType: _selectedTrackingType,
                   );
-                  if (context.canPop()) {
-                    context.pop(newExercise);
+                  if (localContext.canPop()) {
+                    localContext.pop(newExercise);
                   } else {
-                    context.go('/');
+                    localContext.go('/');
                   }
+                } catch (e) {
+                  if (!localContext.mounted) return;
+                  setState(() {
+                    _isSaving = false;
+                  });
+                  ScaffoldMessenger.of(localContext).showSnackBar(
+                    SnackBar(content: Text("Failed to save exercise: $e")),
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -173,14 +189,23 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                   borderRadius: BorderRadius.circular(24),
                 ),
               ),
-              child: Text(
-                "Add custom exercise",
-                style: TextStyle(
-                  color: colorScheme.onPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Text(
+                      "Add custom exercise",
+                      style: TextStyle(
+                        color: colorScheme.onPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
           ),
         ),
