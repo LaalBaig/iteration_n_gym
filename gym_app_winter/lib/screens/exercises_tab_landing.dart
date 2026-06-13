@@ -159,6 +159,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                           category: exercise.category,
                           muscleGroups: muscles,
                           confirmDelete: false,
+                          showDeleteIcon: false,
                           onTap: () {
                             FocusScope.of(context).unfocus();
                             context.push(

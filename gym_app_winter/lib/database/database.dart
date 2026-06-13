@@ -182,36 +182,23 @@ class AppDatabase extends _$AppDatabase {
         },
       );
 
-  // Exercise queries
   Stream<List<Exercise>> watchAllExercises() {
     final query = select(exercises)..where((t) {
-      final notDeleted = t.isDeleted.equals(false) & t.isTracked.equals(true);
-      final hasLogs = t.name.isInQuery(
-        selectOnly(exerciseLogs)..addColumns([exerciseLogs.exerciseName]),
-      );
-      return notDeleted | hasLogs;
+      return t.isDeleted.equals(false) & t.isTracked.equals(true);
     });
     return query.watch();
   }
 
   Future<List<Exercise>> getAllExercises() {
     final query = select(exercises)..where((t) {
-      final notDeleted = t.isDeleted.equals(false) & t.isTracked.equals(true);
-      final hasLogs = t.name.isInQuery(
-        selectOnly(exerciseLogs)..addColumns([exerciseLogs.exerciseName]),
-      );
-      return notDeleted | hasLogs;
+      return t.isDeleted.equals(false) & t.isTracked.equals(true);
     });
     return query.get();
   }
 
   Stream<List<Exercise>> watchRecentlyDeletedExercises() {
     final query = select(exercises)..where((t) {
-      final isDeleted = t.isDeleted.equals(true) & t.isTracked.equals(true);
-      final hasNoLogs = t.name.isInQuery(
-        selectOnly(exerciseLogs)..addColumns([exerciseLogs.exerciseName]),
-      ).not();
-      return isDeleted & hasNoLogs;
+      return t.isDeleted.equals(true) & t.isTracked.equals(true);
     });
     return query.watch();
   }

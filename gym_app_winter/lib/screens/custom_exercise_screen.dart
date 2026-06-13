@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
@@ -134,7 +136,27 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
             child: ElevatedButton(
               onPressed: _isSaving ? null : () async {
                 final name = _nameController.text.trim();
-                if (name.isEmpty) return;
+                if (name.isEmpty) {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Please enter an exercise name"),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  return;
+                }
+
+                if (_selectedMuscles.isEmpty) {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Please select at least one muscle group"),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  return;
+                }
                 
                 final localContext = context;
                 
@@ -143,9 +165,34 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 });
                 
                 final db = DatabaseService().db;
-                final id = 'custom_${DateTime.now().millisecondsSinceEpoch}';
                 
                 try {
+                  // Check if exercise name already exists (case-insensitive)
+                  final String jsonString = await rootBundle.loadString('assets/exercises.json');
+                  final List<dynamic> jsonList = jsonDecode(jsonString);
+                  final isDuplicateAsset = jsonList.any((json) =>
+                      (json['name'] as String).trim().toLowerCase() == name.toLowerCase());
+
+                  final dbExercises = await db.select(db.exercises).get();
+                  final isDuplicateDb = dbExercises.any((ex) =>
+                      ex.name.trim().toLowerCase() == name.toLowerCase());
+
+                  if (isDuplicateAsset || isDuplicateDb) {
+                    if (!localContext.mounted) return;
+                    setState(() {
+                      _isSaving = false;
+                    });
+                    ScaffoldMessenger.of(localContext).clearSnackBars();
+                    ScaffoldMessenger.of(localContext).showSnackBar(
+                      SnackBar(
+                        content: Text("An exercise named '$name' already exists"),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    return;
+                  }
+
+                  final id = 'custom_${DateTime.now().millisecondsSinceEpoch}';
                   await db.addExerciseWithMuscles(
                     ExercisesCompanion(
                       id: Value(id),
@@ -181,6 +228,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                   setState(() {
                     _isSaving = false;
                   });
+                  ScaffoldMessenger.of(localContext).clearSnackBars();
                   ScaffoldMessenger.of(localContext).showSnackBar(
                     SnackBar(content: Text("Failed to save exercise: $e")),
                   );
@@ -327,7 +375,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 ),
               ],
               
-              _buildSectionTitle("Target Muscles"),
+              _buildSectionTitle("Target Muscles *"),
               Wrap(
                 spacing: 8.0,
                 runSpacing: 8.0,

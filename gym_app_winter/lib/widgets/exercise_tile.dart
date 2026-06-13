@@ -11,6 +11,7 @@ class ExerciseTile extends StatelessWidget {
   final double bottomMargin;
   final bool confirmDelete;
   final bool isCustom;
+  final bool showDeleteIcon;
 
   const ExerciseTile({
     super.key,
@@ -23,6 +24,7 @@ class ExerciseTile extends StatelessWidget {
     this.bottomMargin = 8.0,
     this.confirmDelete = true,
     this.isCustom = false,
+    this.showDeleteIcon = true,
   });
 
   Widget _buildTag(String text, Color badgeBgColor, Color brandPurple) {
@@ -151,7 +153,7 @@ class ExerciseTile extends StatelessWidget {
               const SizedBox(width: 12),
 
               // 3. Delete Option or Chevron Right
-              if (onDelete != null)
+              if (onDelete != null && showDeleteIcon)
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () async {
