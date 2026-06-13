@@ -122,7 +122,7 @@ class MinimizedWorkoutBar extends StatelessWidget {
                         if (navigatorContext != null) {
                           final confirm = await showDiscardWorkoutDialog(navigatorContext);
                           if (confirm == true) {
-                            manager.discardWorkout();
+                            await manager.discardWorkout();
                           }
                         }
                       },

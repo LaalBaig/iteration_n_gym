@@ -453,8 +453,10 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                     final confirm = await showDiscardWorkoutDialog(context);
                     if (confirm == true) {
                       if (!context.mounted) return;
-                      manager.discardWorkout();
-                      context.go('/');
+                      await manager.discardWorkout();
+                      if (context.mounted) {
+                        context.go('/');
+                      }
                     }
                   },
                   child: Text(

@@ -25,6 +25,10 @@ class WorkoutManager extends ChangeNotifier {
   // Persisted list of exercises in the active workout
   final List<Exercise> _activeExercises = [];
 
+  // Track IDs of exercises added to database during the current workout session
+  final List<String> _newlyCreatedExerciseIds = [];
+  final List<String> _restoredExerciseIds = [];
+
   bool get isActive => _isActive;
   bool get isMinimized => _isMinimized;
   DateTime? get startTime => _startTime;
@@ -32,6 +36,20 @@ class WorkoutManager extends ChangeNotifier {
   String get currentExerciseName => _currentExerciseName;
   int get setsCount => _setsCount;
   List<Exercise> get activeExercises => _activeExercises;
+  List<String> get newlyCreatedExerciseIds => _newlyCreatedExerciseIds;
+  List<String> get restoredExerciseIds => _restoredExerciseIds;
+
+  void trackNewlyCreatedExercise(String id) {
+    if (!_newlyCreatedExerciseIds.contains(id)) {
+      _newlyCreatedExerciseIds.add(id);
+    }
+  }
+
+  void trackRestoredExercise(String id) {
+    if (!_restoredExerciseIds.contains(id)) {
+      _restoredExerciseIds.add(id);
+    }
+  }
 
   bool _isSetLogged(String exerciseName, Map<String, int> set) {
     final isCompleted = (set['isCompleted'] ?? 0) == 1;
@@ -111,6 +129,8 @@ class WorkoutManager extends ChangeNotifier {
     _setsCount = 0;
     _workoutLogs.clear();
     _activeExercises.clear();
+    _newlyCreatedExerciseIds.clear();
+    _restoredExerciseIds.clear();
     
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -292,25 +312,83 @@ class WorkoutManager extends ChangeNotifier {
       }
     }
 
+    // Cleanup unused newly created/restored exercises
+    final completedNames = completedExerciseNames;
+    for (final id in _newlyCreatedExerciseIds) {
+      try {
+        final exerciseList = await (db.select(db.exercises)..where((t) => t.id.equals(id))).get();
+        if (exerciseList.isNotEmpty) {
+          final exercise = exerciseList.first;
+          if (!completedNames.contains(exercise.name)) {
+            await db.deleteExercisePermanently(exercise.id, exercise.name);
+          }
+        }
+      } catch (e) {
+        debugPrint("Error cleaning up newly created exercise: $e");
+      }
+    }
+
+    for (final id in _restoredExerciseIds) {
+      try {
+        final exerciseList = await (db.select(db.exercises)..where((t) => t.id.equals(id))).get();
+        if (exerciseList.isNotEmpty) {
+          final exercise = exerciseList.first;
+          if (!completedNames.contains(exercise.name)) {
+            await db.softDeleteExercise(exercise.id);
+          }
+        }
+      } catch (e) {
+        debugPrint("Error cleaning up restored exercise: $e");
+      }
+    }
+
     _isActive = false;
     _isMinimized = false;
     _setsCount = 0;
     _currentExerciseName = "No exercise";
     _workoutLogs.clear();
     _activeExercises.clear();
+    _newlyCreatedExerciseIds.clear();
+    _restoredExerciseIds.clear();
     _timer?.cancel();
     notifyListeners();
 
     return workoutId;
   }
 
-  void discardWorkout() {
+  Future<void> discardWorkout() async {
+    final db = DatabaseService().db;
+
+    // 1. Delete newly created exercises permanently
+    for (final id in _newlyCreatedExerciseIds) {
+      try {
+        final exerciseList = await (db.select(db.exercises)..where((t) => t.id.equals(id))).get();
+        if (exerciseList.isNotEmpty) {
+          final exercise = exerciseList.first;
+          await db.deleteExercisePermanently(exercise.id, exercise.name);
+        }
+      } catch (e) {
+        debugPrint("Error deleting newly created exercise during discard: $e");
+      }
+    }
+
+    // 2. Soft-delete restored exercises back to deleted state
+    for (final id in _restoredExerciseIds) {
+      try {
+        await db.softDeleteExercise(id);
+      } catch (e) {
+        debugPrint("Error soft-deleting restored exercise during discard: $e");
+      }
+    }
+
     _isActive = false;
     _isMinimized = false;
     _setsCount = 0;
     _currentExerciseName = "No exercise";
     _workoutLogs.clear();
     _activeExercises.clear();
+    _newlyCreatedExerciseIds.clear();
+    _restoredExerciseIds.clear();
     _timer?.cancel();
     notifyListeners();
   }

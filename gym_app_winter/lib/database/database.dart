@@ -11,6 +11,7 @@ class Exercises extends Table {
   TextColumn get category => text()();
   TextColumn get lastLog => text()();
   BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
+  BoolColumn get isTracked => boolean().withDefault(const Constant(true))();
   TextColumn get exerciseType => text().nullable()();
   TextColumn get trackingType => text().nullable()();
 
@@ -98,7 +99,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -170,6 +171,9 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(routines);
             await m.createTable(routineExercises);
           }
+          if (from < 10) {
+            await m.addColumn(exercises, exercises.isTracked);
+          }
         },
         beforeOpen: (details) async {
           final defaultIds = ['default_upper_body_a', 'default_lower_body_a', 'default_core_cardio'];
@@ -179,12 +183,38 @@ class AppDatabase extends _$AppDatabase {
       );
 
   // Exercise queries
-  Stream<List<Exercise>> watchAllExercises() =>
-      (select(exercises)..where((t) => t.isDeleted.equals(false))).watch();
-  Future<List<Exercise>> getAllExercises() =>
-      (select(exercises)..where((t) => t.isDeleted.equals(false))).get();
-  Stream<List<Exercise>> watchRecentlyDeletedExercises() =>
-      (select(exercises)..where((t) => t.isDeleted.equals(true))).watch();
+  Stream<List<Exercise>> watchAllExercises() {
+    final query = select(exercises)..where((t) {
+      final notDeleted = t.isDeleted.equals(false) & t.isTracked.equals(true);
+      final hasLogs = t.name.isInQuery(
+        selectOnly(exerciseLogs)..addColumns([exerciseLogs.exerciseName]),
+      );
+      return notDeleted | hasLogs;
+    });
+    return query.watch();
+  }
+
+  Future<List<Exercise>> getAllExercises() {
+    final query = select(exercises)..where((t) {
+      final notDeleted = t.isDeleted.equals(false) & t.isTracked.equals(true);
+      final hasLogs = t.name.isInQuery(
+        selectOnly(exerciseLogs)..addColumns([exerciseLogs.exerciseName]),
+      );
+      return notDeleted | hasLogs;
+    });
+    return query.get();
+  }
+
+  Stream<List<Exercise>> watchRecentlyDeletedExercises() {
+    final query = select(exercises)..where((t) {
+      final isDeleted = t.isDeleted.equals(true) & t.isTracked.equals(true);
+      final hasNoLogs = t.name.isInQuery(
+        selectOnly(exerciseLogs)..addColumns([exerciseLogs.exerciseName]),
+      ).not();
+      return isDeleted & hasNoLogs;
+    });
+    return query.watch();
+  }
   Future<Exercise?> getDeletedExerciseByName(String name) async {
     final list = await (select(exercises)..where((t) => t.name.equals(name) & t.isDeleted.equals(true))).get();
     return list.isEmpty ? null : list.first;
@@ -231,8 +261,24 @@ class AppDatabase extends _$AppDatabase {
       );
   Future<void> restoreExercise(String id) =>
       (update(exercises)..where((t) => t.id.equals(id))).write(
-        const ExercisesCompanion(isDeleted: Value(false)),
+        const ExercisesCompanion(
+          isDeleted: Value(false),
+          isTracked: Value(true),
+        ),
       );
+  Future<void> untrackCustomExercise(String id) =>
+      (update(exercises)..where((t) => t.id.equals(id))).write(
+        const ExercisesCompanion(
+          isDeleted: Value(true),
+          isTracked: Value(false),
+        ),
+      );
+  Future<void> deleteCustomExerciseTemplate(String id) async {
+    await transaction(() async {
+      await (delete(exerciseMuscleGroups)..where((t) => t.exerciseId.equals(id))).go();
+      await (delete(exercises)..where((t) => t.id.equals(id))).go();
+    });
+  }
   Future<void> deleteExercisePermanently(String id, String name) async {
     await transaction(() async {
       await (delete(exerciseMuscleGroups)..where((t) => t.exerciseId.equals(id))).go();
@@ -342,6 +388,7 @@ class AppDatabase extends _$AppDatabase {
           category: 'Other',
           lastLog: '',
           isDeleted: true,
+          isTracked: false,
         );
 
         final existing = uniqueLogsMap[log.id];

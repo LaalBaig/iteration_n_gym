@@ -202,10 +202,14 @@ class RecentlyDeletedScreen extends StatelessWidget {
                         );
 
                         if (confirm == true) {
-                          await DatabaseService().db.deleteExercisePermanently(
-                                exercise.id,
-                                exercise.name,
-                              );
+                          if (exercise.id.startsWith('custom_')) {
+                            await DatabaseService().db.untrackCustomExercise(exercise.id);
+                          } else {
+                            await DatabaseService().db.deleteExercisePermanently(
+                                  exercise.id,
+                                  exercise.name,
+                                );
+                          }
                           if (context.mounted) {
                             final messenger = ScaffoldMessenger.of(context);
                             messenger.clearSnackBars();

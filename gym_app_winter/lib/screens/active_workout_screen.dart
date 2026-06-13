@@ -55,6 +55,16 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             _newlyAddedCardKey = GlobalKey();
           });
           WorkoutManager().addExercise(exercise);
+          if (exercise.id.startsWith('custom_') && mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Custom exercise '${exercise.name}' has been created"),
+                duration: const Duration(seconds: 2),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (_newlyAddedCardKey?.currentContext != null) {
               Scrollable.ensureVisible(
@@ -355,8 +365,10 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                     FocusManager.instance.primaryFocus?.unfocus();
                     final confirm = await showDiscardWorkoutDialog(context);
                     if (confirm == true && mounted) {
-                      WorkoutManager().discardWorkout();
-                      context.pop();
+                      await WorkoutManager().discardWorkout();
+                      if (mounted) {
+                        context.pop();
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -451,8 +463,10 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                           FocusManager.instance.primaryFocus?.unfocus();
                           final confirm = await showDiscardWorkoutDialog(itemContext);
                           if (confirm == true && itemContext.mounted) {
-                            WorkoutManager().discardWorkout();
-                            itemContext.pop();
+                            await WorkoutManager().discardWorkout();
+                            if (itemContext.mounted) {
+                              itemContext.pop();
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(

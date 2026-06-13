@@ -8,6 +8,7 @@ import 'package:drift/drift.dart' hide Column;
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:gym_app_winter/models/catalog_exercise.dart';
+import 'package:gym_app_winter/state/workout_manager.dart';
 
 class AddExerciseScreen extends StatefulWidget {
   final String mode;
@@ -49,7 +50,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
       // Get all exercises (both active and deleted) from database
       final dbExercises = await db.select(db.exercises).get();
       
-      // Load all custom exercises (both active and deleted) from database
+      // Load all active custom exercises from database
       final List<CatalogExercise> customCatalog = [];
       for (final ex in dbExercises) {
         if (ex.id.startsWith('custom_')) {
@@ -70,9 +71,9 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
       if (mounted) {
         setState(() {
           exerciseList = combined;
-          filteredExerciseList = combined;
           isLoading = false;
         });
+        _filterExercises(_controller.text);
       }
     } catch (e) {
       debugPrint("Error loading exercises: $e");
@@ -146,10 +147,18 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                   onPressed: () async {
                     final newExercise = await context.push<CatalogExercise?>('/custom');
                     if (newExercise != null && context.mounted) {
-                      if (context.canPop()) {
+                      if (widget.mode == 'workout' || widget.mode == 'routine') {
                         context.pop(newExercise);
                       } else {
-                        context.go('/');
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Custom exercise '${newExercise.name}' has been created"),
+                            duration: const Duration(seconds: 2),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                        context.pop(newExercise);
                       }
                     }
                   },
@@ -182,11 +191,20 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                 itemCount: filteredExerciseList.length,
                 itemBuilder: (context, index) {
                   final exercise = filteredExerciseList[index];
+                  final isCustom = exercise.id.startsWith('custom_');
                   return ExerciseTile(
                     title: exercise.name,
                     subtitle: "",
                     category: exercise.category,
                     muscleGroups: exercise.muscles,
+                    isCustom: isCustom,
+                    onDelete: isCustom
+                        ? () async {
+                            final db = DatabaseService().db;
+                            await db.deleteCustomExerciseTemplate(exercise.id);
+                            _loadExercises();
+                          }
+                        : null,
                     onTap: () async {
                       FocusScope.of(context).unfocus();
                       
@@ -344,6 +362,9 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
 
                             if (choice == "restore") {
                               await db.restoreExercise(deletedExercise.id);
+                              if (WorkoutManager().isActive) {
+                                WorkoutManager().trackRestoredExercise(deletedExercise.id);
+                              }
                             } else if (choice == "anew") {
                               await db.deleteExercisePermanently(deletedExercise.id, deletedExercise.name);
                               await db.addExerciseWithMuscles(
@@ -357,6 +378,9 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                                 ),
                                 exercise.muscles,
                               );
+                              if (WorkoutManager().isActive) {
+                                WorkoutManager().trackNewlyCreatedExercise(exercise.id);
+                              }
                             } else {
                               return; // Cancelled
                             }
@@ -373,6 +397,9 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                               ),
                               exercise.muscles,
                             );
+                            if (WorkoutManager().isActive) {
+                              WorkoutManager().trackNewlyCreatedExercise(exercise.id);
+                            }
                           }
                         } catch (e) {
                           debugPrint('ERROR ADDING EXERCISE: $e');

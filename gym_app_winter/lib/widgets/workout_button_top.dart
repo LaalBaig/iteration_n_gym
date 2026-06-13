@@ -79,11 +79,13 @@ class WorkoutButtonTop extends StatelessWidget {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pop(context);
-                      WorkoutManager().discardWorkout();
+                      await WorkoutManager().discardWorkout();
                       WorkoutManager().startWorkout();
-                      context.push('/active_workout');
+                      if (context.mounted) {
+                        context.push('/active_workout');
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.surfaceContainerHighest,

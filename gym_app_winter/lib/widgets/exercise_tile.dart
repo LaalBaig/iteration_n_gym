@@ -10,6 +10,7 @@ class ExerciseTile extends StatelessWidget {
   final VoidCallback? onDelete;
   final double bottomMargin;
   final bool confirmDelete;
+  final bool isCustom;
 
   const ExerciseTile({
     super.key,
@@ -21,6 +22,7 @@ class ExerciseTile extends StatelessWidget {
     this.onDelete,
     this.bottomMargin = 8.0,
     this.confirmDelete = true,
+    this.isCustom = false,
   });
 
   Widget _buildTag(String text, Color badgeBgColor, Color brandPurple) {
@@ -57,27 +59,7 @@ class ExerciseTile extends StatelessWidget {
       },
       confirmDismiss: (direction) async {
         if (!confirmDelete) return true;
-        final result = await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              backgroundColor: colorScheme.surface,
-              title: Text("Delete Exercise", style: TextStyle(color: colorScheme.onSurface)),
-              content: Text("Are you sure you want to delete this exercise?", style: TextStyle(color: colorScheme.onSurfaceVariant)),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: Text("Cancel", style: TextStyle(color: colorScheme.onSurfaceVariant)),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: Text("Delete", style: TextStyle(color: colorScheme.error)),
-                ),
-              ],
-            );
-          },
-        );
-        return result ?? false;
+        return await _showDeleteDialog(context, colorScheme);
       },
       background: Container(
         margin: EdgeInsets.only(bottom: bottomMargin), 
@@ -137,15 +119,20 @@ class ExerciseTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4), 
-                    if (muscleGroups.isNotEmpty || (category != null && category!.isNotEmpty))
+                    if (muscleGroups.isNotEmpty || (category != null && category!.isNotEmpty) || isCustom)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 4),
                         child: Wrap(
                           spacing: 6,
                           runSpacing: 4,
-                          children: muscleGroups.isNotEmpty 
-                            ? muscleGroups.map((m) => _buildTag(m, badgeBgColor, brandPurple)).toList()
-                            : [_buildTag(category!, badgeBgColor, brandPurple)],
+                          children: [
+                            if (isCustom)
+                              _buildTag("Custom", colorScheme.secondaryContainer, colorScheme.onSecondaryContainer),
+                            if (muscleGroups.isNotEmpty)
+                              ...muscleGroups.map((m) => _buildTag(m, badgeBgColor, brandPurple)).toList()
+                            else if (category != null && category!.isNotEmpty)
+                              _buildTag(category!, badgeBgColor, brandPurple),
+                          ],
                         ),
                       ),
                     if (subtitle.isNotEmpty)
@@ -163,16 +150,63 @@ class ExerciseTile extends StatelessWidget {
               ),
               const SizedBox(width: 12),
 
-              // 3. Chevron Right
-              Icon(
-                Icons.chevron_right, 
-                color: colorScheme.onSurfaceVariant, 
-                size: 20, 
-              ),
+              // 3. Delete Option or Chevron Right
+              if (onDelete != null)
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () async {
+                    if (!confirmDelete) {
+                      onDelete!.call();
+                      return;
+                    }
+                    final confirmed = await _showDeleteDialog(context, colorScheme);
+                    if (confirmed) {
+                      onDelete!.call();
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.delete_outline,
+                      color: colorScheme.error,
+                      size: 22,
+                    ),
+                  ),
+                )
+              else
+                Icon(
+                  Icons.chevron_right, 
+                  color: colorScheme.onSurfaceVariant, 
+                  size: 20, 
+                ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<bool> _showDeleteDialog(BuildContext context, ColorScheme colorScheme) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: colorScheme.surface,
+          title: Text("Delete Exercise", style: TextStyle(color: colorScheme.onSurface)),
+          content: Text("Are you sure you want to delete this exercise?", style: TextStyle(color: colorScheme.onSurfaceVariant)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text("Cancel", style: TextStyle(color: colorScheme.onSurfaceVariant)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text("Delete", style: TextStyle(color: colorScheme.error)),
+            ),
+          ],
+        );
+      },
+    );
+    return result ?? false;
   }
 }

@@ -68,6 +68,21 @@ class $ExercisesTable extends Exercises
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _isTrackedMeta = const VerificationMeta(
+    'isTracked',
+  );
+  @override
+  late final GeneratedColumn<bool> isTracked = GeneratedColumn<bool>(
+    'is_tracked',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_tracked" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _exerciseTypeMeta = const VerificationMeta(
     'exerciseType',
   );
@@ -97,6 +112,7 @@ class $ExercisesTable extends Exercises
     category,
     lastLog,
     isDeleted,
+    isTracked,
     exerciseType,
     trackingType,
   ];
@@ -147,6 +163,12 @@ class $ExercisesTable extends Exercises
         isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
       );
     }
+    if (data.containsKey('is_tracked')) {
+      context.handle(
+        _isTrackedMeta,
+        isTracked.isAcceptableOrUnknown(data['is_tracked']!, _isTrackedMeta),
+      );
+    }
     if (data.containsKey('exercise_type')) {
       context.handle(
         _exerciseTypeMeta,
@@ -194,6 +216,10 @@ class $ExercisesTable extends Exercises
         DriftSqlType.bool,
         data['${effectivePrefix}is_deleted'],
       )!,
+      isTracked: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_tracked'],
+      )!,
       exerciseType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}exercise_type'],
@@ -217,6 +243,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
   final String category;
   final String lastLog;
   final bool isDeleted;
+  final bool isTracked;
   final String? exerciseType;
   final String? trackingType;
   const Exercise({
@@ -225,6 +252,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     required this.category,
     required this.lastLog,
     required this.isDeleted,
+    required this.isTracked,
     this.exerciseType,
     this.trackingType,
   });
@@ -236,6 +264,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     map['category'] = Variable<String>(category);
     map['last_log'] = Variable<String>(lastLog);
     map['is_deleted'] = Variable<bool>(isDeleted);
+    map['is_tracked'] = Variable<bool>(isTracked);
     if (!nullToAbsent || exerciseType != null) {
       map['exercise_type'] = Variable<String>(exerciseType);
     }
@@ -252,6 +281,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       category: Value(category),
       lastLog: Value(lastLog),
       isDeleted: Value(isDeleted),
+      isTracked: Value(isTracked),
       exerciseType: exerciseType == null && nullToAbsent
           ? const Value.absent()
           : Value(exerciseType),
@@ -272,6 +302,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       category: serializer.fromJson<String>(json['category']),
       lastLog: serializer.fromJson<String>(json['lastLog']),
       isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      isTracked: serializer.fromJson<bool>(json['isTracked']),
       exerciseType: serializer.fromJson<String?>(json['exerciseType']),
       trackingType: serializer.fromJson<String?>(json['trackingType']),
     );
@@ -285,6 +316,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       'category': serializer.toJson<String>(category),
       'lastLog': serializer.toJson<String>(lastLog),
       'isDeleted': serializer.toJson<bool>(isDeleted),
+      'isTracked': serializer.toJson<bool>(isTracked),
       'exerciseType': serializer.toJson<String?>(exerciseType),
       'trackingType': serializer.toJson<String?>(trackingType),
     };
@@ -296,6 +328,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     String? category,
     String? lastLog,
     bool? isDeleted,
+    bool? isTracked,
     Value<String?> exerciseType = const Value.absent(),
     Value<String?> trackingType = const Value.absent(),
   }) => Exercise(
@@ -304,6 +337,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     category: category ?? this.category,
     lastLog: lastLog ?? this.lastLog,
     isDeleted: isDeleted ?? this.isDeleted,
+    isTracked: isTracked ?? this.isTracked,
     exerciseType: exerciseType.present ? exerciseType.value : this.exerciseType,
     trackingType: trackingType.present ? trackingType.value : this.trackingType,
   );
@@ -314,6 +348,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       category: data.category.present ? data.category.value : this.category,
       lastLog: data.lastLog.present ? data.lastLog.value : this.lastLog,
       isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      isTracked: data.isTracked.present ? data.isTracked.value : this.isTracked,
       exerciseType: data.exerciseType.present
           ? data.exerciseType.value
           : this.exerciseType,
@@ -331,6 +366,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           ..write('category: $category, ')
           ..write('lastLog: $lastLog, ')
           ..write('isDeleted: $isDeleted, ')
+          ..write('isTracked: $isTracked, ')
           ..write('exerciseType: $exerciseType, ')
           ..write('trackingType: $trackingType')
           ..write(')'))
@@ -344,6 +380,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     category,
     lastLog,
     isDeleted,
+    isTracked,
     exerciseType,
     trackingType,
   );
@@ -356,6 +393,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           other.category == this.category &&
           other.lastLog == this.lastLog &&
           other.isDeleted == this.isDeleted &&
+          other.isTracked == this.isTracked &&
           other.exerciseType == this.exerciseType &&
           other.trackingType == this.trackingType);
 }
@@ -366,6 +404,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
   final Value<String> category;
   final Value<String> lastLog;
   final Value<bool> isDeleted;
+  final Value<bool> isTracked;
   final Value<String?> exerciseType;
   final Value<String?> trackingType;
   final Value<int> rowid;
@@ -375,6 +414,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     this.category = const Value.absent(),
     this.lastLog = const Value.absent(),
     this.isDeleted = const Value.absent(),
+    this.isTracked = const Value.absent(),
     this.exerciseType = const Value.absent(),
     this.trackingType = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -385,6 +425,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     required String category,
     required String lastLog,
     this.isDeleted = const Value.absent(),
+    this.isTracked = const Value.absent(),
     this.exerciseType = const Value.absent(),
     this.trackingType = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -398,6 +439,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     Expression<String>? category,
     Expression<String>? lastLog,
     Expression<bool>? isDeleted,
+    Expression<bool>? isTracked,
     Expression<String>? exerciseType,
     Expression<String>? trackingType,
     Expression<int>? rowid,
@@ -408,6 +450,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
       if (category != null) 'category': category,
       if (lastLog != null) 'last_log': lastLog,
       if (isDeleted != null) 'is_deleted': isDeleted,
+      if (isTracked != null) 'is_tracked': isTracked,
       if (exerciseType != null) 'exercise_type': exerciseType,
       if (trackingType != null) 'tracking_type': trackingType,
       if (rowid != null) 'rowid': rowid,
@@ -420,6 +463,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     Value<String>? category,
     Value<String>? lastLog,
     Value<bool>? isDeleted,
+    Value<bool>? isTracked,
     Value<String?>? exerciseType,
     Value<String?>? trackingType,
     Value<int>? rowid,
@@ -430,6 +474,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
       category: category ?? this.category,
       lastLog: lastLog ?? this.lastLog,
       isDeleted: isDeleted ?? this.isDeleted,
+      isTracked: isTracked ?? this.isTracked,
       exerciseType: exerciseType ?? this.exerciseType,
       trackingType: trackingType ?? this.trackingType,
       rowid: rowid ?? this.rowid,
@@ -454,6 +499,9 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     if (isDeleted.present) {
       map['is_deleted'] = Variable<bool>(isDeleted.value);
     }
+    if (isTracked.present) {
+      map['is_tracked'] = Variable<bool>(isTracked.value);
+    }
     if (exerciseType.present) {
       map['exercise_type'] = Variable<String>(exerciseType.value);
     }
@@ -474,6 +522,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
           ..write('category: $category, ')
           ..write('lastLog: $lastLog, ')
           ..write('isDeleted: $isDeleted, ')
+          ..write('isTracked: $isTracked, ')
           ..write('exerciseType: $exerciseType, ')
           ..write('trackingType: $trackingType, ')
           ..write('rowid: $rowid')
@@ -2500,6 +2549,7 @@ typedef $$ExercisesTableCreateCompanionBuilder =
       required String category,
       required String lastLog,
       Value<bool> isDeleted,
+      Value<bool> isTracked,
       Value<String?> exerciseType,
       Value<String?> trackingType,
       Value<int> rowid,
@@ -2511,6 +2561,7 @@ typedef $$ExercisesTableUpdateCompanionBuilder =
       Value<String> category,
       Value<String> lastLog,
       Value<bool> isDeleted,
+      Value<bool> isTracked,
       Value<String?> exerciseType,
       Value<String?> trackingType,
       Value<int> rowid,
@@ -2547,6 +2598,11 @@ class $$ExercisesTableFilterComposer
 
   ColumnFilters<bool> get isDeleted => $composableBuilder(
     column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isTracked => $composableBuilder(
+    column: $table.isTracked,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2595,6 +2651,11 @@ class $$ExercisesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isTracked => $composableBuilder(
+    column: $table.isTracked,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get exerciseType => $composableBuilder(
     column: $table.exerciseType,
     builder: (column) => ColumnOrderings(column),
@@ -2629,6 +2690,9 @@ class $$ExercisesTableAnnotationComposer
 
   GeneratedColumn<bool> get isDeleted =>
       $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<bool> get isTracked =>
+      $composableBuilder(column: $table.isTracked, builder: (column) => column);
 
   GeneratedColumn<String> get exerciseType => $composableBuilder(
     column: $table.exerciseType,
@@ -2674,6 +2738,7 @@ class $$ExercisesTableTableManager
                 Value<String> category = const Value.absent(),
                 Value<String> lastLog = const Value.absent(),
                 Value<bool> isDeleted = const Value.absent(),
+                Value<bool> isTracked = const Value.absent(),
                 Value<String?> exerciseType = const Value.absent(),
                 Value<String?> trackingType = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -2683,6 +2748,7 @@ class $$ExercisesTableTableManager
                 category: category,
                 lastLog: lastLog,
                 isDeleted: isDeleted,
+                isTracked: isTracked,
                 exerciseType: exerciseType,
                 trackingType: trackingType,
                 rowid: rowid,
@@ -2694,6 +2760,7 @@ class $$ExercisesTableTableManager
                 required String category,
                 required String lastLog,
                 Value<bool> isDeleted = const Value.absent(),
+                Value<bool> isTracked = const Value.absent(),
                 Value<String?> exerciseType = const Value.absent(),
                 Value<String?> trackingType = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -2703,6 +2770,7 @@ class $$ExercisesTableTableManager
                 category: category,
                 lastLog: lastLog,
                 isDeleted: isDeleted,
+                isTracked: isTracked,
                 exerciseType: exerciseType,
                 trackingType: trackingType,
                 rowid: rowid,

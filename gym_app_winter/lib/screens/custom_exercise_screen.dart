@@ -5,6 +5,7 @@ import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:gym_app_winter/models/catalog_exercise.dart';
+import 'package:gym_app_winter/state/workout_manager.dart';
 
 class CustomExerciseScreen extends StatefulWidget {
   const CustomExerciseScreen({super.key});
@@ -156,6 +157,10 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                     ),
                     _selectedMuscles.toList(),
                   );
+
+                  if (WorkoutManager().isActive) {
+                    WorkoutManager().trackNewlyCreatedExercise(id);
+                  }
 
                   if (!localContext.mounted) return;
                   final newExercise = CatalogExercise(
