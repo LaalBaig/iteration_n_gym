@@ -40,7 +40,9 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
   }
 
   void _navigateToAddExercise() async {
-    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await Future.delayed(const Duration(milliseconds: 50));
+    if (!mounted) return;
     final result = await context.push('/add_exercise?mode=routine');
     if (result != null) {
       Exercise? exercise;
@@ -518,7 +520,9 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
             onFinish: (sets) {},
             onRemove: () => _removeExercise(index),
             onReplace: () async {
-              FocusScope.of(context).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
+              await Future.delayed(const Duration(milliseconds: 50));
+              if (!context.mounted) return;
               final result = await context.push('/add_exercise?mode=routine');
               if (result != null) {
                 Exercise? newExercise;

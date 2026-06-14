@@ -329,18 +329,16 @@ class _LogSetCardState extends State<LogSetCard> {
       _notifyChanges();
     });
 
-    if (MediaQuery.of(context).viewInsets.bottom > 0) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          Scrollable.ensureVisible(
-            context,
-            alignment: 0.9,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
-        }
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Scrollable.ensureVisible(
+          context,
+          alignment: 0.9,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   void _removeSet(int index) {

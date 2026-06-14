@@ -24,7 +24,9 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
   GlobalKey? _newlyAddedCardKey;
 
   void _navigateToAddExercise() async {
-    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await Future.delayed(const Duration(milliseconds: 50));
+    if (!mounted) return;
     final result = await context.push('/add_exercise?mode=workout');
     if (result != null) {
       Exercise? exercise;
@@ -511,7 +513,9 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               WorkoutManager().removeExercise(exercise.name);
             },
             onReplace: () async {
-              FocusScope.of(itemContext).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
+              await Future.delayed(const Duration(milliseconds: 50));
+              if (!itemContext.mounted) return;
               final result = await itemContext.push('/add_exercise?mode=workout');
               if (result != null) {
                 Exercise? newExercise;
