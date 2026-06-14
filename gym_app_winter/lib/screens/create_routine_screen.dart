@@ -21,6 +21,9 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
   bool _showHelpBanner = true;
   bool _isSaving = false;
   bool _isReordering = false;
+  String? _newlyAddedExerciseId;
+  GlobalKey? _newlyAddedCardKey;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -32,6 +35,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
   void dispose() {
     _titleController.removeListener(_onTitleChanged);
     _titleController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -64,6 +68,19 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
           _routineSets[exercise.id] = [
             {'weight': 0, 'reps': 0, 'isCompleted': 0}
           ];
+          _newlyAddedExerciseId = exercise.id;
+          _newlyAddedCardKey = GlobalKey();
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_newlyAddedCardKey?.currentContext != null) {
+            Scrollable.ensureVisible(
+              _newlyAddedCardKey!.currentContext!,
+              alignment: 0.4,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+          _newlyAddedExerciseId = null;
         });
       }
     }
@@ -369,21 +386,30 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _navigateToAddExercise,
-              icon: const Icon(Icons.add, size: 20),
-              label: const Text(
-                "Add exercise",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _navigateToAddExercise,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add, color: colorScheme.onPrimary),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Add Exercise",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: colorScheme.onPrimary),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -405,55 +431,37 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
         },
         itemBuilder: (context, index) {
           final exercise = _exercises[index];
-          return Card(
-            key: ValueKey("reorder_${exercise.id}"),
-            margin: const EdgeInsets.only(bottom: 12),
-            elevation: 0,
-            color: isDark ? colorScheme.surface : colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: colorScheme.outlineVariant,
-                width: 1.0,
+          return Material(
+            key: ValueKey(exercise.id),
+            color: Colors.transparent,
+            child: Card(
+              margin: const EdgeInsets.only(bottom: 12.0),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: colorScheme.outlineVariant, width: 1.0),
               ),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              leading: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.assignment_outlined,
-                    color: colorScheme.primary,
-                    size: 18,
+              color: colorScheme.surface,
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                title: Text(
+                  exercise.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
                   ),
                 ),
-              ),
-              title: Text(
-                exercise.name,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
+                subtitle: Text(
+                  exercise.category,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
-              subtitle: Text(
-                exercise.category,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              trailing: ReorderableDragStartListener(
-                index: index,
-                child: Icon(
-                  Icons.drag_handle,
-                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                trailing: ReorderableDragStartListener(
+                  index: index,
+                  child: Icon(Icons.drag_handle, color: colorScheme.onSurfaceVariant),
                 ),
               ),
             ),
@@ -462,31 +470,49 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
       );
     }
 
+    final theme = Theme.of(context);
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      controller: _scrollController,
+      padding: const EdgeInsets.symmetric(vertical: 24.0),
       itemCount: _exercises.length + 1,
       itemBuilder: (context, index) {
         if (index == _exercises.length) {
           return Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-            child: SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: OutlinedButton.icon(
-                onPressed: _navigateToAddExercise,
-                icon: const Icon(Icons.add, size: 20),
-                label: const Text(
-                  "Add Exercise",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: colorScheme.primary,
-                  side: BorderSide(color: colorScheme.primary, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _navigateToAddExercise,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.scaffoldBackgroundColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: colorScheme.primary, width: 1.5),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add, color: colorScheme.primary),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Add Exercise",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: colorScheme.primary),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 12),
+                // Extra bottom spacing to allow scrolling the last exercise card to the top
+                SizedBox(height: MediaQuery.of(context).size.height * 0.8),
+              ],
             ),
           );
         }
@@ -504,6 +530,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
         }
 
         return Padding(
+          key: exercise.id == _newlyAddedExerciseId ? _newlyAddedCardKey : null,
           padding: const EdgeInsets.only(bottom: 24.0, left: 24.0, right: 24.0),
           child: LogSetCard(
             key: ValueKey(exercise.id),
@@ -512,6 +539,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
             showLogButton: false,
             showCheckmark: false, // Hides checkmark column for routine template definition
             headerTitle: exercise.name,
+            isHighlighted: exercise.id == _newlyAddedExerciseId,
             initialSets: _routineSets[exercise.id],
             onChanged: (newSets) {
               _routineSets[exercise.id] = newSets;

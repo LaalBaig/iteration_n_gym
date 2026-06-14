@@ -61,7 +61,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             if (_newlyAddedCardKey?.currentContext != null) {
               Scrollable.ensureVisible(
                 _newlyAddedCardKey!.currentContext!,
-                alignment: 0.16,
+                alignment: 0.4,
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOut,
               );
