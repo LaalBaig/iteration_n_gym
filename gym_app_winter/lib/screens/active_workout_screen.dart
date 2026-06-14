@@ -24,7 +24,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
   GlobalKey? _newlyAddedCardKey;
 
   void _navigateToAddExercise() async {
-    FocusManager.instance.primaryFocus?.unfocus();
+    FocusScope.of(context).unfocus();
     final result = await context.push('/add_exercise?mode=workout');
     if (result != null) {
       Exercise? exercise;
@@ -55,16 +55,6 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             _newlyAddedCardKey = GlobalKey();
           });
           WorkoutManager().addExercise(exercise);
-          if (exercise.id.startsWith('custom_') && mounted) {
-            ScaffoldMessenger.of(context).clearSnackBars();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("Custom exercise '${exercise.name}' has been created"),
-                duration: const Duration(seconds: 2),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (_newlyAddedCardKey?.currentContext != null) {
               Scrollable.ensureVisible(
@@ -121,7 +111,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                 )
               : BouncingButton(
                   onTap: () {
-                    FocusManager.instance.primaryFocus?.unfocus();
+                    FocusScope.of(context).unfocus();
                     WorkoutManager().minimize();
                     MainScreen.activeTabNotifier.value = 0; // lead to workouts tab
                     if (context.canPop()) {
@@ -181,7 +171,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                         }
 
                         if (!mounted) return;
-                        FocusManager.instance.primaryFocus?.unfocus();
+                        FocusScope.of(context).unfocus();
                         context.push('/save_workout');
                       },
                       style: ElevatedButton.styleFrom(
@@ -521,7 +511,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               WorkoutManager().removeExercise(exercise.name);
             },
             onReplace: () async {
-              FocusManager.instance.primaryFocus?.unfocus();
+              FocusScope.of(itemContext).unfocus();
               final result = await itemContext.push('/add_exercise?mode=workout');
               if (result != null) {
                 Exercise? newExercise;

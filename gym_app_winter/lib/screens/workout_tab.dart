@@ -220,7 +220,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                               ),
                               child: Center(
                                 child: FaIcon(
-                                  FontAwesomeIcons.plus,
+                                  FontAwesomeIcons.clipboard,
                                   color: colorScheme.primary,
                                   size: 20,
                                 ),

@@ -53,7 +53,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
       // Load all active custom exercises from database
       final List<CatalogExercise> customCatalog = [];
       for (final ex in dbExercises) {
-        if (ex.id.startsWith('custom_')) {
+        if (ex.id.startsWith('custom_') && !ex.isDeleted) {
           final muscles = await db.getMusclesForExercise(ex.id);
           customCatalog.add(CatalogExercise(
             id: ex.id,
@@ -147,19 +147,15 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                   onPressed: () async {
                     final newExercise = await context.push<CatalogExercise?>('/custom');
                     if (newExercise != null && context.mounted) {
-                      if (widget.mode == 'workout' || widget.mode == 'routine') {
-                        context.pop(newExercise);
-                      } else {
-                        ScaffoldMessenger.of(context).clearSnackBars();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Custom exercise '${newExercise.name}' has been created"),
-                            duration: const Duration(seconds: 2),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                        context.pop(newExercise);
-                      }
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Custom exercise '${newExercise.name}' has been created"),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                      context.pop(newExercise);
                     }
                   },
                   icon: Icon(Icons.add, color: colorScheme.primary),

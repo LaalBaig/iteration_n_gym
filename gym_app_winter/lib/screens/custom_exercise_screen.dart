@@ -175,7 +175,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
 
                   final dbExercises = await db.select(db.exercises).get();
                   final isDuplicateDb = dbExercises.any((ex) =>
-                      ex.name.trim().toLowerCase() == name.toLowerCase());
+                      !ex.isDeleted && ex.name.trim().toLowerCase() == name.toLowerCase());
 
                   if (isDuplicateAsset || isDuplicateDb) {
                     if (!localContext.mounted) return;

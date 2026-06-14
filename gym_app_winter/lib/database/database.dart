@@ -262,6 +262,14 @@ class AppDatabase extends _$AppDatabase {
       );
   Future<void> deleteCustomExerciseTemplate(String id) async {
     await transaction(() async {
+      final exercise = await (select(exercises)..where((t) => t.id.equals(id))).getSingleOrNull();
+      if (exercise != null) {
+        await (update(exerciseLogs)..where((t) => t.exerciseName.equals(exercise.name))).write(
+          ExerciseLogsCompanion(
+            exerciseName: Value('${exercise.name} (Deleted)'),
+          ),
+        );
+      }
       await (delete(exerciseMuscleGroups)..where((t) => t.exerciseId.equals(id))).go();
       await (delete(exercises)..where((t) => t.id.equals(id))).go();
     });
@@ -269,8 +277,12 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteExercisePermanently(String id, String name) async {
     await transaction(() async {
       await (delete(exerciseMuscleGroups)..where((t) => t.exerciseId.equals(id))).go();
-      // Keep workout history logs intact even if exercise template is deleted
-      // await (delete(exerciseLogs)..where((t) => t.exerciseName.equals(name))).go();
+      // Rename workout history logs to prevent ghost data on recreate
+      await (update(exerciseLogs)..where((t) => t.exerciseName.equals(name))).write(
+        ExerciseLogsCompanion(
+          exerciseName: Value('$name (Deleted)'),
+        ),
+      );
       await (delete(exercises)..where((t) => t.id.equals(id))).go();
     });
   }

@@ -172,7 +172,7 @@ class WorkoutButtonTop extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   child: const Text(
-                    "Start Empty Workout",
+                    "Start New Workout",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ),
