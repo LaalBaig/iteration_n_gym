@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:gym_app_winter/datamodel/exercise.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
@@ -95,10 +97,10 @@ class WorkoutPageState extends State<WorkoutPage> {
             crossAxisAlignment: .start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
                 child: Text(
                   'Track Workouts',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: ResponsiveHelper.sp(24), fontWeight: FontWeight.w600),
                 ),
               ),
               CustomSearchBar(

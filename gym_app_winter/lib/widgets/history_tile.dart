@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
@@ -28,7 +30,7 @@ class HistoryTile extends StatelessWidget {
         : "Wednesday, December 23";
 
     return Padding(
-      padding: const EdgeInsets.all(0),
+      padding: EdgeInsets.all(ResponsiveHelper.w(0)),
       child: BouncingButton(
         onTap: () {
           if (setData.length > 3) {
@@ -36,7 +38,7 @@ class HistoryTile extends StatelessWidget {
           }
         },
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(ResponsiveHelper.w(16)),
           decoration: ShapeDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             shape: SmoothRectangleBorder(
@@ -49,7 +51,7 @@ class HistoryTile extends StatelessWidget {
               BoxShadow(
                 color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.04),
                 blurRadius: 20,
-                offset: const Offset(0, 4),
+                offset: Offset(0, 4),
               ),
             ],
           ),
@@ -75,17 +77,17 @@ class HistoryTile extends StatelessWidget {
                             ),
                           ),
                           if (isWorkout) ...[
-                            const SizedBox(width: 8),
+                            SizedBox(width: ResponsiveHelper.w(8)),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(8), vertical: ResponsiveHelper.h(4)),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.secondaryContainer,
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(ResponsiveHelper.w(8)),
                               ),
                               child: Text(
                                 "Workout",
                                 style: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: ResponsiveHelper.sp(10),
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.onSecondaryContainer,
                                 ),
@@ -100,17 +102,17 @@ class HistoryTile extends StatelessWidget {
                         onTap: () => _confirmAndDelete(context),
                         behavior: HitTestBehavior.opaque,
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(ResponsiveHelper.w(8.0)),
                           child: Icon(
                             Icons.delete_outline,
-                            size: 24,
+                            size: ResponsiveHelper.w(24),
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
                   ],
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: ResponsiveHelper.h(10)),
                 Text("Sets", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                 Divider(),
                 for (
@@ -126,23 +128,23 @@ class HistoryTile extends StatelessWidget {
                             "${i + 1} ",
                             style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
-                          SizedBox(width: 12),
+                          SizedBox(width: ResponsiveHelper.w(12)),
                           Text(
                             _formatSet(setData[i]),
                             style: TextStyle(fontWeight: FontWeight.w400),
                           ),
                           if (setData[i]['isPR'] == 1)
                             Container(
-                              margin: const EdgeInsets.only(left: 8),
-                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                              margin: EdgeInsets.only(left: 8),
+                              padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(4), vertical: ResponsiveHelper.h(2)),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: BorderRadius.circular(ResponsiveHelper.w(4)),
                               ),
                               child: Text(
                                 "PR",
                                 style: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: ResponsiveHelper.sp(10),
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
@@ -150,12 +152,12 @@ class HistoryTile extends StatelessWidget {
                             ),
                         ],
                       ),
-                      SizedBox(height: 6),
+                      SizedBox(height: ResponsiveHelper.h(6)),
                     ],
                   ),
                 if (setData.length > 3)
                   Padding(
-                    padding: const EdgeInsets.only(top: 8),
+                    padding: EdgeInsets.only(top: 8),
                     child: Text(
                       "View more",
                       style: TextStyle(
@@ -195,9 +197,9 @@ class HistoryTile extends StatelessWidget {
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(24),
+          insetPadding: EdgeInsets.all(ResponsiveHelper.w(24)),
           child: Container(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(ResponsiveHelper.w(24)),
             decoration: ShapeDecoration(
               color: Theme.of(context).colorScheme.surface,
               shape: SmoothRectangleBorder(
@@ -219,7 +221,7 @@ class HistoryTile extends StatelessWidget {
                         child: Text(
                           dateStr,
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: ResponsiveHelper.sp(18),
                             fontWeight: FontWeight.w600,
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -232,9 +234,9 @@ class HistoryTile extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: ResponsiveHelper.h(16)),
                   Text("Sets", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 16)),
-                  const Divider(),
+                  Divider(),
                   for (int i = 0; i < setData.length; i++)
                     Column(
                       children: [
@@ -244,23 +246,23 @@ class HistoryTile extends StatelessWidget {
                               "${i + 1} ",
                               style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 16),
                             ),
-                            const SizedBox(width: 16),
+                            SizedBox(width: ResponsiveHelper.w(16)),
                             Text(
                               _formatSet(setData[i]),
-                              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                              style: TextStyle(fontWeight: FontWeight.w500, fontSize: ResponsiveHelper.sp(16)),
                             ),
                             if (setData[i]['isPR'] == 1)
                               Container(
-                                margin: const EdgeInsets.only(left: 8),
-                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                margin: EdgeInsets.only(left: 8),
+                                padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(4), vertical: ResponsiveHelper.h(2)),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.primaryContainer,
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(4)),
                                 ),
                                 child: Text(
                                   "PR",
                                   style: TextStyle(
-                                    fontSize: 10,
+                                    fontSize: ResponsiveHelper.sp(10),
                                     fontWeight: FontWeight.bold,
                                     color: Theme.of(context).colorScheme.primary,
                                   ),
@@ -268,7 +270,7 @@ class HistoryTile extends StatelessWidget {
                               ),
                           ],
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: ResponsiveHelper.h(10)),
                       ],
                     ),
                 ],
@@ -357,9 +359,9 @@ class HistoryTile extends StatelessWidget {
         behavior: SnackBarBehavior.floating,
         backgroundColor: Theme.of(context).colorScheme.inverseSurface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
         ),
-        margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        margin: EdgeInsets.fromLTRB(24, 0, 24, 24),
         duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: "Undo",

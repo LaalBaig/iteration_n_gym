@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/main.dart' as import_main;
@@ -13,14 +15,14 @@ class ProfileTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0), vertical: ResponsiveHelper.h(32.0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header / Profile Card
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(ResponsiveHelper.w(24)),
             decoration: ShapeDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -40,7 +42,7 @@ class ProfileTab extends StatelessWidget {
                 BoxShadow(
                   color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                   blurRadius: 24,
-                  offset: const Offset(0, 8),
+                  offset: Offset(0, 8),
                 ),
               ],
             ),
@@ -53,32 +55,32 @@ class ProfileTab extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Icon(
                       Icons.person,
-                      size: 36,
+                      size: ResponsiveHelper.w(36),
                       color: Colors.white,
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: ResponsiveHelper.w(16)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Athlete Profile',
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: ResponsiveHelper.sp(22),
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: ResponsiveHelper.h(4)),
                       Text(
                         'Track your fitness journey',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: ResponsiveHelper.sp(14),
                           color: Colors.white.withValues(alpha: 0.8),
                         ),
                       ),
@@ -89,19 +91,19 @@ class ProfileTab extends StatelessWidget {
             ),
           ),
           
-          const SizedBox(height: 32),
+          SizedBox(height: ResponsiveHelper.h(32)),
           
           // Section: General Settings
           Text(
             "GENERAL",
             style: TextStyle(
-              fontSize: 12,
+              fontSize: ResponsiveHelper.sp(12),
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
               color: context.colors.emptyText,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: ResponsiveHelper.h(8)),
           
           Container(
             decoration: ShapeDecoration(
@@ -116,22 +118,22 @@ class ProfileTab extends StatelessWidget {
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 16,
-                  offset: const Offset(0, 4),
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16.0), vertical: ResponsiveHelper.h(8.0)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(ResponsiveHelper.w(8)),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
                         ),
                         child: Icon(
                           Icons.dark_mode_outlined,
@@ -139,11 +141,11 @@ class ProfileTab extends StatelessWidget {
                           size: 22,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: ResponsiveHelper.w(12)),
                       Text(
                         "Dark Mode",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: ResponsiveHelper.sp(16),
                           color: context.colors.textBlack,
                           fontWeight: FontWeight.w600,
                         ),
@@ -162,24 +164,24 @@ class ProfileTab extends StatelessWidget {
             ),
           ),
           
-          const SizedBox(height: 32),
+          SizedBox(height: ResponsiveHelper.h(32)),
           
           // Section: Testing & Developer Options
           Text(
             "TESTING TOOLS",
             style: TextStyle(
-              fontSize: 12,
+              fontSize: ResponsiveHelper.sp(12),
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
               color: context.colors.emptyText,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: ResponsiveHelper.h(8)),
           
           BouncingButton(
             onTap: () => _confirmAndClearHistory(context),
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(ResponsiveHelper.w(16)),
               decoration: ShapeDecoration(
                 color: context.colors.surfaceWhite,
                 shape: SmoothRectangleBorder(
@@ -192,17 +194,17 @@ class ProfileTab extends StatelessWidget {
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.03),
                     blurRadius: 16,
-                    offset: const Offset(0, 4),
+                    offset: Offset(0, 4),
                   ),
                 ],
               ),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(ResponsiveHelper.w(8)),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.errorContainer,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
                     ),
                     child: Icon(
                       Icons.delete_sweep_outlined,
@@ -210,7 +212,7 @@ class ProfileTab extends StatelessWidget {
                       size: 22,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: ResponsiveHelper.w(12)),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,16 +220,16 @@ class ProfileTab extends StatelessWidget {
                         Text(
                           "Clear History",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: ResponsiveHelper.sp(16),
                             color: Theme.of(context).colorScheme.error,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(height: ResponsiveHelper.h(2)),
                         Text(
                           "Delete all exercise and workout history",
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: ResponsiveHelper.sp(12),
                             color: context.colors.emptyText,
                           ),
                         ),
@@ -267,7 +269,7 @@ class ProfileTab extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: const Text(
+          content: Text(
             "Are you sure you want to permanently delete all exercise and workout history? This action cannot be undone.",
           ),
           actions: [
@@ -300,10 +302,10 @@ class ProfileTab extends StatelessWidget {
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text("All exercise and workout history has been cleared."),
+          content: Text("All exercise and workout history has been cleared."),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
           ),
           duration: const Duration(seconds: 2),
         ),

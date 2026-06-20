@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -38,11 +40,11 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(top: 24.0, bottom: 12.0),
+      padding: EdgeInsets.only(top: 24.0, bottom: 12.0),
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 16,
+          fontSize: ResponsiveHelper.sp(16),
           fontWeight: FontWeight.w600,
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -67,14 +69,14 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
         : (isSelected ? colorScheme.onPrimary : colorScheme.onSurface);
 
     final Widget buttonChild = Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-      padding: const EdgeInsets.symmetric(vertical: 14.0),
+      margin: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(4.0)),
+      padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(14.0)),
       decoration: BoxDecoration(
         color: backgroundColor,
         border: Border.all(
           color: borderColor,
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
       ),
       child: Center(
         child: Text(
@@ -122,14 +124,14 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
           "Create Custom Exercise",
           style: TextStyle(
             color: colorScheme.onSurface,
-            fontSize: 20,
+            fontSize: ResponsiveHelper.sp(20),
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
           child: SizedBox(
             width: double.infinity,
             height: 56,
@@ -239,11 +241,11 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 foregroundColor: colorScheme.onPrimary,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(24)),
                 ),
               ),
               child: _isSaving
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
@@ -255,7 +257,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                       "Add custom exercise",
                       style: TextStyle(
                         color: colorScheme.onPrimary,
-                        fontSize: 16,
+                        fontSize: ResponsiveHelper.sp(16),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -267,7 +269,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
         behavior: HitTestBehavior.opaque,
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -275,13 +277,13 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
               Container(
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                 ),
                 child: TextField(
                   controller: _nameController,
                   style: TextStyle(
                     color: colorScheme.onSurface,
-                    fontSize: 16,
+                    fontSize: ResponsiveHelper.sp(16),
                     fontWeight: FontWeight.w600,
                   ),
                   onTapOutside: (PointerDownEvent event) {
@@ -290,9 +292,9 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                   decoration: InputDecoration(
                     hintText: "E.g. Bulgarian Split Squat",
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16), vertical: ResponsiveHelper.h(16)),
                     hintStyle: TextStyle(
-                      fontSize: 16,
+                      fontSize: ResponsiveHelper.sp(16),
                       fontWeight: FontWeight.w600,
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -318,7 +320,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 ],
               ),
               
-              const SizedBox(height: 16),
+              SizedBox(height: ResponsiveHelper.h(16)),
               BouncingButton(
                 onTap: () {
                   setState(() {
@@ -326,23 +328,23 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                   });
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                  padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(14.0), horizontal: ResponsiveHelper.w(16.0)),
                   decoration: BoxDecoration(
                     color: colorScheme.surface,
                     border: Border.all(color: colorScheme.outlineVariant),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.tune, color: colorScheme.primary, size: 20),
-                          const SizedBox(width: 8),
+                          Icon(Icons.tune, color: colorScheme.primary, size: ResponsiveHelper.w(20)),
+                          SizedBox(width: ResponsiveHelper.w(8)),
                           Text(
                             "Advanced Options",
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: ResponsiveHelper.sp(16),
                               fontWeight: FontWeight.w600,
                               color: colorScheme.onSurface,
                             ),
@@ -402,7 +404,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                     checkmarkColor: colorScheme.primary,
                     backgroundColor: colorScheme.surface,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                       side: BorderSide(
                         color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
                       ),
@@ -412,7 +414,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
               ),
               
               // Spacing so content doesn't get hidden behind the floating button when scrolling to the very bottom
-              const SizedBox(height: 64),
+              SizedBox(height: ResponsiveHelper.h(64)),
             ],
           ),
         ),

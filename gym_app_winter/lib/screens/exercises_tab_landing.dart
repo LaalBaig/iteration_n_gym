@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/widgets/empty_exercise_screen.dart';
 import 'package:gym_app_winter/widgets/exercise_tile.dart';
@@ -47,7 +49,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -77,12 +79,12 @@ class _ExercisesTabState extends State<ExercisesTab> {
                             right: -2,
                             top: -2,
                             child: Container(
-                              padding: const EdgeInsets.all(4),
+                              padding: EdgeInsets.all(ResponsiveHelper.w(4)),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.error,
                                 shape: BoxShape.circle,
                               ),
-                              constraints: const BoxConstraints(
+                              constraints: BoxConstraints(
                                 minWidth: 16,
                                 minHeight: 16,
                               ),
@@ -130,7 +132,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
 
               if (snapshot.connectionState == ConnectionState.waiting &&
                   exerciseList.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(child: CircularProgressIndicator());
               }
 
               if (filteredExerciseList.isEmpty) {
@@ -144,7 +146,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
               } else {
                 return ListView.builder(
                   itemCount: filteredExerciseList.length,
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 6),
+                  padding: EdgeInsets.fromLTRB(24, 0, 24, 6),
                   itemBuilder: (context, index) {
                     final exercise = filteredExerciseList[index];
                     return FutureBuilder<List<MuscleTarget>>(
@@ -184,7 +186,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
                                   behavior: SnackBarBehavior.floating,
                                   backgroundColor: Theme.of(context).colorScheme.inverseSurface,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                                   ),
                                   margin: EdgeInsets.fromLTRB(
                                     24,
@@ -232,21 +234,21 @@ class _ExercisesTabState extends State<ExercisesTab> {
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
                 ),
                 elevation: 4,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add, color: Colors.white, size: 24),
-                  const SizedBox(width: 4),
+                  Icon(Icons.add, color: Colors.white, size: ResponsiveHelper.w(24)),
+                  SizedBox(width: ResponsiveHelper.w(4)),
                   Text(
                     'Add Exercise',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: ResponsiveHelper.sp(16),
                     ),
                   ),
                 ],

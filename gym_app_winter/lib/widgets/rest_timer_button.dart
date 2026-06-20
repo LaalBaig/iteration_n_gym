@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/state/rest_timer_notifier.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
@@ -63,7 +65,7 @@ class _RestTimerButtonState extends State<RestTimerButton> {
             CompositedTransformFollower(
               link: _layerLink,
               showWhenUnlinked: false,
-              offset: const Offset(-200, 50), // Adjust to bottom-left align roughly
+              offset: Offset(-200, 50), // Adjust to bottom-left align roughly
               child: Material(
                 color: Colors.transparent,
                 child: ListenableBuilder(
@@ -112,19 +114,19 @@ class _RestTimerButtonState extends State<RestTimerButton> {
         return CompositedTransformTarget(
           link: _layerLink,
           child: Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: EdgeInsets.only(right: 8.0),
             child: FilledButton.icon(
               onPressed: _togglePopup,
               style: FilledButton.styleFrom(
                 backgroundColor: bgColor,
                 foregroundColor: fgColor,
                 shape: const StadiumBorder(),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16)),
               ),
-              icon: const Icon(Icons.timer_outlined, size: 20),
+              icon: Icon(Icons.timer_outlined, size: ResponsiveHelper.w(20)),
               label: Text(
                 label,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -157,16 +159,16 @@ class _RestTimerPopupContent extends StatelessWidget {
     final timerTheme = context.timerTheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16), vertical: ResponsiveHelper.h(12)),
       decoration: BoxDecoration(
         color: timerTheme.popupBg,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.w(24)),
         border: Border.all(color: Theme.of(context).colorScheme.outlineVariant, width: 0.5),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -185,37 +187,37 @@ class _RestTimerPopupContent extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: ResponsiveHelper.w(16)),
           // Time Label
           SizedBox(
             width: 50,
             child: Text(
               timeStr,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: ResponsiveHelper.sp(18),
                 fontWeight: FontWeight.w500,
                 color: timerTheme.popupTextColor,
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: ResponsiveHelper.w(12)),
           // -15s Button
           _AdjustButton(
             label: "-15s",
             onPressed: onSubtract,
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: ResponsiveHelper.w(8)),
           // +15s Button
           _AdjustButton(
             label: "+15s",
             onPressed: onAdd,
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: ResponsiveHelper.w(8)),
           // Close Button
           IconButton(
             onPressed: onClose,
             icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onSurfaceVariant),
-            constraints: const BoxConstraints(),
+            constraints: BoxConstraints(),
             padding: EdgeInsets.zero,
           ),
         ],
@@ -239,15 +241,15 @@ class _AdjustButton extends StatelessWidget {
         backgroundColor: timerTheme.adjustBtnBg,
         foregroundColor: timerTheme.adjustBtnTextColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(12), vertical: ResponsiveHelper.h(8)),
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       child: Text(
         label,
-        style: const TextStyle(fontWeight: FontWeight.w600),
+        style: TextStyle(fontWeight: FontWeight.w600),
       ),
     );
   }

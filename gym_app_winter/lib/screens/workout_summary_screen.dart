@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
 import 'package:gym_app_winter/screens/main_screen.dart';
@@ -28,11 +30,11 @@ class WorkoutSummaryScreen extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0), vertical: ResponsiveHelper.h(16.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Spacer(flex: 1),
+              Spacer(flex: 1),
               
               // Celebratory Icon and Title
               TweenAnimationBuilder<double>(
@@ -52,36 +54,36 @@ class WorkoutSummaryScreen extends StatelessWidget {
                     color: Colors.green.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Icon(
                       Icons.check_circle_rounded,
                       color: Colors.green,
-                      size: 64,
+                      size: ResponsiveHelper.w(64),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
               Text(
                 "Workout Complete!",
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: ResponsiveHelper.sp(28),
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: ResponsiveHelper.h(8)),
               Text(
                 "Awesome job finishing your workout today!",
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: ResponsiveHelper.sp(15),
                   color: colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),
               
-              const Spacer(flex: 1),
+              Spacer(flex: 1),
 
               // Stats Cards Row
               Row(
@@ -95,7 +97,7 @@ class WorkoutSummaryScreen extends StatelessWidget {
                       iconColor: colorScheme.primary,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: ResponsiveHelper.w(12)),
                   Expanded(
                     child: _buildStatCard(
                       context,
@@ -105,7 +107,7 @@ class WorkoutSummaryScreen extends StatelessWidget {
                       iconColor: Colors.amber[700]!,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: ResponsiveHelper.w(12)),
                   Expanded(
                     child: _buildStatCard(
                       context,
@@ -118,7 +120,7 @@ class WorkoutSummaryScreen extends StatelessWidget {
                 ],
               ),
               
-              const SizedBox(height: 32),
+              SizedBox(height: ResponsiveHelper.h(32)),
 
               // Completed Exercises List Title
               Align(
@@ -126,13 +128,13 @@ class WorkoutSummaryScreen extends StatelessWidget {
                 child: Text(
                   "Exercises Performed",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: ResponsiveHelper.sp(18),
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface,
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: ResponsiveHelper.h(12)),
 
               // Completed Exercises List
               Expanded(
@@ -149,18 +151,18 @@ class WorkoutSummaryScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final exerciseName = exercises[index];
                           return Card(
-                            margin: const EdgeInsets.only(bottom: 10),
+                            margin: EdgeInsets.only(bottom: 10),
                             elevation: 0,
                             color: colorScheme.surfaceContainerHighest,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                               side: BorderSide(
                                 color: colorScheme.outlineVariant,
                                 width: 1.0,
                               ),
                             ),
                             child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
+                              contentPadding: EdgeInsets.symmetric(
                                 horizontal: 16.0,
                                 vertical: 4.0,
                               ),
@@ -173,14 +175,14 @@ class WorkoutSummaryScreen extends StatelessWidget {
                                 ),
                                 child: Icon(
                                   Icons.done,
-                                  size: 18,
+                                  size: ResponsiveHelper.w(18),
                                   color: colorScheme.primary,
                                 ),
                               ),
                               title: Text(
                                 exerciseName,
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: ResponsiveHelper.sp(16),
                                   fontWeight: FontWeight.w600,
                                   color: colorScheme.onSurface,
                                 ),
@@ -191,7 +193,7 @@ class WorkoutSummaryScreen extends StatelessWidget {
                       ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
 
               // Action button
               SizedBox(
@@ -203,16 +205,16 @@ class WorkoutSummaryScreen extends StatelessWidget {
                   },
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16)),
                     decoration: BoxDecoration(
                       color: colorScheme.primary,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
                     ),
                     child: Center(
                       child: Text(
                         "Done",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: ResponsiveHelper.sp(16),
                           fontWeight: FontWeight.bold,
                           color: colorScheme.onPrimary,
                         ),
@@ -221,7 +223,7 @@ class WorkoutSummaryScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: ResponsiveHelper.h(8)),
             ],
           ),
         ),
@@ -239,10 +241,10 @@ class WorkoutSummaryScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16), horizontal: ResponsiveHelper.w(8)),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
         border: Border.all(
           color: colorScheme.outlineVariant,
           width: 1.0,
@@ -250,22 +252,22 @@ class WorkoutSummaryScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, color: iconColor, size: 24),
-          const SizedBox(height: 8),
+          Icon(icon, color: iconColor, size: ResponsiveHelper.w(24)),
+          SizedBox(height: ResponsiveHelper.h(8)),
           Text(
             value,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: ResponsiveHelper.sp(18),
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: ResponsiveHelper.h(4)),
           Text(
             title,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: ResponsiveHelper.sp(11),
               fontWeight: FontWeight.w500,
               color: colorScheme.onSurfaceVariant,
             ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 
 class ConfirmLog extends StatelessWidget {
   const ConfirmLog({super.key});
@@ -11,7 +13,7 @@ class ConfirmLog extends StatelessWidget {
     return AlertDialog(
       backgroundColor: colorScheme.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
       ),
       title: Text(
         "Confirm Log",
@@ -40,10 +42,10 @@ class ConfirmLog extends StatelessWidget {
             backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(ResponsiveHelper.w(8)),
             ),
           ),
-          child: const Text("Log Exercise"),
+          child: Text("Log Exercise"),
         ),
       ],
     );

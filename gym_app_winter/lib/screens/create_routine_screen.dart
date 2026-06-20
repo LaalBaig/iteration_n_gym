@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -175,7 +177,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                       "Cancel",
                       style: TextStyle(
                         color: colorScheme.primary,
-                        fontSize: 18,
+                        fontSize: ResponsiveHelper.sp(18),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -185,7 +187,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
               _isReordering ? "Reorder Exercises" : "Create Routine",
               style: TextStyle(
                 color: colorScheme.onSurface,
-                fontSize: 18,
+                fontSize: ResponsiveHelper.sp(18),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -202,13 +204,13 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                       foregroundColor: colorScheme.onPrimary,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16), vertical: ResponsiveHelper.h(8)),
                       minimumSize: const Size(64, 36),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: const Text("Done", style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text("Done", style: TextStyle(fontWeight: FontWeight.bold)),
                   )
                 : ElevatedButton(
                     onPressed: isSaveEnabled ? _saveRoutine : null,
@@ -218,9 +220,9 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                       elevation: 0,
                       shadowColor: Colors.transparent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16), vertical: ResponsiveHelper.h(8)),
                       minimumSize: const Size(64, 36),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ).copyWith(
@@ -238,7 +240,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                       }),
                     ),
                     child: _isSaving
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 18,
                             height: 18,
                             child: CircularProgressIndicator(
@@ -246,10 +248,10 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : const Text(
+                        : Text(
                             "Save",
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: ResponsiveHelper.sp(16),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -267,7 +269,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
               Container(
                 width: double.infinity,
                 color: isDark ? const Color(0xFF452B00) : const Color(0xFFFFF3CD),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16), vertical: ResponsiveHelper.h(10)),
                 child: Row(
                   children: [
                     Expanded(
@@ -276,8 +278,8 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: const Text("Creating a Routine"),
-                              content: const Text(
+                              title: Text("Creating a Routine"),
+                              content: Text(
                                 "Routines are workout templates you can run repeatedly. "
                                 "Give your routine a name, add some exercises, define their target sets/reps, and tap Save. "
                                 "You can start a workout from any of your routines at any time.",
@@ -285,7 +287,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: const Text("Got it"),
+                                  child: Text("Got it"),
                                 ),
                               ],
                             ),
@@ -313,7 +315,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                         });
                       },
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                      constraints: BoxConstraints(),
                     ),
                   ],
                 ),
@@ -322,19 +324,19 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
             // Title Input
             if (!_isReordering) ...[
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+                padding: EdgeInsets.fromLTRB(24, 20, 24, 8),
                 child: TextField(
                   controller: _titleController,
                   autofocus: false,
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: ResponsiveHelper.sp(28),
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface,
                   ),
                   decoration: InputDecoration(
                     hintText: "Routine title",
                     hintStyle: TextStyle(
-                      fontSize: 28,
+                      fontSize: ResponsiveHelper.sp(28),
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                     ),
@@ -343,8 +345,8 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24)),
                 child: Divider(height: 1, thickness: 1),
               ),
             ],
@@ -366,35 +368,35 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 48),
+        padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(48)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FaIcon(
               FontAwesomeIcons.dumbbell,
-              size: 50,
+              size: ResponsiveHelper.w(50),
               color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: ResponsiveHelper.h(16)),
             Text(
               "Get started by adding an exercise to your routine.",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: ResponsiveHelper.sp(16),
                 color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: ResponsiveHelper.h(24)),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _navigateToAddExercise,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16)),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                   ),
                   elevation: 0,
                 ),
@@ -403,10 +405,10 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.add, color: colorScheme.onPrimary),
-                    const SizedBox(width: 8),
+                    SizedBox(width: ResponsiveHelper.w(8)),
                     Text(
                       "Add Exercise",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: colorScheme.onPrimary),
+                      style: TextStyle(fontSize: ResponsiveHelper.sp(16), fontWeight: FontWeight.w600, color: colorScheme.onPrimary),
                     ),
                   ],
                 ),
@@ -421,7 +423,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
   Widget _buildExercisesList(ColorScheme colorScheme, bool isDark) {
     if (_isReordering) {
       return ReorderableListView.builder(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+        padding: EdgeInsets.fromLTRB(24, 16, 24, 16),
         itemCount: _exercises.length,
         onReorderItem: (oldIndex, newIndex) {
           setState(() {
@@ -435,19 +437,19 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
             key: ValueKey(exercise.id),
             color: Colors.transparent,
             child: Card(
-              margin: const EdgeInsets.only(bottom: 12.0),
+              margin: EdgeInsets.only(bottom: 12.0),
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                 side: BorderSide(color: colorScheme.outlineVariant, width: 1.0),
               ),
               color: colorScheme.surface,
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                contentPadding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16.0), vertical: ResponsiveHelper.h(8.0)),
                 title: Text(
                   exercise.name,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: ResponsiveHelper.sp(16),
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface,
                   ),
@@ -455,7 +457,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                 subtitle: Text(
                   exercise.category,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: ResponsiveHelper.sp(12),
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -473,24 +475,24 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
     final theme = Theme.of(context);
     return ListView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.symmetric(vertical: 24.0),
+      padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(24.0)),
       itemCount: _exercises.length + 1,
       itemBuilder: (context, index) {
         if (index == _exercises.length) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0)),
             child: Column(
               children: [
-                const SizedBox(height: 16),
+                SizedBox(height: ResponsiveHelper.h(16)),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _navigateToAddExercise,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.scaffoldBackgroundColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16)),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                         side: BorderSide(color: colorScheme.primary, width: 1.5),
                       ),
                       elevation: 0,
@@ -500,16 +502,16 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.add, color: colorScheme.primary),
-                        const SizedBox(width: 8),
+                        SizedBox(width: ResponsiveHelper.w(8)),
                         Text(
                           "Add Exercise",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: colorScheme.primary),
+                          style: TextStyle(fontSize: ResponsiveHelper.sp(16), fontWeight: FontWeight.w600, color: colorScheme.primary),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: ResponsiveHelper.h(12)),
                 // Extra bottom spacing to allow scrolling the last exercise card to the top
                 SizedBox(height: MediaQuery.of(context).size.height * 0.8),
               ],
@@ -531,7 +533,7 @@ class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
 
         return Padding(
           key: exercise.id == _newlyAddedExerciseId ? _newlyAddedCardKey : null,
-          padding: const EdgeInsets.only(bottom: 24.0, left: 24.0, right: 24.0),
+          padding: EdgeInsets.only(bottom: 24.0, left: 24.0, right: 24.0),
           child: LogSetCard(
             key: ValueKey(exercise.id),
             exerciseName: exercise.name,

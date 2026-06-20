@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/history_tile.dart';
@@ -48,7 +50,7 @@ class _SeeAllHistoryScreenState extends State<SeeAllHistoryScreen> {
             "${widget.exerciseName} History",
             style: TextStyle(
               color: context.colors.textBlack,
-              fontSize: 20,
+              fontSize: ResponsiveHelper.sp(20),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -60,7 +62,7 @@ class _SeeAllHistoryScreenState extends State<SeeAllHistoryScreen> {
             child: Icon(Icons.arrow_back, color: context.colors.textBlack),
           ),
         ),
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -82,7 +84,7 @@ class _SeeAllHistoryScreenState extends State<SeeAllHistoryScreen> {
           "${widget.exerciseName} History",
           style: TextStyle(
             color: context.colors.textBlack,
-            fontSize: 20,
+            fontSize: ResponsiveHelper.sp(20),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -100,7 +102,7 @@ class _SeeAllHistoryScreenState extends State<SeeAllHistoryScreen> {
           final logs = snapshot.data ?? [];
 
           if (snapshot.connectionState == ConnectionState.waiting && logs.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           // Group logs by workoutId
@@ -128,17 +130,17 @@ class _SeeAllHistoryScreenState extends State<SeeAllHistoryScreen> {
             return Center(
               child: Text(
                 "No logs recorded yet.",
-                style: TextStyle(color: context.colors.emptyText, fontSize: 16),
+                style: TextStyle(color: context.colors.emptyText, fontSize: ResponsiveHelper.sp(16)),
               ),
             );
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+            padding: EdgeInsets.fromLTRB(24, 0, 24, 12),
             itemCount: history.length,
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
+                padding: EdgeInsets.only(bottom: 12.0),
                 child: history[index],
               );
             },

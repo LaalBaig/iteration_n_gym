@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gym_app_winter/database/database.dart';
 import 'package:intl/intl.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+import 'package:gym_app_winter/constants/spacing.dart';
+import 'package:gym_app_winter/widgets/app_card.dart';
 
 class WorkoutSummaryCard extends StatelessWidget {
   final List<LogWithWorkoutAndExercise> logs;
@@ -51,24 +54,8 @@ class WorkoutSummaryCard extends StatelessWidget {
     final averageWeight = totalWeightedSets > 0 ? sumOfWeights / totalWeightedSets : 0.0;
     final numberFormat = NumberFormat('#,##0.#');
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colors.surfaceWhite,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colors.borderCream,
-          width: 1.0,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.withValues(alpha: 0.03),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return AppCard(
+      padding: EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -77,52 +64,51 @@ class WorkoutSummaryCard extends StatelessWidget {
             children: [
               Text(
                 'Weekly Summary',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
                   color: colors.textBlack,
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.help_outline),
+                icon: Icon(Icons.help_outline),
                 onPressed: () {
                   // TODO: Show help dialog explaining the stats
                 },
                 color: colors.emptyText,
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
+                constraints: BoxConstraints(),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: AppSpacing.lg),
           
           // Placeholder for Anatomical Heatmap
           Container(
-            height: 180,
+            height: ResponsiveHelper.h(180),
             width: double.infinity,
             decoration: BoxDecoration(
               color: colors.warmSand,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
             ),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.accessibility_new_rounded, size: 48, color: colorScheme.primary.withValues(alpha: 0.5)),
-                  const SizedBox(height: 8),
+                  Icon(Icons.accessibility_new_rounded, size: ResponsiveHelper.w(48), color: colorScheme.primary.withValues(alpha: 0.5)),
+                  SizedBox(height: AppSpacing.sm),
                   Text(
                     'Anatomical Heatmap Placeholder',
-                    style: TextStyle(color: colors.emptyText),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.emptyText),
                   ),
                   Text(
                     '(Requires SVG body assets)',
-                    style: TextStyle(fontSize: 12, color: colors.emptyText.withValues(alpha: 0.7)),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.emptyText.withValues(alpha: 0.7)),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: AppSpacing.xl),
 
           // Stats Grid
           Row(
@@ -132,7 +118,7 @@ class WorkoutSummaryCard extends StatelessWidget {
               Expanded(child: _StatItem(label: 'Reps', value: totalReps.toString())),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: AppSpacing.lg),
           Row(
             children: [
               Expanded(child: _StatItem(label: 'Volume', value: '${numberFormat.format(totalVolume)} kg', isHighlight: true)),
@@ -167,18 +153,15 @@ class _StatItem extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 13,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: colors.emptyText,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: AppSpacing.xs),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             color: isHighlight ? colorScheme.primary : colors.textBlack,
           ),
         ),

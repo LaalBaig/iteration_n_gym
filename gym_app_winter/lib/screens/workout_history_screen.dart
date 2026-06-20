@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:figma_squircle/figma_squircle.dart';
@@ -124,9 +126,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
         behavior: SnackBarBehavior.floating,
         backgroundColor: colorScheme.inverseSurface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
         ),
-        margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        margin: EdgeInsets.fromLTRB(24, 0, 24, 24),
         duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: "Undo",
@@ -170,7 +172,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
           "Workout History",
           style: TextStyle(
             color: colorScheme.onSurface,
-            fontSize: 20,
+            fontSize: ResponsiveHelper.sp(20),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -181,7 +183,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
           final workouts = snapshot.data ?? [];
 
           if (snapshot.connectionState == ConnectionState.waiting && workouts.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           if (workouts.isEmpty) {
@@ -199,23 +201,23 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                     child: Icon(
                       Icons.history,
                       color: colorScheme.onSurfaceVariant,
-                      size: 40,
+                      size: ResponsiveHelper.w(40),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: ResponsiveHelper.h(16)),
                   Text(
                     "No Workouts Completed",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: ResponsiveHelper.sp(18),
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: ResponsiveHelper.h(8)),
                   Text(
                     "Workouts you finish will be listed here",
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: ResponsiveHelper.sp(14),
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
@@ -226,7 +228,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
 
           return ListView.builder(
             itemCount: workouts.length,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24), vertical: ResponsiveHelper.h(8)),
             itemBuilder: (context, index) {
               final workout = workouts[index];
               final dateStr = DateFormat('EEEE, MMM d').format(workout.startTime);
@@ -234,8 +236,8 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
               final durationStr = _formatDuration(workout.startTime, workout.endTime);
 
               return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.all(16),
+                margin: EdgeInsets.only(bottom: 16),
+                padding: EdgeInsets.all(ResponsiveHelper.w(16)),
                 decoration: ShapeDecoration(
                   color: context.colors.surfaceWhite,
                   shape: SmoothRectangleBorder(
@@ -264,16 +266,16 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                               Text(
                                 dateStr,
                                 style: TextStyle(
-                                  fontSize: 17,
+                                  fontSize: ResponsiveHelper.sp(17),
                                   fontWeight: FontWeight.bold,
                                   color: colorScheme.onSurface,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: ResponsiveHelper.h(4)),
                               Text(
                                 "$timeStr • $durationStr",
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: ResponsiveHelper.sp(13),
                                   fontWeight: FontWeight.w500,
                                   color: colorScheme.onSurfaceVariant,
                                 ),
@@ -285,10 +287,10 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                           onTap: () => _confirmAndDelete(context, workout),
                           behavior: HitTestBehavior.opaque,
                           child: Padding(
-                            padding: const EdgeInsets.all(4.0),
+                            padding: EdgeInsets.all(ResponsiveHelper.w(4.0)),
                             child: Icon(
                               Icons.delete_outline,
-                              size: 22,
+                              size: ResponsiveHelper.w(22),
                               color: colorScheme.onSurfaceVariant,
                             ),
                           ),
@@ -296,19 +298,19 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                       ],
                     ),
                     if (workout.description != null && workout.description!.isNotEmpty) ...[
-                      const SizedBox(height: 10),
+                      SizedBox(height: ResponsiveHelper.h(10)),
                       Text(
                         workout.description!,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: ResponsiveHelper.sp(14),
                           fontStyle: FontStyle.italic,
                           color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
-                    const SizedBox(height: 12),
-                    const Divider(height: 1),
-                    const SizedBox(height: 12),
+                    SizedBox(height: ResponsiveHelper.h(12)),
+                    Divider(height: 1),
+                    SizedBox(height: ResponsiveHelper.h(12)),
                     // Exercises and sets list
                     FutureBuilder<List<ExerciseLog>>(
                       future: DatabaseService().db.getLogsForWorkout(workout.id),
@@ -316,8 +318,8 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                         final logs = logSnapshot.data ?? [];
 
                         if (logSnapshot.connectionState == ConnectionState.waiting && logs.isEmpty) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(8.0)),
                             child: SizedBox(
                               height: 14,
                               width: 14,
@@ -330,7 +332,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                           return Text(
                             "No logs recorded for this workout.",
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: ResponsiveHelper.sp(13),
                               color: colorScheme.onSurfaceVariant,
                               fontStyle: FontStyle.italic,
                             ),
@@ -352,23 +354,23 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                             final setCountText = exerciseSets.length == 1 ? "1 set" : "${exerciseSets.length} sets";
 
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
+                              padding: EdgeInsets.only(bottom: 10.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     exerciseName,
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: ResponsiveHelper.sp(14),
                                       fontWeight: FontWeight.w600,
                                       color: colorScheme.onSurface,
                                     ),
                                   ),
-                                  const SizedBox(height: 3),
+                                  SizedBox(height: ResponsiveHelper.h(3)),
                                   Text(
                                     "$setCountText: $setListText",
                                     style: TextStyle(
-                                      fontSize: 13,
+                                      fontSize: ResponsiveHelper.sp(13),
                                       color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),

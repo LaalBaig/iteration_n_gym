@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:gym_app_winter/navigation/app_router.dart';
 import 'package:gym_app_winter/widgets/minimized_workout_bar.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+import 'package:gym_app_winter/theme/app_theme.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -37,6 +39,7 @@ class _MyAppState extends State<MyApp> {
   
   @override
   Widget build(BuildContext context) {
+    ResponsiveHelper.init(context);
     return MaterialApp.router(
         scaffoldMessengerKey: scaffoldMessengerKey,
         title: "Fitness App",
@@ -58,9 +61,7 @@ class _MyAppState extends State<MyApp> {
           error: Colors.red,
           onError: Colors.white,
         ),
-        textTheme: GoogleFonts.dmSansTextTheme(
-          ThemeData.light().textTheme,
-        ),
+        textTheme: AppTheme.getResponsiveTextTheme(ThemeData.light().textTheme),
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,
         splashColor: Colors.transparent,
@@ -96,9 +97,7 @@ class _MyAppState extends State<MyApp> {
           error: Colors.redAccent,
           onError: Colors.white,
         ),
-        textTheme: GoogleFonts.dmSansTextTheme(
-          ThemeData.dark().textTheme,
-        ),
+        textTheme: AppTheme.getResponsiveTextTheme(ThemeData.dark().textTheme),
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,
         splashColor: Colors.transparent,
@@ -119,14 +118,21 @@ class _MyAppState extends State<MyApp> {
       ),
       routerConfig: _appRouter.getRouter(),
       builder: (context, child) {
-        return Stack(
-          children: [
-            if (child != null) child,
-            const Align(
-              alignment: Alignment.bottomCenter,
-              child: MinimizedWorkoutBar(),
-            ),
-          ],
+        final mediaQueryData = MediaQuery.of(context);
+        final clampedTextScaler = TextScaler.linear(
+          mediaQueryData.textScaler.scale(1).clamp(0.85, 1.15)
+        );
+        return MediaQuery(
+          data: mediaQueryData.copyWith(textScaler: clampedTextScaler),
+          child: Stack(
+            children: [
+              if (child != null) child,
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: MinimizedWorkoutBar(),
+              ),
+            ],
+          ),
         );
       },
     );

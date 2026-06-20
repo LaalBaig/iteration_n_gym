@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gym_app_winter/datamodel/exercise.dart';
@@ -107,9 +109,9 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
           elevation: 0,
           titleSpacing: 16,
           title: _isReordering
-              ? const Text(
+              ? Text(
                   "Reorder Exercises",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: ResponsiveHelper.sp(20), fontWeight: FontWeight.w600),
                 )
               : BouncingButton(
                   onTap: () {
@@ -125,10 +127,10 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   child: Row(
                     children: [
                       Icon(Icons.keyboard_arrow_down, color: colorScheme.onSurface),
-                      const SizedBox(width: 8),
+                      SizedBox(width: ResponsiveHelper.w(8)),
                       Text(
                         "Log Workout",
-                        style: TextStyle(color: colorScheme.onSurface, fontSize: 20, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: colorScheme.onSurface, fontSize: ResponsiveHelper.sp(20), fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -136,7 +138,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
           actions: _isReordering
               ? [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16.0), vertical: ResponsiveHelper.h(8.0)),
                     child: ElevatedButton(
                       onPressed: () {
                         setState(() {
@@ -147,18 +149,18 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                         backgroundColor: colorScheme.primary,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(ResponsiveHelper.w(8)),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16)),
                       ),
-                      child: Text("Done", style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16)),
+                      child: Text("Done", style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: ResponsiveHelper.sp(16))),
                     ),
                   ),
                 ]
               : [
                   const RestTimerButton(),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16.0), vertical: ResponsiveHelper.h(8.0)),
                     child: ElevatedButton(
                       onPressed: () async {
                         final manager = WorkoutManager();
@@ -180,11 +182,11 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                         backgroundColor: colorScheme.primary,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(ResponsiveHelper.w(8)),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16)),
                       ),
-                      child: Text("Finish", style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: 16)),
+                      child: Text("Finish", style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.w600, fontSize: ResponsiveHelper.sp(16))),
                     ),
                   ),
                 ],
@@ -199,7 +201,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               return SafeArea(
                 child: ReorderableListView.builder(
                   buildDefaultDragHandles: false,
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0), vertical: ResponsiveHelper.h(16.0)),
                   itemCount: workoutExercises.length,
                   onReorderItem: (oldIndex, newIndex) {
                     manager.reorderExercises(oldIndex, newIndex);
@@ -210,19 +212,19 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                       key: ValueKey(exercise.id),
                       color: Colors.transparent,
                       child: Card(
-                        margin: const EdgeInsets.only(bottom: 12.0),
+                        margin: EdgeInsets.only(bottom: 12.0),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                           side: BorderSide(color: colorScheme.outlineVariant, width: 1.0),
                         ),
                         color: colorScheme.surface,
                         child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          contentPadding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16.0), vertical: ResponsiveHelper.h(8.0)),
                           title: Text(
                             exercise.name,
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: ResponsiveHelper.sp(16),
                               fontWeight: FontWeight.bold,
                               color: colorScheme.onSurface,
                             ),
@@ -230,7 +232,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                           subtitle: Text(
                             exercise.category,
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: ResponsiveHelper.sp(12),
                               color: colorScheme.onSurfaceVariant,
                             ),
                           ),
@@ -252,7 +254,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
                   // Summary Row
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
+                    padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0), vertical: ResponsiveHelper.h(16)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -283,25 +285,25 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
     final colorScheme = theme.colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(),
+          Spacer(),
           // Empty State Graphic
-          FaIcon(FontAwesomeIcons.dumbbell, size: 60, color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
-          const SizedBox(height: 24),
+          FaIcon(FontAwesomeIcons.dumbbell, size: ResponsiveHelper.w(60), color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+          SizedBox(height: ResponsiveHelper.h(24)),
           Text(
             "Get started",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
+            style: TextStyle(fontSize: ResponsiveHelper.sp(20), fontWeight: FontWeight.bold, color: colorScheme.onSurface),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: ResponsiveHelper.h(8)),
           Text(
             "Add an exercise to start your workout",
-            style: TextStyle(fontSize: 16, color: colorScheme.onSurfaceVariant),
+            style: TextStyle(fontSize: ResponsiveHelper.sp(16), color: colorScheme.onSurfaceVariant),
           ),
           
-          const Spacer(),
+          Spacer(),
           
           // Action Buttons
           SizedBox(
@@ -310,9 +312,9 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
               onPressed: _navigateToAddExercise,
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16)),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                 ),
                 elevation: 0,
               ),
@@ -321,16 +323,16 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.add, color: colorScheme.onPrimary),
-                  const SizedBox(width: 8),
+                  SizedBox(width: ResponsiveHelper.w(8)),
                   Text(
                     "Add Exercise",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: colorScheme.onPrimary),
+                    style: TextStyle(fontSize: ResponsiveHelper.sp(16), fontWeight: FontWeight.w600, color: colorScheme.onPrimary),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: ResponsiveHelper.h(12)),
           Row(
             children: [
               Expanded(
@@ -338,19 +340,19 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.surfaceContainerHighest,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16)),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                     ),
                     elevation: 0,
                   ),
                   child: Text(
                     "Settings",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: colorScheme.onSurface),
+                    style: TextStyle(fontSize: ResponsiveHelper.sp(16), fontWeight: FontWeight.w600, color: colorScheme.onSurface),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: ResponsiveHelper.w(12)),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () async {
@@ -365,21 +367,21 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.surfaceContainerHighest,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16)),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                     ),
                     elevation: 0,
                   ),
                   child: Text(
                     "Discard Workout",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: colorScheme.error),
+                    style: TextStyle(fontSize: ResponsiveHelper.sp(16), fontWeight: FontWeight.w600, color: colorScheme.error),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: ResponsiveHelper.h(24)),
         ],
       ),
     );
@@ -391,15 +393,15 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
 
     return ListView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.symmetric(vertical: 24.0),
+      padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(24.0)),
       itemCount: workoutExercises.length + 1,
       itemBuilder: (itemContext, index) {
         if (index == workoutExercises.length) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0)),
             child: Column(
               children: [
-                const SizedBox(height: 16),
+                SizedBox(height: ResponsiveHelper.h(16)),
                 // Action Buttons below the list
                 SizedBox(
                   width: double.infinity,
@@ -407,9 +409,9 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                     onPressed: _navigateToAddExercise,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.scaffoldBackgroundColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16)),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                         side: BorderSide(color: colorScheme.primary, width: 1.5),
                       ),
                       elevation: 0,
@@ -419,16 +421,16 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.add, color: colorScheme.primary),
-                        const SizedBox(width: 8),
+                        SizedBox(width: ResponsiveHelper.w(8)),
                         Text(
                           "Add Exercise",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: colorScheme.primary),
+                          style: TextStyle(fontSize: ResponsiveHelper.sp(16), fontWeight: FontWeight.w600, color: colorScheme.primary),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: ResponsiveHelper.h(12)),
                 Row(
                   children: [
                     Expanded(
@@ -436,19 +438,19 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.surfaceContainerHighest,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16)),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                           ),
                           elevation: 0,
                         ),
                         child: Text(
                           "Settings",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: colorScheme.onSurface),
+                          style: TextStyle(fontSize: ResponsiveHelper.sp(16), fontWeight: FontWeight.w600, color: colorScheme.onSurface),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: ResponsiveHelper.w(12)),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
@@ -463,21 +465,21 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.surfaceContainerHighest,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16)),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                           ),
                           elevation: 0,
                         ),
                         child: Text(
                           "Discard Workout",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: colorScheme.error),
+                          style: TextStyle(fontSize: ResponsiveHelper.sp(16), fontWeight: FontWeight.w600, color: colorScheme.error),
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: ResponsiveHelper.h(24)),
                 // Extra bottom spacing to allow scrolling the last exercise card to the top
                 SizedBox(height: MediaQuery.of(itemContext).size.height * 0.8),
               ],
@@ -499,7 +501,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
 
         return Padding(
           key: exercise.id == _newlyAddedExerciseId ? _newlyAddedCardKey : null,
-          padding: const EdgeInsets.only(bottom: 24.0, left: 24.0, right: 24.0),
+          padding: EdgeInsets.only(bottom: 24.0, left: 24.0, right: 24.0),
           child: LogSetCard(
             key: ValueKey(exercise.id),
             exerciseName: exercise.name,
@@ -564,13 +566,13 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: ResponsiveHelper.sp(12), color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.w500),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: ResponsiveHelper.h(4)),
         Text(
           value,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: ResponsiveHelper.sp(18),
             fontWeight: FontWeight.w600,
             color: isBlue ? colorScheme.primary : colorScheme.onSurface,
           ),

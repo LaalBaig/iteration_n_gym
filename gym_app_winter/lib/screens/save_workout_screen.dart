@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:gym_app_winter/state/workout_manager.dart';
@@ -135,19 +137,19 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                           borderSide: BorderSide(color: colorScheme.primary),
                         ),
                       ),
-                      style: TextStyle(color: colorScheme.onSurface, fontSize: 18),
+                      style: TextStyle(color: colorScheme.onSurface, fontSize: ResponsiveHelper.sp(18)),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: ResponsiveHelper.w(8)),
                   Text(
                     ":",
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: ResponsiveHelper.sp(24),
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: ResponsiveHelper.w(8)),
                   // Minutes Field
                   SizedBox(
                     width: 50,
@@ -167,19 +169,19 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                           borderSide: BorderSide(color: colorScheme.primary),
                         ),
                       ),
-                      style: TextStyle(color: colorScheme.onSurface, fontSize: 18),
+                      style: TextStyle(color: colorScheme.onSurface, fontSize: ResponsiveHelper.sp(18)),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: ResponsiveHelper.w(8)),
                   Text(
                     ":",
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: ResponsiveHelper.sp(24),
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: ResponsiveHelper.w(8)),
                   // Seconds Field
                   SizedBox(
                     width: 50,
@@ -199,7 +201,7 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                           borderSide: BorderSide(color: colorScheme.primary),
                         ),
                       ),
-                      style: TextStyle(color: colorScheme.onSurface, fontSize: 18),
+                      style: TextStyle(color: colorScheme.onSurface, fontSize: ResponsiveHelper.sp(18)),
                     ),
                   ),
                 ],
@@ -267,14 +269,14 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
           "Save Workout",
           style: TextStyle(
             color: colorScheme.onSurface,
-            fontSize: 18,
+            fontSize: ResponsiveHelper.sp(18),
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: EdgeInsets.only(right: 16.0),
             child: SizedBox(
               height: 36,
               child: ElevatedButton(
@@ -324,16 +326,16 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                   elevation: 0,
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(8)),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16)),
                 ),
-                child: const Text(
+                child: Text(
                   "Save",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: ResponsiveHelper.sp(15),
                   ),
                 ),
               ),
@@ -343,7 +345,7 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0), vertical: ResponsiveHelper.h(16.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -353,9 +355,9 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                 children: [
                   InkWell(
                     onTap: () => _showDurationPickerDialog(context),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(8)),
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
+                      padding: EdgeInsets.all(ResponsiveHelper.w(4.0)),
                       child: _buildStatItem("Duration", durationStr, colorScheme.primary),
                     ),
                   ),
@@ -363,43 +365,43 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                   _buildStatItem("Sets", manager.setsCount.toString(), colorScheme.onSurface),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
               Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
 
               // "When" section (tappable to edit)
               InkWell(
                 onTap: () => _selectDateTime(context),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.w(8)),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+                  padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(4.0), horizontal: ResponsiveHelper.w(4.0)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "When",
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: ResponsiveHelper.sp(12),
                           color: colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: ResponsiveHelper.h(4)),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             formattedDate,
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: ResponsiveHelper.sp(16),
                               fontWeight: FontWeight.w600,
                               color: colorScheme.primary,
                             ),
                           ),
-                          const SizedBox(width: 6),
+                          SizedBox(width: ResponsiveHelper.w(6)),
                           Icon(
                             Icons.edit_calendar_outlined,
-                            size: 16,
+                            size: ResponsiveHelper.w(16),
                             color: colorScheme.primary,
                           ),
                         ],
@@ -408,9 +410,9 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
               Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
 
 
 
@@ -418,18 +420,18 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
               Text(
                 "Description",
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: ResponsiveHelper.sp(12),
                   color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: ResponsiveHelper.h(8)),
               TextField(
                 controller: _descriptionController,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: ResponsiveHelper.sp(15),
                   color: colorScheme.onSurface,
                 ),
                 decoration: InputDecoration(
@@ -442,9 +444,9 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
               Divider(color: colorScheme.outlineVariant, thickness: 1, height: 1),
-              const SizedBox(height: 48),
+              SizedBox(height: ResponsiveHelper.h(48)),
 
               // Discard Button
               Center(
@@ -463,13 +465,13 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
                     "Discard Workout",
                     style: TextStyle(
                       color: colorScheme.error,
-                      fontSize: 16,
+                      fontSize: ResponsiveHelper.sp(16),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
             ],
           ),
         ),
@@ -485,16 +487,16 @@ class _SaveWorkoutScreenState extends State<SaveWorkoutScreen> {
         Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: ResponsiveHelper.sp(12),
             color: colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: ResponsiveHelper.h(4)),
         Text(
           value,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: ResponsiveHelper.sp(18),
             fontWeight: FontWeight.bold,
             color: valueColor,
           ),

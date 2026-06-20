@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 
 class CustomSearchBar extends StatelessWidget {
   const CustomSearchBar({
@@ -16,16 +18,16 @@ class CustomSearchBar extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24.0, 12, 24, 24),
+      padding: EdgeInsets.fromLTRB(24.0, 12, 24, 24),
       child: Container(
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
         ),
         child: Row(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(12.0, 0, 0, 0),
+              padding: EdgeInsets.fromLTRB(12.0, 0, 0, 0),
               child: Icon(
                 Icons.search,
                 color: colorScheme.onSurfaceVariant,
@@ -40,20 +42,20 @@ class CustomSearchBar extends StatelessWidget {
                   filled: true,
                   fillColor: colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                   ),
                   hintText: hintText,
                   hintStyle: TextStyle(
-                    fontSize: 16,
+                    fontSize: ResponsiveHelper.sp(16),
                     fontWeight: FontWeight.w400,
                     color: colorScheme.onSurfaceVariant,
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(12.0)),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(12.0)),
                     borderSide: BorderSide.none,
                   ),
                 ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+import 'package:gym_app_winter/constants/spacing.dart';
 
 class ExerciseTile extends StatelessWidget {
   final String title;
@@ -27,17 +29,16 @@ class ExerciseTile extends StatelessWidget {
     this.showDeleteIcon = true,
   });
 
-  Widget _buildTag(String text, Color badgeBgColor, Color brandPurple) {
+  Widget _buildTag(BuildContext context, String text, Color badgeBgColor, Color brandPurple) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(6), vertical: ResponsiveHelper.h(2)),
       decoration: BoxDecoration(
         color: badgeBgColor,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.w(6)),
       ),
       child: Text(
         text,
-        style: TextStyle(
-          fontSize: 11,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
           fontWeight: FontWeight.bold,
           color: brandPurple,
         ),
@@ -64,23 +65,23 @@ class ExerciseTile extends StatelessWidget {
         return await _showDeleteDialog(context, colorScheme);
       },
       background: Container(
-        margin: EdgeInsets.only(bottom: bottomMargin), 
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        margin: EdgeInsets.only(bottom: ResponsiveHelper.h(bottomMargin)), 
+        padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
         decoration: BoxDecoration(
           color: colorScheme.error,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
         ),
         alignment: Alignment.centerRight,
-        child: const Icon(Icons.delete, color: Colors.white),
+        child: Icon(Icons.delete, color: Colors.white, size: ResponsiveHelper.w(24)),
       ),
       child: BouncingButton(
         onTap: onTap,
         child: Container(
-          margin: EdgeInsets.only(bottom: bottomMargin), 
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), 
+          margin: EdgeInsets.only(bottom: ResponsiveHelper.h(bottomMargin)), 
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: ResponsiveHelper.h(12)), 
           decoration: BoxDecoration(
             color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
             border: Border.all(
               color: colorScheme.outlineVariant,
               width: 1.0,
@@ -90,21 +91,21 @@ class ExerciseTile extends StatelessWidget {
             children: [
               // 1. Dumbbell Icon Badge
               Container(
-                width: 40,
-                height: 40,
+                width: ResponsiveHelper.w(40),
+                height: ResponsiveHelper.w(40),
                 decoration: BoxDecoration(
                   color: badgeBgColor,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
                 ),
                 child: Center(
                   child: Icon(
                     Icons.fitness_center,
                     color: brandPurple,
-                    size: 18, 
+                    size: ResponsiveHelper.w(18), 
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: AppSpacing.sm),
 
               // 2. Title & Subtitle + Category Badges
               Expanded(
@@ -114,34 +115,32 @@ class ExerciseTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
-                        fontSize: 16, 
-                        fontWeight: FontWeight.bold, 
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600, 
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 4), 
+                    SizedBox(height: AppSpacing.xs), 
                     if (muscleGroups.isNotEmpty || (category != null && category!.isNotEmpty) || isCustom)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
+                        padding: EdgeInsets.only(bottom: ResponsiveHelper.h(4)),
                         child: Wrap(
-                          spacing: 6,
-                          runSpacing: 4,
+                          spacing: ResponsiveHelper.w(6),
+                          runSpacing: ResponsiveHelper.h(4),
                           children: [
                             if (isCustom)
-                              _buildTag("Custom", colorScheme.secondaryContainer, colorScheme.onSecondaryContainer),
+                              _buildTag(context, "Custom", colorScheme.secondaryContainer, colorScheme.onSecondaryContainer),
                             if (muscleGroups.isNotEmpty)
-                              ...muscleGroups.map((m) => _buildTag(m, badgeBgColor, brandPurple)).toList()
+                              ...muscleGroups.map((m) => _buildTag(context, m, badgeBgColor, brandPurple))
                             else if (category != null && category!.isNotEmpty)
-                              _buildTag(category!, badgeBgColor, brandPurple),
+                              _buildTag(context, category!, badgeBgColor, brandPurple),
                           ],
                         ),
                       ),
                     if (subtitle.isNotEmpty)
                       Text(
                         subtitle,
-                        style: TextStyle(
-                          fontSize: 12, 
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
                         maxLines: 1,
@@ -150,7 +149,7 @@ class ExerciseTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: AppSpacing.sm),
 
               // 3. Delete Option or Chevron Right
               if (onDelete != null && showDeleteIcon)
@@ -167,11 +166,11 @@ class ExerciseTile extends StatelessWidget {
                     }
                   },
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(AppSpacing.sm),
                     child: Icon(
                       Icons.delete_outline,
                       color: colorScheme.error,
-                      size: 22,
+                      size: ResponsiveHelper.w(22),
                     ),
                   ),
                 )
@@ -179,7 +178,7 @@ class ExerciseTile extends StatelessWidget {
                 Icon(
                   Icons.chevron_right, 
                   color: colorScheme.onSurfaceVariant, 
-                  size: 20, 
+                  size: ResponsiveHelper.w(20), 
                 ),
             ],
           ),
@@ -194,16 +193,16 @@ class ExerciseTile extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: colorScheme.surface,
-          title: Text("Delete Exercise", style: TextStyle(color: colorScheme.onSurface)),
-          content: Text("Are you sure you want to delete this exercise?", style: TextStyle(color: colorScheme.onSurfaceVariant)),
+          title: Text("Delete Exercise", style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface)),
+          content: Text("Are you sure you want to delete this exercise?", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text("Cancel", style: TextStyle(color: colorScheme.onSurfaceVariant)),
+              child: Text("Cancel", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text("Delete", style: TextStyle(color: colorScheme.error)),
+              child: Text("Delete", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.error)),
             ),
           ],
         );

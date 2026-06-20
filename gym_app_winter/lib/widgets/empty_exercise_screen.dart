@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:gym_app_winter/palette/color_scheme.dart';
 
 class EmptyExerciseScreen extends StatelessWidget {
@@ -15,7 +17,7 @@ class EmptyExerciseScreen extends StatelessWidget {
             color: const Color.fromARGB(255, 127, 127, 127),
             size: 48,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: ResponsiveHelper.h(16)),
           Text(
               style: TextStyle(color: context.colors.emptyText),
               "No Exercises Added Yet"),

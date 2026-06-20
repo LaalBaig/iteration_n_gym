@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/history_tile.dart';
@@ -83,11 +85,11 @@ class _ProgressChartState extends State<ProgressChart> {
     final Color brandPurple = isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16), vertical: ResponsiveHelper.h(16)),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF161616) : Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.w(24)),
         border: Border.all(
           color: borderTheme,
           width: 1.0,
@@ -104,7 +106,7 @@ class _ProgressChartState extends State<ProgressChart> {
               Text(
                 "Progress",
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: ResponsiveHelper.sp(20),
                   fontWeight: FontWeight.bold,
                   color: context.colors.textBlack,
                 ),
@@ -116,7 +118,7 @@ class _ProgressChartState extends State<ProgressChart> {
                     value: _selectedMetric,
                     dropdownColor: isDark ? const Color(0xFF222222) : Colors.white,
                     iconEnabledColor: context.colors.brandPrimary,
-                    underline: const SizedBox(),
+                    underline: SizedBox(),
                     style: TextStyle(
                       color: isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9),
                       fontWeight: FontWeight.bold,
@@ -125,7 +127,7 @@ class _ProgressChartState extends State<ProgressChart> {
                     items: ['Volume', 'Max Weight', 'Reps']
                         .map((e) => DropdownMenuItem(
                               value: e,
-                              child: Text(e, style: TextStyle(color: context.colors.textBlack, fontSize: 13)),
+                              child: Text(e, style: TextStyle(color: context.colors.textBlack, fontSize: ResponsiveHelper.sp(13))),
                             ))
                         .toList(),
                     onChanged: (val) {
@@ -136,12 +138,12 @@ class _ProgressChartState extends State<ProgressChart> {
                       }
                     },
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: ResponsiveHelper.w(8)),
                   DropdownButton<String>(
                     value: _selectedTimeframe,
                     dropdownColor: isDark ? const Color(0xFF222222) : Colors.white,
                     iconEnabledColor: context.colors.brandPrimary,
-                    underline: const SizedBox(),
+                    underline: SizedBox(),
                     style: TextStyle(
                       color: isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9),
                       fontWeight: FontWeight.bold,
@@ -150,7 +152,7 @@ class _ProgressChartState extends State<ProgressChart> {
                     items: ['All Time', 'Past Week', 'Past Month', 'Past Year']
                         .map((e) => DropdownMenuItem(
                               value: e,
-                              child: Text(e, style: TextStyle(color: context.colors.textBlack, fontSize: 13)),
+                              child: Text(e, style: TextStyle(color: context.colors.textBlack, fontSize: ResponsiveHelper.sp(13))),
                             ))
                         .toList(),
                     onChanged: (val) {
@@ -165,15 +167,15 @@ class _ProgressChartState extends State<ProgressChart> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: ResponsiveHelper.h(20)),
           // Chart Area
           Container(
             height: 240,
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(8, 24, 24, 16),
+            padding: EdgeInsets.fromLTRB(8, 24, 24, 16),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF9F9F9),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
               border: Border.all(color: lineTheme),
             ),
             child: Stack(
@@ -208,7 +210,7 @@ class _ProgressChartState extends State<ProgressChart> {
                       leftTitles: AxisTitles(
                         axisNameWidget: Text(
                           _selectedMetric,
-                          style: TextStyle(color: context.colors.emptyText, fontSize: 12, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: context.colors.emptyText, fontSize: ResponsiveHelper.sp(12), fontWeight: FontWeight.bold),
                         ),
                         axisNameSize: 20,
                         sideTitles: SideTitles(
@@ -216,10 +218,10 @@ class _ProgressChartState extends State<ProgressChart> {
                           reservedSize: 44,
                           getTitlesWidget: (value, meta) {
                             return Padding(
-                              padding: const EdgeInsets.only(right: 12.0),
+                              padding: EdgeInsets.only(right: 12.0),
                               child: Text(
                                 value.toInt().toString(),
-                                style: TextStyle(color: context.colors.emptyText, fontSize: 10),
+                                style: TextStyle(color: context.colors.emptyText, fontSize: ResponsiveHelper.sp(10)),
                                 textAlign: TextAlign.right,
                               ),
                             );
@@ -228,10 +230,10 @@ class _ProgressChartState extends State<ProgressChart> {
                       ),
                       bottomTitles: AxisTitles(
                         axisNameWidget: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+                          padding: EdgeInsets.only(top: 8.0),
                           child: Text(
                             "Session",
-                            style: TextStyle(color: context.colors.emptyText, fontSize: 12, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: context.colors.emptyText, fontSize: ResponsiveHelper.sp(12), fontWeight: FontWeight.bold),
                           ),
                         ),
                         axisNameSize: 24,
@@ -241,10 +243,10 @@ class _ProgressChartState extends State<ProgressChart> {
                           getTitlesWidget: (value, meta) {
                             if (value != value.toInt() || value == 0) return const SizedBox.shrink(); 
                             return Padding(
-                              padding: const EdgeInsets.only(top: 4.0),
+                              padding: EdgeInsets.only(top: 4.0),
                               child: Text(
                                 value.toInt().toString(),
-                                style: TextStyle(color: context.colors.emptyText, fontSize: 10),
+                                style: TextStyle(color: context.colors.emptyText, fontSize: ResponsiveHelper.sp(10)),
                               ),
                             );
                           },
@@ -269,7 +271,7 @@ class _ProgressChartState extends State<ProgressChart> {
                               TextStyle(
                                 color: brandPurple,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: ResponsiveHelper.sp(16),
                               ),
                             );
                           }).toList();
@@ -306,13 +308,13 @@ class _ProgressChartState extends State<ProgressChart> {
                 ),
                 if (!hasData)
                   Padding(
-                    padding: const EdgeInsets.only(left: 60.0, bottom: 24.0),
+                    padding: EdgeInsets.only(left: 60.0, bottom: 24.0),
                     child: Center(
                       child: Text(
                         widget.history.isEmpty
                             ? "Start logging to see progress"
                             : "No logs in the selected timeframe",
-                        style: TextStyle(color: context.colors.emptyText, fontSize: 14, fontWeight: FontWeight.w500),
+                        style: TextStyle(color: context.colors.emptyText, fontSize: ResponsiveHelper.sp(14), fontWeight: FontWeight.w500),
                       ),
                     ),
                   ),

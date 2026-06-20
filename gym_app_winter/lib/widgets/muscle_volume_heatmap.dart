@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:gym_app_winter/database/database.dart';
 
 class MuscleVolumeHeatmap extends StatefulWidget {
@@ -129,10 +131,10 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
 
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveHelper.w(20)),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.w(20)),
         border: Border.all(
           color: colorScheme.outlineVariant,
           width: 1.0,
@@ -141,7 +143,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
           BoxShadow(
             color: colorScheme.shadow.withValues(alpha: 0.03),
             blurRadius: 12,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -154,12 +156,12 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.grid_on_rounded, color: brandPurple, size: 20),
-                  const SizedBox(width: 8),
+                  Icon(Icons.grid_on_rounded, color: brandPurple, size: ResponsiveHelper.w(20)),
+                  SizedBox(width: ResponsiveHelper.w(8)),
                   Text(
                     'Muscle Heatmap',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: ResponsiveHelper.sp(18),
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
                     ),
@@ -170,11 +172,11 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                 value: _selectedRange,
                 dropdownColor: colorScheme.surface,
                 iconEnabledColor: colorScheme.primary,
-                underline: const SizedBox(),
+                underline: SizedBox(),
                 style: TextStyle(
                   color: colorScheme.primary,
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
+                  fontSize: ResponsiveHelper.sp(14),
                 ),
                 items: ['This Week', 'This Month', 'This Year']
                     .map((e) => DropdownMenuItem(
@@ -192,7 +194,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: ResponsiveHelper.h(20)),
           
           // Heatmap Grid Row
           Row(
@@ -203,7 +205,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Spacing to align with the column headers
-                  const SizedBox(height: 20),
+                  SizedBox(height: ResponsiveHelper.h(20)),
                   ...categories.map((cat) => SizedBox(
                         height: cellSize + cellPadding,
                         child: Align(
@@ -211,7 +213,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                           child: Text(
                             cat,
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: ResponsiveHelper.sp(12),
                               fontWeight: FontWeight.w600,
                               color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
@@ -220,7 +222,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                       )),
                 ],
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: ResponsiveHelper.w(8)),
               
               // 2. Horizontally scrollable Grid
               Expanded(
@@ -239,7 +241,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                               child: Text(
                                 colLabels[colIndex],
                                 style: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: ResponsiveHelper.sp(10),
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
@@ -248,7 +250,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: ResponsiveHelper.h(4)),
                       // Matrix cells
                       ...categories.map((cat) {
                         return Row(
@@ -271,7 +273,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                                   height: cellSize,
                                   decoration: BoxDecoration(
                                     color: getCellColor(intensity, context),
-                                    borderRadius: BorderRadius.circular(6),
+                                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(6)),
                                   ),
                                 ),
                               ),
@@ -285,7 +287,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: ResponsiveHelper.h(16)),
           
           // Heatmap Legend
           Row(
@@ -294,29 +296,29 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
               Text(
                 'Less',
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: ResponsiveHelper.sp(10),
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(width: 6),
+              SizedBox(width: ResponsiveHelper.w(6)),
               ...List.generate(5, (index) {
                 final double intensity = index / 4.0;
                 return Container(
                   width: 12,
                   height: 12,
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                  margin: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(2)),
                   decoration: BoxDecoration(
                     color: getCellColor(intensity, context),
-                    borderRadius: BorderRadius.circular(3),
+                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(3)),
                   ),
                 );
               }),
-              const SizedBox(width: 6),
+              SizedBox(width: ResponsiveHelper.w(6)),
               Text(
                 'More',
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: ResponsiveHelper.sp(10),
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),

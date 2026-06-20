@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
@@ -48,23 +50,23 @@ class CustomBottomNavigationBar extends StatelessWidget {
             width: 380, // Compact, centered bottom bar width for four tabs
             height: 72, // Strict height constraints for parent
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(36),
+              borderRadius: BorderRadius.circular(ResponsiveHelper.w(36)),
               boxShadow: [
                 BoxShadow(
                   color: shadowColor,
                   blurRadius: 36,
                   spreadRadius: 1,
-                  offset: const Offset(0, 12),
+                  offset: Offset(0, 12),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(36),
+              borderRadius: BorderRadius.circular(ResponsiveHelper.w(36)),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
                 child: Container(
                   color: backgroundColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(0)),
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       final double totalWidth = constraints.maxWidth;
@@ -90,7 +92,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                             child: Container(
                               decoration: BoxDecoration(
                                 color: badgeBgColor,
-                                borderRadius: BorderRadius.circular(32), // Matches half of height (64) for a perfect pill shape
+                                borderRadius: BorderRadius.circular(ResponsiveHelper.w(32)), // Matches half of height (64) for a perfect pill shape
                               ),
                             ),
                           ),
@@ -190,7 +192,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                     size: 24,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: ResponsiveHelper.h(4)),
                 AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 200),
                   style: GoogleFonts.dmSans(

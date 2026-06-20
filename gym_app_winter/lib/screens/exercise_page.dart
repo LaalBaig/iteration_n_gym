@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/widgets/history_tile.dart';
 import 'package:gym_app_winter/widgets/log_set_card.dart';
@@ -147,7 +149,7 @@ class _ExercisePageState extends State<ExercisePage> {
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
+                          padding: EdgeInsets.fromLTRB(12, 6, 0, 6),
                           child: Builder(
                             builder: (context) {
                               final titleLen = widget.exerciseName.length;
@@ -179,7 +181,7 @@ class _ExercisePageState extends State<ExercisePage> {
                       const RestTimerButton(),
                     ],
                   ),
-                  SizedBox(height: 24),
+                  SizedBox(height: ResponsiveHelper.h(24)),
                   LogSetCard(
                     exerciseName: widget.exerciseName,
                     variant: variant,
@@ -227,12 +229,12 @@ class _ExercisePageState extends State<ExercisePage> {
                     },
                     onAddSet: () {},
                   ),
-                  SizedBox(height: 24),
+                  SizedBox(height: ResponsiveHelper.h(24)),
                   ProgressChart(history: history),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 24),
+                      SizedBox(height: ResponsiveHelper.h(24)),
                       Row(
                         children: [
                           Text(
@@ -250,11 +252,11 @@ class _ExercisePageState extends State<ExercisePage> {
                               );
                             },
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 6, 0, 0),
+                              padding: EdgeInsets.fromLTRB(12, 6, 0, 0),
                               child: Text(
                                 "See All",
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: ResponsiveHelper.sp(16),
                                   fontWeight: FontWeight.w400,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
@@ -263,7 +265,7 @@ class _ExercisePageState extends State<ExercisePage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 12),
+                      SizedBox(height: ResponsiveHelper.h(12)),
                       SizedBox(
                         height: 220,
                         child: history.isEmpty 
@@ -274,7 +276,7 @@ class _ExercisePageState extends State<ExercisePage> {
                               itemBuilder: (context, index) {
                                 return Container(
                                   width: 300,
-                                  padding: const EdgeInsets.only(right: 16),
+                                  padding: EdgeInsets.only(right: 16),
                                   child: history[index],
                                 );
                               },

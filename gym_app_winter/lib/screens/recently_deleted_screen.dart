@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
@@ -31,7 +33,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
           "Recently Deleted",
           style: TextStyle(
             color: colorScheme.onSurface,
-            fontSize: 20,
+            fontSize: ResponsiveHelper.sp(20),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -43,7 +45,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
 
           if (snapshot.connectionState == ConnectionState.waiting &&
               deletedList.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           if (deletedList.isEmpty) {
@@ -61,23 +63,23 @@ class RecentlyDeletedScreen extends StatelessWidget {
                     child: Icon(
                       Icons.delete_sweep_outlined,
                       color: colorScheme.onSurfaceVariant,
-                      size: 40,
+                      size: ResponsiveHelper.w(40),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: ResponsiveHelper.h(16)),
                   Text(
                     "Trash is Empty",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: ResponsiveHelper.sp(18),
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: ResponsiveHelper.h(8)),
                   Text(
                     "Exercises you delete will appear here",
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: ResponsiveHelper.sp(14),
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
@@ -88,15 +90,15 @@ class RecentlyDeletedScreen extends StatelessWidget {
 
           return ListView.builder(
             itemCount: deletedList.length,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24), vertical: ResponsiveHelper.h(8)),
             itemBuilder: (context, index) {
               final exercise = deletedList[index];
               return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                margin: EdgeInsets.only(bottom: 12),
+                padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16), vertical: ResponsiveHelper.h(12)),
                 decoration: BoxDecoration(
                   color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
                   border: Border.all(
                     color: colorScheme.outlineVariant,
                     width: 1.0,
@@ -109,17 +111,17 @@ class RecentlyDeletedScreen extends StatelessWidget {
                       height: 40,
                       decoration: BoxDecoration(
                         color: colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
                       ),
                       child: Center(
                         child: Icon(
                           Icons.fitness_center,
                           color: colorScheme.primary,
-                          size: 18,
+                          size: ResponsiveHelper.w(18),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: ResponsiveHelper.w(12)),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,17 +129,17 @@ class RecentlyDeletedScreen extends StatelessWidget {
                           Text(
                             exercise.name,
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: ResponsiveHelper.sp(16),
                               fontWeight: FontWeight.bold,
                               color: colorScheme.onSurface,
                             ),
                           ),
                           if (exercise.category.isNotEmpty) ...[
-                            const SizedBox(height: 4),
+                            SizedBox(height: ResponsiveHelper.h(4)),
                             Text(
                               exercise.category,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: ResponsiveHelper.sp(12),
                                 color: colorScheme.onSurfaceVariant,
                               ),
                             ),
@@ -146,7 +148,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.settings_backup_restore, color: Colors.green),
+                      icon: Icon(Icons.settings_backup_restore, color: Colors.green),
                       tooltip: "Restore exercise",
                       onPressed: () async {
                         await DatabaseService().db.restoreExercise(exercise.id);
@@ -157,7 +159,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                             SnackBar(
                               content: Text(
                                 "Restored '${exercise.name}'",
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(color: Colors.white),
                               ),
                               behavior: SnackBarBehavior.floating,
                               backgroundColor: Colors.green[700],

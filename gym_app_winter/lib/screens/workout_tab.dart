@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/widgets/workout_button_top.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
@@ -26,7 +28,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (sheetContext) {
@@ -35,34 +37,34 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(16.0)),
                 child: Text(
                   routine.routine.title,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: ResponsiveHelper.sp(18),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const Divider(height: 1),
+              Divider(height: 1),
               ListTile(
                 leading: Icon(Icons.play_arrow, color: colorScheme.primary),
-                title: const Text("Start Workout", style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Text("Start Workout", style: TextStyle(fontWeight: FontWeight.bold)),
                 onTap: () {
                   Navigator.pop(sheetContext);
                   _startWorkoutFromRoutine(context, routine);
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text("Delete Routine", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                leading: Icon(Icons.delete_outline, color: Colors.red),
+                title: Text("Delete Routine", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                 onTap: () async {
                   Navigator.pop(sheetContext);
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (dialogContext) => AlertDialog(
                       backgroundColor: Theme.of(dialogContext).colorScheme.surface,
-                      title: const Text("Delete Routine?"),
+                      title: Text("Delete Routine?"),
                       content: Text("Are you sure you want to delete '${routine.routine.title}'? This cannot be undone."),
                       actions: [
                         TextButton(
@@ -71,7 +73,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(dialogContext, true),
-                          child: const Text("Delete", style: TextStyle(color: Colors.red)),
+                          child: Text("Delete", style: TextStyle(color: Colors.red)),
                         ),
                       ],
                     ),
@@ -81,7 +83,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                   }
                 },
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: ResponsiveHelper.h(8)),
             ],
           ),
         );
@@ -150,7 +152,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+            padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -166,7 +168,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                   icon: Icon(
                     Icons.history,
                     color: colorScheme.onSurface,
-                    size: 28,
+                    size: ResponsiveHelper.w(28),
                   ),
                   onPressed: () {
                     context.push('/workout_history');
@@ -177,7 +179,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
           ),
           const WorkoutButtonTop(),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
+            padding: EdgeInsets.fromLTRB(24, 16, 24, 12),
             child: Text(
               "Routines",
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -188,7 +190,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+            padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
             child: IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -199,10 +201,10 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                         context.push('/create_routine');
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                        padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(24), horizontal: ResponsiveHelper.w(16)),
                         decoration: BoxDecoration(
                           color: colorScheme.surface,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
                           border: Border.all(
                             color: colorScheme.outlineVariant,
                             width: 1.0,
@@ -216,22 +218,22 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                               height: 48,
                               decoration: BoxDecoration(
                                 color: colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                               ),
                               child: Center(
                                 child: FaIcon(
                                   FontAwesomeIcons.clipboard,
                                   color: colorScheme.primary,
-                                  size: 20,
+                                  size: ResponsiveHelper.w(20),
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: ResponsiveHelper.h(12)),
                             Text(
                               "New Routine",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: ResponsiveHelper.sp(16),
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.onSurface,
                               ),
@@ -241,15 +243,15 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: ResponsiveHelper.w(16)),
                   Expanded(
                     child: BouncingButton(
                       onTap: () {},
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                        padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(24), horizontal: ResponsiveHelper.w(16)),
                         decoration: BoxDecoration(
                           color: colorScheme.surface,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
                           border: Border.all(
                             color: colorScheme.outlineVariant,
                             width: 1.0,
@@ -263,22 +265,22 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                               height: 48,
                               decoration: BoxDecoration(
                                 color: colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                               ),
                               child: Center(
                                 child: FaIcon(
                                   FontAwesomeIcons.magnifyingGlass,
                                   color: colorScheme.primary,
-                                  size: 18,
+                                  size: ResponsiveHelper.w(18),
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: ResponsiveHelper.h(12)),
                             Text(
                               "Explore Routines",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: ResponsiveHelper.sp(16),
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.onSurface,
                               ),
@@ -293,7 +295,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
+            padding: EdgeInsets.fromLTRB(24, 24, 24, 12),
             child: Text(
               "My Routines",
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -308,7 +310,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
               stream: DatabaseService().db.watchAllRoutinesWithExercises(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: CircularProgressIndicator());
                 }
 
                 final routines = snapshot.data ?? [];
@@ -317,13 +319,13 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                     padding: EdgeInsets.only(bottom: bottomInset),
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(24.0),
+                        padding: EdgeInsets.all(ResponsiveHelper.w(24.0)),
                         child: Text(
                           "No routines yet. Create one above!",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: colorScheme.onSurfaceVariant,
-                            fontSize: 16,
+                            fontSize: ResponsiveHelper.sp(16),
                           ),
                         ),
                       ),
@@ -338,18 +340,18 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                     final item = routines[index];
                     final exercisesString = item.exercises.map((e) => e.exerciseName).join(", ");
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
+                      padding: EdgeInsets.only(bottom: 12.0),
                       child: Dismissible(
                         key: Key('routine_${item.routine.id}'),
                         direction: DismissDirection.endToStart,
                         background: Container(
                           alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 20.0),
+                          padding: EdgeInsets.only(right: 20.0),
                           decoration: BoxDecoration(
                             color: Colors.redAccent.shade200,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.delete,
                             color: Colors.white,
                           ),
@@ -359,7 +361,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                             context: context,
                             builder: (dialogContext) => AlertDialog(
                               backgroundColor: Theme.of(dialogContext).colorScheme.surface,
-                              title: const Text("Delete Routine?"),
+                              title: Text("Delete Routine?"),
                               content: Text("Are you sure you want to delete '${item.routine.title}'? This cannot be undone."),
                               actions: [
                                 TextButton(
@@ -368,7 +370,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.pop(dialogContext, true),
-                                  child: const Text("Delete", style: TextStyle(color: Colors.red)),
+                                  child: Text("Delete", style: TextStyle(color: Colors.red)),
                                 ),
                               ],
                             ),
@@ -418,10 +420,10 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
         _showRoutineOptions(context, routine);
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16), vertical: ResponsiveHelper.h(12)),
         decoration: BoxDecoration(
           color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
           border: Border.all(
             color: colorScheme.outlineVariant,
             width: 1.0,
@@ -435,17 +437,17 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
               height: 40,
               decoration: BoxDecoration(
                 color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
               ),
               child: Center(
                 child: Icon(
                   Icons.assignment_outlined,
                   color: colorScheme.primary,
-                  size: 20,
+                  size: ResponsiveHelper.w(20),
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: ResponsiveHelper.w(12)),
             // Title & Subtitle
             Expanded(
               child: Column(
@@ -455,16 +457,16 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: ResponsiveHelper.sp(16),
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: ResponsiveHelper.h(4)),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: ResponsiveHelper.sp(12),
                       color: colorScheme.onSurfaceVariant,
                     ),
                     maxLines: 1,
@@ -473,7 +475,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                 ],
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: ResponsiveHelper.w(12)),
             // Play Button
             GestureDetector(
               onTap: () {
@@ -486,11 +488,11 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                   color: colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
-                child: const Center(
+                child: Center(
                   child: Icon(
                     Icons.play_arrow,
                     color: Colors.white,
-                    size: 20,
+                    size: ResponsiveHelper.w(20),
                   ),
                 ),
               ),

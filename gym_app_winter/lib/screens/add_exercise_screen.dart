@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:gym_app_winter/widgets/exercise_tile.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
@@ -123,7 +125,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
           "Add Exercise",
           style: TextStyle(
             color: colorScheme.onSurface,
-            fontSize: 20,
+            fontSize: ResponsiveHelper.sp(20),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -139,7 +141,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
               onChanged: _filterExercises,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0)),
               child: SizedBox(
                 width: double.infinity,
                 height: 48,
@@ -163,7 +165,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                     "Create a custom exercise",
                     style: TextStyle(
                       color: colorScheme.primary,
-                      fontSize: 16,
+                      fontSize: ResponsiveHelper.sp(16),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -171,19 +173,19 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                     backgroundColor: theme.scaffoldBackgroundColor,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                       side: BorderSide(color: colorScheme.primary, width: 1.5),
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: ResponsiveHelper.h(24)),
             Expanded(
               child: isLoading 
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: CircularProgressIndicator())
                 : ListView.builder(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 6),
+                padding: EdgeInsets.fromLTRB(24, 0, 24, 6),
                 itemCount: filteredExerciseList.length,
                 itemBuilder: (context, index) {
                   final exercise = filteredExerciseList[index];
@@ -254,7 +256,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                                     ),
                                     TextButton(
                                       onPressed: () => Navigator.of(context).pop("restore"),
-                                      child: const Text("Restore History", style: TextStyle(color: Colors.green)),
+                                      child: Text("Restore History", style: TextStyle(color: Colors.green)),
                                     ),
                                   ],
                                 );
@@ -349,7 +351,7 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                                     ),
                                     TextButton(
                                       onPressed: () => Navigator.of(context).pop("restore"),
-                                      child: const Text("Restore History", style: TextStyle(color: Colors.green)),
+                                      child: Text("Restore History", style: TextStyle(color: Colors.green)),
                                     ),
                                   ],
                                 );

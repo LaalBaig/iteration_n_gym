@@ -60,7 +60,7 @@ class RestTimerNotifier extends ChangeNotifier {
     scaffoldMessengerKey.currentState?.clearSnackBars();
     scaffoldMessengerKey.currentState?.showSnackBar(
       SnackBar(
-        content: const Text(
+        content: Text(
           "Rest complete!",
           style: TextStyle(
             color: Colors.white,
@@ -75,7 +75,7 @@ class RestTimerNotifier extends ChangeNotifier {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.fromLTRB(48, 0, 48, 80),
+        margin: EdgeInsets.fromLTRB(48, 0, 48, 80),
         elevation: 6,
       ),
     );

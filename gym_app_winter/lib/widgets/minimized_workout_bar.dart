@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:gym_app_winter/state/workout_manager.dart';
 import 'package:gym_app_winter/navigation/app_router.dart';
 import 'package:gym_app_winter/widgets/discard_workout_dialog.dart';
@@ -41,7 +43,7 @@ class MinimizedWorkoutBar extends StatelessWidget {
                 height: 64,
                 decoration: BoxDecoration(
                   color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(32),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(32)),
                   border: Border.all(
                     color: colorScheme.outlineVariant,
                     width: 1.0,
@@ -50,11 +52,11 @@ class MinimizedWorkoutBar extends StatelessWidget {
                     BoxShadow(
                       color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
                       blurRadius: 16,
-                      offset: const Offset(0, 6),
+                      offset: Offset(0, 6),
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(10)),
                 child: Row(
                   children: [
                     // Maximize Button
@@ -68,10 +70,10 @@ class MinimizedWorkoutBar extends StatelessWidget {
                       child: Icon(
                         Icons.keyboard_arrow_up_rounded,
                         color: colorScheme.onSurface,
-                        size: 24,
+                        size: ResponsiveHelper.w(24),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: ResponsiveHelper.w(16)),
                     
                     // Workout Info
                     Expanded(
@@ -84,28 +86,28 @@ class MinimizedWorkoutBar extends StatelessWidget {
                               Container(
                                 width: 8,
                                 height: 8,
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   color: Colors.green,
                                   shape: BoxShape.circle,
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: ResponsiveHelper.w(8)),
                               Text(
                                 "Workout ${manager.formattedDuration}",
                                 style: TextStyle(
                                   color: colorScheme.onSurface,
-                                  fontSize: 16,
+                                  fontSize: ResponsiveHelper.sp(16),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: ResponsiveHelper.h(2)),
                           Text(
                             manager.currentExerciseName,
                             style: TextStyle(
                               color: colorScheme.onSurfaceVariant,
-                              fontSize: 13,
+                              fontSize: ResponsiveHelper.sp(13),
                               fontWeight: FontWeight.w500,
                             ),
                             maxLines: 1,
@@ -136,7 +138,7 @@ class MinimizedWorkoutBar extends StatelessWidget {
                         child: Icon(
                           Icons.delete_outline_rounded,
                           color: colorScheme.error,
-                          size: 22,
+                          size: ResponsiveHelper.w(22),
                         ),
                       ),
                     ),

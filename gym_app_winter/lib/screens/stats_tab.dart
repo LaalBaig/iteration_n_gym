@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
 import 'package:gym_app_winter/widgets/muscle_volume_heatmap.dart';
@@ -40,7 +42,7 @@ class StatsTab extends StatelessWidget {
         if (peakVolume == 0) peakVolume = 1.0;
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(ResponsiveHelper.w(24.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -52,15 +54,15 @@ class StatsTab extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
               
               // Dynamic Weekly Volume Trend Chart Section
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(ResponsiveHelper.w(20)),
                 decoration: BoxDecoration(
                   color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(20)),
                   border: Border.all(
                     color: colorScheme.outlineVariant,
                     width: 1.0,
@@ -69,7 +71,7 @@ class StatsTab extends StatelessWidget {
                     BoxShadow(
                       color: colorScheme.shadow.withValues(alpha: 0.03),
                       blurRadius: 12,
-                      offset: const Offset(0, 4),
+                      offset: Offset(0, 4),
                     ),
                   ],
                 ),
@@ -82,7 +84,7 @@ class StatsTab extends StatelessWidget {
                         Text(
                           'Weekly Volume Trend',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: ResponsiveHelper.sp(18),
                             fontWeight: FontWeight.bold,
                             color: colorScheme.onSurface,
                           ),
@@ -90,7 +92,7 @@ class StatsTab extends StatelessWidget {
                         Icon(Icons.trending_up, color: brandPurple),
                       ],
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: ResponsiveHelper.h(32)),
                     
                     SizedBox(
                       height: 120,
@@ -111,16 +113,16 @@ class StatsTab extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
               // Weekly Summary Card
               WorkoutSummaryCard(logs: logs),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.h(24)),
 
               // Muscle Volume Heatmap Card
               MuscleVolumeHeatmap(logs: logs),
 
               // Scroll buffer
-              const SizedBox(height: 120),
+              SizedBox(height: ResponsiveHelper.h(120)),
             ],
           ),
         );
@@ -144,18 +146,18 @@ class StatsTab extends StatelessWidget {
                   width: 16,
                   decoration: BoxDecoration(
                     color: brandPurple.withValues(alpha: 0.85),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(4)),
                   ),
                 ),
               ),
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: ResponsiveHelper.h(8)),
         Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: ResponsiveHelper.sp(12),
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w500,
           ),
