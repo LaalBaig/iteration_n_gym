@@ -153,7 +153,7 @@ class WorkoutButtonTop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(24.0, 12, 24, 16),
+      padding: EdgeInsets.fromLTRB(24.0, 12, 24, 4),
       child: BouncingButton(
         onTap: () {
           if (WorkoutManager().isActive) {

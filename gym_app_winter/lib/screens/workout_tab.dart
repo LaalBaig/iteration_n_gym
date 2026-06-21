@@ -179,7 +179,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
           ),
           const WorkoutButtonTop(),
           Padding(
-            padding: EdgeInsets.fromLTRB(24, 16, 24, 12),
+            padding: EdgeInsets.fromLTRB(24, 24, 24, 12),
             child: Text(
               "Routines",
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -246,7 +246,9 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                   SizedBox(width: ResponsiveHelper.w(16)),
                   Expanded(
                     child: BouncingButton(
-                      onTap: () {},
+                      onTap: () {
+                        context.push('/explore_routines');
+                      },
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(24), horizontal: ResponsiveHelper.w(16)),
                         decoration: BoxDecoration(

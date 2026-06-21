@@ -3,29 +3,32 @@ import 'package:gym_app_winter/utils/responsive_helper.dart';
 
 import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
+import 'package:gym_app_winter/widgets/insight_card.dart';
 import 'package:gym_app_winter/widgets/muscle_volume_heatmap.dart';
 import 'package:gym_app_winter/widgets/workout_summary_card.dart';
+import 'package:gym_app_winter/widgets/top_exercises_card.dart';
+import 'package:gym_app_winter/widgets/muscle_group_focus_card.dart';
+import 'package:gym_app_winter/widgets/personal_records_card.dart';
 
 class StatsTab extends StatelessWidget {
   const StatsTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final brandPurple = colorScheme.primary;
-    
+
     return StreamBuilder<List<LogWithWorkoutAndExercise>>(
       stream: DatabaseService().db.watchAllLogsWithWorkoutAndExercise(),
       builder: (context, snapshot) {
         final logs = snapshot.data ?? [];
-        
-        // Weekly Volume Trend calculation
+
+        // ── Weekly Volume Trend data ─────────────────────────────────────
         final now = DateTime.now();
         final monday = now.subtract(Duration(days: now.weekday - 1));
         final startOfWeek = DateTime(monday.year, monday.month, monday.day);
         final weeklyVolumes = List.filled(7, 0.0);
-        
+
         for (var item in logs) {
           final logDate = item.workout.startTime;
           if (logDate.isAfter(startOfWeek.subtract(const Duration(seconds: 1))) &&
@@ -55,74 +58,44 @@ class StatsTab extends StatelessWidget {
                 ),
               ),
               SizedBox(height: ResponsiveHelper.h(24)),
-              
-              // Weekly Summary Card
+
               WorkoutSummaryCard(logs: logs),
               SizedBox(height: ResponsiveHelper.h(24)),
 
-              // Dynamic Weekly Volume Trend Chart Section
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(ResponsiveHelper.w(20)),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(20)),
-                  border: Border.all(
-                    color: colorScheme.outlineVariant,
-                    width: 1.0,
+              TopExercisesCard(logs: logs),
+              SizedBox(height: ResponsiveHelper.h(24)),
+
+              MuscleGroupFocusCard(logs: logs),
+              SizedBox(height: ResponsiveHelper.h(24)),
+
+              PersonalRecordsCard(logs: logs),
+              SizedBox(height: ResponsiveHelper.h(24)),
+
+              // Weekly Volume Trend
+              InsightCard(
+                title: 'Weekly Volume Trend',
+                icon: Icons.trending_up,
+                child: SizedBox(
+                  height: 120,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: List.generate(7, (i) {
+                      const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                      return _ChartBar(
+                        heightFactor: (weeklyVolumes[i] / peakVolume).clamp(0.05, 1.0),
+                        label: labels[i],
+                        volume: weeklyVolumes[i],
+                        color: brandPurple,
+                      );
+                    }),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.shadow.withValues(alpha: 0.03),
-                      blurRadius: 12,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Weekly Volume Trend',
-                          style: TextStyle(
-                            fontSize: ResponsiveHelper.sp(18),
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        Icon(Icons.trending_up, color: brandPurple),
-                      ],
-                    ),
-                    SizedBox(height: ResponsiveHelper.h(32)),
-                    
-                    SizedBox(
-                      height: 120,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          _buildChartBar(context, (weeklyVolumes[0] / peakVolume).clamp(0.05, 1.0), 'Mon', weeklyVolumes[0], brandPurple),
-                          _buildChartBar(context, (weeklyVolumes[1] / peakVolume).clamp(0.05, 1.0), 'Tue', weeklyVolumes[1], brandPurple),
-                          _buildChartBar(context, (weeklyVolumes[2] / peakVolume).clamp(0.05, 1.0), 'Wed', weeklyVolumes[2], brandPurple),
-                          _buildChartBar(context, (weeklyVolumes[3] / peakVolume).clamp(0.05, 1.0), 'Thu', weeklyVolumes[3], brandPurple),
-                          _buildChartBar(context, (weeklyVolumes[4] / peakVolume).clamp(0.05, 1.0), 'Fri', weeklyVolumes[4], brandPurple),
-                          _buildChartBar(context, (weeklyVolumes[5] / peakVolume).clamp(0.05, 1.0), 'Sat', weeklyVolumes[5], brandPurple),
-                          _buildChartBar(context, (weeklyVolumes[6] / peakVolume).clamp(0.05, 1.0), 'Sun', weeklyVolumes[6], brandPurple),
-                        ],
-                      ),
-                    ),
-                  ],
                 ),
               ),
               SizedBox(height: ResponsiveHelper.h(24)),
 
-              // Muscle Volume Heatmap Card
               MuscleVolumeHeatmap(logs: logs),
 
-              // Scroll buffer
               SizedBox(height: ResponsiveHelper.h(120)),
             ],
           ),
@@ -130,8 +103,26 @@ class StatsTab extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget _buildChartBar(BuildContext context, double heightFactor, String label, double volume, Color brandPurple) {
+// ── Chart bar (local to this screen only) ────────────────────────────────────
+
+class _ChartBar extends StatelessWidget {
+  final double heightFactor;
+  final String label;
+  final double volume;
+  final Color color;
+
+  const _ChartBar({
+    required this.heightFactor,
+    required this.label,
+    required this.volume,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -146,7 +137,7 @@ class StatsTab extends StatelessWidget {
                 child: Container(
                   width: 16,
                   decoration: BoxDecoration(
-                    color: brandPurple.withValues(alpha: 0.85),
+                    color: color.withValues(alpha: 0.85),
                     borderRadius: BorderRadius.circular(ResponsiveHelper.w(4)),
                   ),
                 ),
@@ -159,7 +150,7 @@ class StatsTab extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: ResponsiveHelper.sp(12),
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w500,
           ),
         ),

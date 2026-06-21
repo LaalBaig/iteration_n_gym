@@ -12,6 +12,7 @@ import 'package:gym_app_winter/screens/workout_summary_screen.dart';
 import 'package:gym_app_winter/screens/workout_history_screen.dart';
 import 'package:gym_app_winter/screens/save_workout_screen.dart';
 import 'package:gym_app_winter/screens/create_routine_screen.dart';
+import 'package:gym_app_winter/screens/explore_routines_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -105,6 +106,10 @@ class AppRouter {
       GoRoute(
         path: '/create_routine',
         builder: (context, state) => const CreateRoutineScreen(),
+      ),
+      GoRoute(
+        path: '/explore_routines',
+        builder: (context, state) => const ExploreRoutinesScreen(),
       ),
     ],
   );
