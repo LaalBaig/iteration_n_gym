@@ -29,9 +29,17 @@ class ExerciseTile extends StatelessWidget {
     this.showDeleteIcon = true,
   });
 
-  Widget _buildTag(BuildContext context, String text, Color badgeBgColor, Color brandPurple) {
+  Widget _buildTag(
+    BuildContext context,
+    String text,
+    Color badgeBgColor,
+    Color brandPurple,
+  ) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(6), vertical: ResponsiveHelper.h(2)),
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveHelper.w(6),
+        vertical: ResponsiveHelper.h(2),
+      ),
       decoration: BoxDecoration(
         color: badgeBgColor,
         borderRadius: BorderRadius.circular(ResponsiveHelper.w(6)),
@@ -56,7 +64,9 @@ class ExerciseTile extends StatelessWidget {
 
     return Dismissible(
       key: key ?? ValueKey(title),
-      direction: onDelete == null ? DismissDirection.none : DismissDirection.endToStart,
+      direction: onDelete == null
+          ? DismissDirection.none
+          : DismissDirection.endToStart,
       onDismissed: (direction) {
         onDelete?.call();
       },
@@ -65,27 +75,31 @@ class ExerciseTile extends StatelessWidget {
         return await _showDeleteDialog(context, colorScheme);
       },
       background: Container(
-        margin: EdgeInsets.only(bottom: ResponsiveHelper.h(bottomMargin)), 
+        margin: EdgeInsets.only(bottom: ResponsiveHelper.h(bottomMargin)),
         padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
         decoration: BoxDecoration(
           color: colorScheme.error,
           borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
         ),
         alignment: Alignment.centerRight,
-        child: Icon(Icons.delete, color: Colors.white, size: ResponsiveHelper.w(24)),
+        child: Icon(
+          Icons.delete,
+          color: Colors.white,
+          size: ResponsiveHelper.w(24),
+        ),
       ),
       child: BouncingButton(
         onTap: onTap,
         child: Container(
-          margin: EdgeInsets.only(bottom: ResponsiveHelper.h(bottomMargin)), 
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: ResponsiveHelper.h(12)), 
+          margin: EdgeInsets.only(bottom: ResponsiveHelper.h(bottomMargin)),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: ResponsiveHelper.h(12),
+          ),
           decoration: BoxDecoration(
             color: colorScheme.surface,
             borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
-            border: Border.all(
-              color: colorScheme.outlineVariant,
-              width: 1.0,
-            ),
+            border: Border.all(color: colorScheme.outlineVariant, width: 1.0),
           ),
           child: Row(
             children: [
@@ -101,7 +115,7 @@ class ExerciseTile extends StatelessWidget {
                   child: Icon(
                     Icons.fitness_center,
                     color: brandPurple,
-                    size: ResponsiveHelper.w(18), 
+                    size: ResponsiveHelper.w(18),
                   ),
                 ),
               ),
@@ -116,12 +130,14 @@ class ExerciseTile extends StatelessWidget {
                     Text(
                       title,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600, 
+                        fontWeight: FontWeight.w600,
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    SizedBox(height: AppSpacing.xs), 
-                    if (muscleGroups.isNotEmpty || (category != null && category!.isNotEmpty) || isCustom)
+                    SizedBox(height: AppSpacing.xs),
+                    if (muscleGroups.isNotEmpty ||
+                        (category != null && category!.isNotEmpty) ||
+                        isCustom)
                       Padding(
                         padding: EdgeInsets.only(bottom: ResponsiveHelper.h(4)),
                         child: Wrap(
@@ -129,11 +145,28 @@ class ExerciseTile extends StatelessWidget {
                           runSpacing: ResponsiveHelper.h(4),
                           children: [
                             if (isCustom)
-                              _buildTag(context, "Custom", colorScheme.secondaryContainer, colorScheme.onSecondaryContainer),
+                              _buildTag(
+                                context,
+                                "Custom",
+                                colorScheme.secondaryContainer,
+                                colorScheme.onSecondaryContainer,
+                              ),
                             if (muscleGroups.isNotEmpty)
-                              ...muscleGroups.map((m) => _buildTag(context, m, badgeBgColor, brandPurple))
+                              ...muscleGroups.map(
+                                (m) => _buildTag(
+                                  context,
+                                  m,
+                                  badgeBgColor,
+                                  brandPurple,
+                                ),
+                              )
                             else if (category != null && category!.isNotEmpty)
-                              _buildTag(context, category!, badgeBgColor, brandPurple),
+                              _buildTag(
+                                context,
+                                category!,
+                                badgeBgColor,
+                                brandPurple,
+                              ),
                           ],
                         ),
                       ),
@@ -160,7 +193,10 @@ class ExerciseTile extends StatelessWidget {
                       onDelete!.call();
                       return;
                     }
-                    final confirmed = await _showDeleteDialog(context, colorScheme);
+                    final confirmed = await _showDeleteDialog(
+                      context,
+                      colorScheme,
+                    );
                     if (confirmed) {
                       onDelete!.call();
                     }
@@ -176,9 +212,9 @@ class ExerciseTile extends StatelessWidget {
                 )
               else
                 Icon(
-                  Icons.chevron_right, 
-                  color: colorScheme.onSurfaceVariant, 
-                  size: ResponsiveHelper.w(20), 
+                  Icons.chevron_right,
+                  color: colorScheme.onSurfaceVariant,
+                  size: ResponsiveHelper.w(20),
                 ),
             ],
           ),
@@ -187,22 +223,45 @@ class ExerciseTile extends StatelessWidget {
     );
   }
 
-  Future<bool> _showDeleteDialog(BuildContext context, ColorScheme colorScheme) async {
+  Future<bool> _showDeleteDialog(
+    BuildContext context,
+    ColorScheme colorScheme,
+  ) async {
     final result = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: colorScheme.surface,
-          title: Text("Delete Exercise", style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface)),
-          content: Text("Are you sure you want to delete this exercise?", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
+          title: Text(
+            "Delete Exercise",
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface),
+          ),
+          content: Text(
+            "Are you sure you want to delete this exercise?",
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text("Cancel", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)),
+              child: Text(
+                "Cancel",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text("Delete", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.error)),
+              child: Text(
+                "Delete",
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: colorScheme.error),
+              ),
             ),
           ],
         );

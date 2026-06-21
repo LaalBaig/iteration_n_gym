@@ -22,7 +22,10 @@ class WorkoutButtonTop extends StatelessWidget {
             borderRadius: BorderRadius.circular(ResponsiveHelper.w(28)),
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24), vertical: ResponsiveHelper.h(24)),
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveHelper.w(24),
+              vertical: ResponsiveHelper.h(24),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -46,7 +49,7 @@ class WorkoutButtonTop extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: ResponsiveHelper.h(24)),
-                
+
                 // Resume Button
                 SizedBox(
                   width: double.infinity,
@@ -61,7 +64,9 @@ class WorkoutButtonTop extends StatelessWidget {
                       backgroundColor: colorScheme.primary,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
+                        borderRadius: BorderRadius.circular(
+                          ResponsiveHelper.w(12),
+                        ),
                       ),
                     ),
                     child: Text(
@@ -75,7 +80,7 @@ class WorkoutButtonTop extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: ResponsiveHelper.h(12)),
-                
+
                 // Start New Button
                 SizedBox(
                   width: double.infinity,
@@ -93,7 +98,9 @@ class WorkoutButtonTop extends StatelessWidget {
                       backgroundColor: colorScheme.surfaceContainerHighest,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
+                        borderRadius: BorderRadius.circular(
+                          ResponsiveHelper.w(12),
+                        ),
                       ),
                     ),
                     child: Text(
@@ -107,7 +114,7 @@ class WorkoutButtonTop extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: ResponsiveHelper.h(12)),
-                
+
                 // Cancel Button
                 SizedBox(
                   width: double.infinity,
@@ -120,7 +127,9 @@ class WorkoutButtonTop extends StatelessWidget {
                       backgroundColor: colorScheme.surfaceContainerHighest,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
+                        borderRadius: BorderRadius.circular(
+                          ResponsiveHelper.w(12),
+                        ),
                       ),
                     ),
                     child: Text(
@@ -168,14 +177,18 @@ class WorkoutButtonTop extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.fromLTRB(16.0, 0, 0, 0),
-                child: Icon(Icons.add, color: Colors.white),
+                child: Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimary),
               ),
               Expanded(
                 child: Container(
                   padding: EdgeInsets.all(ResponsiveHelper.w(16)),
                   child: Text(
                     "Start New Workout",
-                    style: TextStyle(fontSize: ResponsiveHelper.sp(18), fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: ResponsiveHelper.sp(18),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
                   ),
                 ),
               ),

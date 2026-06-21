@@ -83,17 +83,17 @@ class _MyAppState extends State<MyApp> {
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF111111), // Black
+        scaffoldBackgroundColor: const Color(0xFF000000), // True Black
         colorScheme: const ColorScheme.dark(
           primary: Color(0xFF9F92EC),
-          onPrimary: Color(0xFF111111),
+          onPrimary: Color(0xFF000000),
           primaryContainer: Color(0xFF3C3489),
           onPrimaryContainer: Colors.white,
-          surface: Color(0xFF212121),
+          surface: Color(0xFF1C1C1E), // Elevated dark gray for tiles/cards to stand out
           onSurface: Colors.white,
-          surfaceContainerHighest: Color(0xFF2C2C2C),
+          surfaceContainerHighest: Color(0xFF2C2C2E), // Lighter gray for highlights
           onSurfaceVariant: Color(0xFF9E9E9E),
-          outlineVariant: Color(0xFF333333),
+          outlineVariant: Color(0xFF38383A), // Visible outlines
           error: Colors.redAccent,
           onError: Colors.white,
         ),
@@ -106,12 +106,12 @@ class _MyAppState extends State<MyApp> {
             buttonActiveBg: Color(0xFF3C3489), // Dark Purple
             buttonInactiveBg: Color(0xFF9F92EC), // M3 Primary Dark
             buttonActiveTextColor: Colors.white,
-            buttonInactiveTextColor: Color(0xFF111111), // High contrast dark text on light purple
-            popupBg: Color(0xFF212121),
+            buttonInactiveTextColor: Color(0xFF000000),
+            popupBg: Color(0xFF1C1C1E),
             popupTextColor: Colors.white70,
-            trackColor: Color(0xFF2C2C2C),
+            trackColor: Color(0xFF2C2C2E),
             arcColor: Color(0xFF9F92EC),
-            adjustBtnBg: Color(0xFF2C2C2C),
+            adjustBtnBg: Color(0xFF2C2C2E),
             adjustBtnTextColor: Color(0xFF9F92EC),
           ),
         ],

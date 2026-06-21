@@ -232,7 +232,7 @@ class _ExercisesTabState extends State<ExercisesTab> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.white,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
                 ),
@@ -241,12 +241,12 @@ class _ExercisesTabState extends State<ExercisesTab> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add, color: Colors.white, size: ResponsiveHelper.w(24)),
+                  Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimary, size: ResponsiveHelper.w(24)),
                   SizedBox(width: ResponsiveHelper.w(4)),
                   Text(
                     'Add Exercise',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: ResponsiveHelper.sp(16),
                     ),
