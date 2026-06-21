@@ -56,6 +56,10 @@ class StatsTab extends StatelessWidget {
               ),
               SizedBox(height: ResponsiveHelper.h(24)),
               
+              // Weekly Summary Card
+              WorkoutSummaryCard(logs: logs),
+              SizedBox(height: ResponsiveHelper.h(24)),
+
               // Dynamic Weekly Volume Trend Chart Section
               Container(
                 width: double.infinity,
@@ -113,9 +117,6 @@ class StatsTab extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: ResponsiveHelper.h(24)),
-              // Weekly Summary Card
-              WorkoutSummaryCard(logs: logs),
               SizedBox(height: ResponsiveHelper.h(24)),
 
               // Muscle Volume Heatmap Card

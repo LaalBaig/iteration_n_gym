@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:gym_app_winter/navigation/app_router.dart';
 import 'package:gym_app_winter/widgets/minimized_workout_bar.dart';
@@ -22,14 +23,27 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = ThemeMode.light;
+  ThemeMode _themeMode = ThemeMode.system;
 
   @override
   void initState() {
     super.initState();
+    _loadThemeMode();
   }
 
-  void toggleTheme(bool isDark) {
+  Future<void> _loadThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isDark = prefs.getBool('isDarkTheme');
+    if (isDark != null) {
+      setState(() {
+        _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+      });
+    }
+  }
+
+  void toggleTheme(bool isDark) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkTheme', isDark);
     setState(() {
       _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     });

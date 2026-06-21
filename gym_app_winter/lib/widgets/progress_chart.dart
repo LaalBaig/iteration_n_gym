@@ -7,16 +7,31 @@ import 'package:gym_app_winter/widgets/history_tile.dart';
 
 class ProgressChart extends StatefulWidget {
   final List<HistoryTile> history;
+  final String initialMetric;
   
-  const ProgressChart({super.key, required this.history});
+  const ProgressChart({super.key, required this.history, this.initialMetric = 'Volume'});
 
   @override
   State<ProgressChart> createState() => _ProgressChartState();
 }
 
 class _ProgressChartState extends State<ProgressChart> {
-  String _selectedMetric = 'Volume';
+  late String _selectedMetric;
   String _selectedTimeframe = 'All Time';
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedMetric = widget.initialMetric;
+  }
+
+  @override
+  void didUpdateWidget(ProgressChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialMetric != widget.initialMetric) {
+      _selectedMetric = widget.initialMetric;
+    }
+  }
 
   List<HistoryTile> _getFilteredHistory() {
     if (_selectedTimeframe == 'All Time') {
@@ -67,6 +82,11 @@ class _ProgressChartState extends State<ProgressChart> {
         } else if (_selectedMetric == 'Reps') {
            for (var s in sets) {
              yValue += (s['reps'] ?? 0).toDouble();
+           }
+        } else if (_selectedMetric == 'Time') {
+           for (var s in sets) {
+             final time = (s['time'] ?? 0).toDouble();
+             if (time > yValue) yValue = time;
            }
         }
         spots.add(FlSpot((i + 1).toDouble(), yValue));
@@ -124,7 +144,7 @@ class _ProgressChartState extends State<ProgressChart> {
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),
-                    items: ['Volume', 'Max Weight', 'Reps']
+                    items: ['Volume', 'Max Weight', 'Reps', 'Time']
                         .map((e) => DropdownMenuItem(
                               value: e,
                               child: Text(e, style: TextStyle(color: context.colors.textBlack, fontSize: ResponsiveHelper.sp(13))),

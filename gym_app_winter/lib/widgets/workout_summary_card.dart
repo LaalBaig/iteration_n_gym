@@ -38,6 +38,12 @@ class WorkoutSummaryCard extends StatelessWidget {
     double sumOfWeights = 0;
 
     for (var item in weeklyLogs) {
+      final tType = item.exercise.trackingType?.toLowerCase();
+      final cat = item.exercise.category.toLowerCase();
+      if (tType == 'time based' || tType == 'timed' || cat == 'timed' || cat == 'cardio') {
+        continue;
+      }
+
       final weight = item.log.weight;
       final reps = item.log.reps;
       
@@ -81,35 +87,6 @@ class WorkoutSummaryCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: AppSpacing.lg),
-          
-          // Placeholder for Anatomical Heatmap
-          Container(
-            height: ResponsiveHelper.h(180),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: colors.warmSand,
-              borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.accessibility_new_rounded, size: ResponsiveHelper.w(48), color: colorScheme.primary.withValues(alpha: 0.5)),
-                  SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Anatomical Heatmap Placeholder',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.emptyText),
-                  ),
-                  Text(
-                    '(Requires SVG body assets)',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.emptyText.withValues(alpha: 0.7)),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: AppSpacing.xl),
-
           // Stats Grid
           Row(
             children: [

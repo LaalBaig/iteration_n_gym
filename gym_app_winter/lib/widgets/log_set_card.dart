@@ -171,6 +171,7 @@ class _LogSetCardState extends State<LogSetCard> {
         final setData = _createSetData(weight: w, reps: r);
         setData.isCompleted = completed;
         if (widget.variant == LogSetCardVariant.timed) {
+          int w = setMap['time'] ?? setMap['weight'] ?? 0;
           setData.durationMs = w * 1000;
           setData.timeBeforeStartMs = w * 1000;
         }
@@ -188,6 +189,7 @@ class _LogSetCardState extends State<LogSetCard> {
           final setData = _createSetData(weight: w, reps: r);
           setData.isCompleted = completed;
           if (widget.variant == LogSetCardVariant.timed) {
+            int w = setMap['time'] ?? setMap['weight'] ?? 0;
             setData.durationMs = w * 1000;
             setData.timeBeforeStartMs = w * 1000;
           }
@@ -258,8 +260,9 @@ class _LogSetCardState extends State<LogSetCard> {
               _maxBodyweightReps = log.reps;
             }
           } else if (widget.variant == LogSetCardVariant.timed) {
-            if (log.weight.toInt() > _maxTimeSeconds) {
-              _maxTimeSeconds = log.weight.toInt();
+            int logTime = log.time ?? log.weight.toInt();
+            if (logTime > _maxTimeSeconds) {
+              _maxTimeSeconds = logTime;
             }
           }
         }
@@ -612,8 +615,9 @@ class _LogSetCardState extends State<LogSetCard> {
     final setsData = _sets.map((s) {
       if (widget.variant == LogSetCardVariant.timed) {
         return {
-          'weight': s.durationMs ~/ 1000,
+          'weight': 0,
           'reps': 0,
+          'time': s.durationMs ~/ 1000,
           'isCompleted': s.isCompleted ? 1 : 0,
         };
       } else if (widget.variant == LogSetCardVariant.bodyweight) {
@@ -643,7 +647,7 @@ class _LogSetCardState extends State<LogSetCard> {
       final setData = _sets[index];
       setState(() {
         if (widget.variant == LogSetCardVariant.timed) {
-          final seconds = log.weight.toInt();
+          final seconds = log.time ?? log.weight.toInt();
           setData.durationMs = seconds * 1000;
           setData.timeBeforeStartMs = seconds * 1000;
           setData.isCompleted = true;

@@ -56,6 +56,7 @@ class ExerciseLogs extends Table {
   IntColumn get setNumber => integer()();
   RealColumn get weight => real()();
   IntColumn get reps => integer()();
+  IntColumn get time => integer().nullable()();
 }
 
 @DataClassName('Routine')
@@ -99,7 +100,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -173,6 +174,26 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 10) {
             await m.addColumn(exercises, exercises.isTracked);
+          }
+          if (from < 11) {
+            await m.addColumn(exerciseLogs, exerciseLogs.time);
+            
+            // Migrate existing timed exercises to use time column instead of weight
+            final timedExercises = await (select(exercises)..where((t) => 
+              t.category.equals('Timed') | 
+              t.category.equals('Cardio') | 
+              t.trackingType.equals('Time Based') | 
+              t.trackingType.equals('Timed')
+            )).get();
+            
+            final timedExerciseNames = timedExercises.map((e) => e.name).toSet().toList();
+            
+            if (timedExerciseNames.isNotEmpty) {
+               final inClause = timedExerciseNames.map((e) => "'${e.replaceAll("'", "''")}'").join(', ');
+               await customStatement(
+                 'UPDATE exercise_logs SET time = CAST(weight AS INTEGER), weight = 0.0 WHERE exercise_name IN ($inClause)'
+               );
+            }
           }
         },
         beforeOpen: (details) async {

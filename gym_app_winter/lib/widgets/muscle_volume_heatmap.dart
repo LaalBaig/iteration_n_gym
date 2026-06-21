@@ -108,9 +108,14 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
         final cat = item.exercise.category;
         if (categories.contains(cat)) {
           final col = getColIndex(logDate);
-          final volume = item.log.weight > 0
-              ? item.log.weight * item.log.reps
-              : item.log.reps.toDouble();
+          double volume = 0.0;
+          if (cat == 'Timed' || cat == 'Cardio') {
+            volume = item.log.time?.toDouble() ?? 0.0;
+          } else {
+            volume = item.log.weight > 0
+                ? item.log.weight * item.log.reps
+                : item.log.reps.toDouble();
+          }
           gridData[cat]![col] = (gridData[cat]![col] ?? 0.0) + volume;
         }
       }
@@ -257,7 +262,7 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
                           children: List.generate(numCols, (colIndex) {
                             final double volume = gridData[cat]![colIndex] ?? 0.0;
                             final double intensity = maxVolume > 0 ? volume / maxVolume : 0.0;
-                            final suffix = (cat == 'Cardio' || cat == 'Timed' || cat == 'Bodyweight') ? 'reps' : 'kg';
+                            final suffix = (cat == 'Cardio' || cat == 'Timed') ? 's' : (cat == 'Bodyweight' ? 'reps' : 'kg');
                             
                             return Padding(
                               padding: EdgeInsets.symmetric(

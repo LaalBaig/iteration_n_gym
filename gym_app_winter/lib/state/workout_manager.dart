@@ -57,6 +57,7 @@ class WorkoutManager extends ChangeNotifier {
 
     final weight = set['weight'] ?? 0;
     final reps = set['reps'] ?? 0;
+    final time = set['time'] ?? 0;
 
     final exercise = _activeExercises.firstWhere(
       (e) => e.name == exerciseName,
@@ -69,7 +70,7 @@ class WorkoutManager extends ChangeNotifier {
       final cat = exercise.category.toLowerCase();
 
       if (tType == 'time based' || tType == 'timed' || cat == 'timed' || cat == 'cardio') {
-        return weight > 0;
+        return time > 0 || weight > 0;
       } else if (eType == 'bodyweight' || cat == 'bodyweight') {
         return reps > 0;
       } else {
@@ -101,6 +102,16 @@ class WorkoutManager extends ChangeNotifier {
   double get totalVolume {
     double volume = 0.0;
     _workoutLogs.forEach((exerciseName, sets) {
+      final exercise = _activeExercises.firstWhere(
+        (e) => e.name == exerciseName,
+        orElse: () => Exercise(id: '', name: '', lastLog: '', category: ''),
+      );
+      final tType = exercise.trackingType?.toLowerCase();
+      final cat = exercise.category.toLowerCase();
+      if (tType == 'time based' || tType == 'timed' || cat == 'timed' || cat == 'cardio') {
+        return;
+      }
+
       for (var set in sets) {
         if (_isSetLogged(exerciseName, set)) {
           final w = (set['weight'] ?? 0).toDouble();
@@ -266,6 +277,7 @@ class WorkoutManager extends ChangeNotifier {
             setNumber: i + 1,
             weight: (completedSets[i]['weight'] ?? 0).toDouble(),
             reps: completedSets[i]['reps'] ?? 0,
+            time: completedSets[i].containsKey('time') ? Value(completedSets[i]['time']) : const Value.absent(),
           ),
         );
       }

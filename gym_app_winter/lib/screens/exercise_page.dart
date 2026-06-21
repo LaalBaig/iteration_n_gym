@@ -92,8 +92,9 @@ class _ExercisePageState extends State<ExercisePage> {
                     maxBodyweightReps = log.log.reps;
                   }
                 } else if (variant == LogSetCardVariant.timed) {
-                  if (log.log.weight.toInt() > maxTimeSeconds) {
-                    maxTimeSeconds = log.log.weight.toInt();
+                  final logTime = log.log.time ?? log.log.weight.toInt();
+                  if (logTime > maxTimeSeconds) {
+                    maxTimeSeconds = logTime;
                   }
                 }
               }
@@ -119,13 +120,15 @@ class _ExercisePageState extends State<ExercisePage> {
                         isPR = 1;
                       }
                     } else if (variant == LogSetCardVariant.timed) {
-                      if (e.log.weight.toInt() > 0 && e.log.weight.toInt() == maxTimeSeconds) {
+                      final logTime = e.log.time ?? e.log.weight.toInt();
+                      if (logTime > 0 && logTime == maxTimeSeconds) {
                         isPR = 1;
                       }
                     }
                     return {
                       'weight': e.log.weight.toInt(),
                       'reps': e.log.reps,
+                      'time': e.log.time ?? e.log.weight.toInt(),
                       'isPR': isPR,
                     };
                   }).toList(),
@@ -206,6 +209,7 @@ class _ExercisePageState extends State<ExercisePage> {
                             setNumber: i + 1,
                             weight: setData[i]['weight']!.toDouble(),
                             reps: setData[i]['reps']!,
+                            time: setData[i].containsKey('time') ? Value(setData[i]['time']) : const Value.absent(),
                           ),
                         );
                       }
@@ -230,7 +234,14 @@ class _ExercisePageState extends State<ExercisePage> {
                     onAddSet: () {},
                   ),
                   SizedBox(height: ResponsiveHelper.h(24)),
-                  ProgressChart(history: history),
+                  ProgressChart(
+                    history: history,
+                    initialMetric: variant == LogSetCardVariant.timed
+                        ? 'Time'
+                        : variant == LogSetCardVariant.bodyweight
+                            ? 'Reps'
+                            : 'Volume',
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
