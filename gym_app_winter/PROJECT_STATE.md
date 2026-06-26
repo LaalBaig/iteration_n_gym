@@ -1,6 +1,6 @@
 # Project State — gym_app_winter
 
-> Last updated: 2026-06-26 (session 2)
+> Last updated: 2026-06-26 (session 3)
 > Branch: `vibecode-supreme` | Version: `1.0.0+1` | DB schema: v11
 
 ---
@@ -23,6 +23,7 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 | Custom exercise delete — two-step choice dialog | ✅ Done | Replaces generic "Are you sure?" for custom exercises. First dialog: "Remove from catalogue" (soft-delete → Recently Deleted, history intact) or "Delete permanently". Permanent path shows a second dialog explaining logs will be relabelled `"[Name] (Deleted)"`. `ExerciseTile` gained `onSoftDelete` callback; `add_exercise_screen` wires both paths. |
 | Responsive sizing system | ✅ Done | `ResponsiveHelper` applied across UI; theme constants updated |
 | Auto-scroll for newly added exercises | ✅ Done | Active workout + routine screens |
+| UI colour consistency pass | ✅ Done | "Add Exercise" button aligned to `WorkoutButtonTop` style (`primary`/`onPrimary`, `elevation: 0`, `cornerRadius: 12`). Routine tile play button switched to tonal `primaryContainer`/`primary` to match icon badges. Dark mode backgrounds made OLED black: `AppColors.backgroundGrey` → `0xFF000000`; `workout_page.dart` scaffold fixed from `surfaceWhite` to `scaffoldBackgroundColor`. |
 
 ---
 
