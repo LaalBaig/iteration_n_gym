@@ -10,6 +10,7 @@ class ExerciseTile extends StatelessWidget {
   final List<String> muscleGroups;
   final VoidCallback onTap;
   final VoidCallback? onDelete;
+  final VoidCallback? onSoftDelete;
   final double bottomMargin;
   final bool confirmDelete;
   final bool isCustom;
@@ -23,6 +24,7 @@ class ExerciseTile extends StatelessWidget {
     this.muscleGroups = const [],
     required this.onTap,
     this.onDelete,
+    this.onSoftDelete,
     this.bottomMargin = 8.0,
     this.confirmDelete = true,
     this.isCustom = false,
@@ -68,10 +70,15 @@ class ExerciseTile extends StatelessWidget {
           ? DismissDirection.none
           : DismissDirection.endToStart,
       onDismissed: (direction) {
+        // handled inside confirmDismiss — never reaches here for custom exercises
         onDelete?.call();
       },
       confirmDismiss: (direction) async {
         if (!confirmDelete) return true;
+        if (isCustom && onSoftDelete != null) {
+          await _showCustomDeleteDialog(context, colorScheme);
+          return false; // always prevent Dismissible from removing the tile itself
+        }
         return await _showDeleteDialog(context, colorScheme);
       },
       background: Container(
@@ -193,6 +200,10 @@ class ExerciseTile extends StatelessWidget {
                       onDelete!.call();
                       return;
                     }
+                    if (isCustom && onSoftDelete != null) {
+                      await _showCustomDeleteDialog(context, colorScheme);
+                      return;
+                    }
                     final confirmed = await _showDeleteDialog(
                       context,
                       colorScheme,
@@ -221,6 +232,95 @@ class ExerciseTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showCustomDeleteDialog(
+    BuildContext context,
+    ColorScheme colorScheme,
+  ) async {
+    final choice = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colorScheme.surface,
+        title: Text(
+          'Remove "$title"?',
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          'Choose how you want to remove this exercise from your catalogue.',
+          style: TextStyle(color: colorScheme.onSurfaceVariant),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(null),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colorScheme.onSurfaceVariant),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop('soft'),
+            child: Text(
+              'Remove from catalogue',
+              style: TextStyle(color: colorScheme.primary),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop('hard'),
+            child: Text(
+              'Delete permanently',
+              style: TextStyle(color: colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (choice == 'soft') {
+      onSoftDelete!.call();
+    } else if (choice == 'hard') {
+      if (!context.mounted) return;
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: colorScheme.surface,
+          title: Text(
+            'Delete permanently?',
+            style: TextStyle(
+              color: colorScheme.error,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: Text(
+            'Your past workout logs for "$title" will be kept in history but '
+            'relabelled as "$title (Deleted)". This cannot be undone.',
+            style: TextStyle(color: colorScheme.onSurfaceVariant),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: colorScheme.onSurfaceVariant),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(
+                'Yes, delete permanently',
+                style: TextStyle(color: colorScheme.error),
+              ),
+            ),
+          ],
+        ),
+      );
+      if (confirmed == true) {
+        onDelete!.call();
+      }
+    }
   }
 
   Future<bool> _showDeleteDialog(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:gym_app_winter/utils/responsive_helper.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
@@ -19,6 +20,8 @@ class CustomExerciseScreen extends StatefulWidget {
 }
 
 class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
+  static List<dynamic>? _cachedCatalogJson;
+
   final TextEditingController _nameController = TextEditingController();
   
   String _selectedExerciseType = 'Weights'; 
@@ -116,7 +119,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
             if (context.canPop()) {
               context.pop();
             } else {
-              context.go('/add');
+              context.go('/add_exercise');
             }
           },
         ),
@@ -169,15 +172,16 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 final db = DatabaseService().db;
                 
                 try {
-                  // Check if exercise name already exists (case-insensitive)
-                  final String jsonString = await rootBundle.loadString('assets/exercises.json');
-                  final List<dynamic> jsonList = jsonDecode(jsonString);
-                  final isDuplicateAsset = jsonList.any((json) =>
+                  _cachedCatalogJson ??= jsonDecode(
+                    await rootBundle.loadString('assets/exercises.json'),
+                  ) as List<dynamic>;
+                  final isDuplicateAsset = _cachedCatalogJson!.any((json) =>
                       (json['name'] as String).trim().toLowerCase() == name.toLowerCase());
 
-                  final dbExercises = await db.select(db.exercises).get();
-                  final isDuplicateDb = dbExercises.any((ex) =>
-                      !ex.isDeleted && ex.name.trim().toLowerCase() == name.toLowerCase());
+                  final matchingDbExercises = await (db.select(db.exercises)
+                    ..where((t) => t.name.lower().equals(name.toLowerCase()))).get();
+                  final isDuplicateDb = matchingDbExercises.any((ex) => !ex.isDeleted);
+                  final isSoftDeleted = !isDuplicateDb && matchingDbExercises.any((ex) => ex.isDeleted && ex.isTracked);
 
                   if (isDuplicateAsset || isDuplicateDb) {
                     if (!localContext.mounted) return;
@@ -194,7 +198,22 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                     return;
                   }
 
-                  final id = 'custom_${DateTime.now().millisecondsSinceEpoch}';
+                  if (isSoftDeleted) {
+                    if (!localContext.mounted) return;
+                    setState(() {
+                      _isSaving = false;
+                    });
+                    ScaffoldMessenger.of(localContext).clearSnackBars();
+                    ScaffoldMessenger.of(localContext).showSnackBar(
+                      SnackBar(
+                        content: Text("'$name' was previously deleted. Restore it from Recently Deleted instead."),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    return;
+                  }
+
+                  final id = 'custom_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(0xFFFFFF)}';
                   await db.addExerciseWithMuscles(
                     ExercisesCompanion(
                       id: Value(id),
@@ -212,6 +231,9 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                   }
 
                   if (!localContext.mounted) return;
+                  setState(() {
+                    _isSaving = false;
+                  });
                   final newExercise = CatalogExercise(
                     id: id,
                     name: name,
@@ -281,6 +303,7 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 ),
                 child: TextField(
                   controller: _nameController,
+                  maxLength: 50,
                   style: TextStyle(
                     color: colorScheme.onSurface,
                     fontSize: ResponsiveHelper.sp(16),
@@ -364,14 +387,20 @@ class _CustomExerciseScreenState extends State<CustomExerciseScreen> {
                 Row(
                   children: [
                     _buildChoiceButton(
-                      'Yes', 
-                      _selectedTrackingType == 'Time based' ? 'Yes' : 'No', 
-                      (val) => setState(() => _selectedTrackingType = 'Time based'),
+                      'Yes',
+                      _selectedTrackingType == 'Time based' ? 'Yes' : 'No',
+                      (val) => setState(() {
+                        _selectedTrackingType = 'Time based';
+                        _selectedExerciseType = 'Bodyweight';
+                      }),
                     ),
                     _buildChoiceButton(
-                      'No', 
-                      _selectedTrackingType == 'Time based' ? 'Yes' : 'No', 
-                      (val) => setState(() => _selectedTrackingType = 'Weight based'),
+                      'No',
+                      _selectedTrackingType == 'Time based' ? 'Yes' : 'No',
+                      (val) => setState(() {
+                        _selectedTrackingType = 'Weight based';
+                        _selectedExerciseType = 'Weights';
+                      }),
                     ),
                   ],
                 ),

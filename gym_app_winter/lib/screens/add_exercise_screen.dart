@@ -196,6 +196,13 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                     category: exercise.category,
                     muscleGroups: exercise.muscles,
                     isCustom: isCustom,
+                    onSoftDelete: isCustom
+                        ? () async {
+                            final db = DatabaseService().db;
+                            await db.softDeleteExercise(exercise.id);
+                            _loadExercises();
+                          }
+                        : null,
                     onDelete: isCustom
                         ? () async {
                             final db = DatabaseService().db;
