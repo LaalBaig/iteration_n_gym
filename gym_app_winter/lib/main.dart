@@ -103,9 +103,9 @@ class _MyAppState extends State<MyApp> {
           onPrimary: Color(0xFF000000),
           primaryContainer: Color(0xFF3C3489),
           onPrimaryContainer: Colors.white,
-          surface: Color(0xFF1C1C1E), // Elevated dark gray for tiles/cards to stand out
+          surface: Color(0xFF1C1C1E),
           onSurface: Colors.white,
-          surfaceContainerHighest: Color(0xFF2C2C2E), // Lighter gray for highlights
+          surfaceContainerHighest: Color(0xFF2C2C2E),
           onSurfaceVariant: Color(0xFF9E9E9E),
           outlineVariant: Color(0xFF38383A), // Visible outlines
           error: Colors.redAccent,

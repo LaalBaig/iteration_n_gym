@@ -90,7 +90,7 @@ class WorkoutPageState extends State<WorkoutPage> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: context.colors.surfaceWhite,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: Column(
             mainAxisAlignment: .start,

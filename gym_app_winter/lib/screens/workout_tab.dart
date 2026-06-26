@@ -487,13 +487,13 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: colorScheme.primary,
+                  color: colorScheme.primaryContainer,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Icon(
                     Icons.play_arrow,
-                    color: Colors.white,
+                    color: colorScheme.primary,
                     size: ResponsiveHelper.w(20),
                   ),
                 ),

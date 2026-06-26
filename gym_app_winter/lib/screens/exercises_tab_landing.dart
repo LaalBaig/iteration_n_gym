@@ -233,10 +233,10 @@ class _ExercisesTabState extends State<ExercisesTab> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                 ),
-                elevation: 4,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

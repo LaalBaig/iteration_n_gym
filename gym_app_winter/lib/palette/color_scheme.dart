@@ -25,7 +25,7 @@ class AppColors {
 
   // Mappings to existing names to minimize breakage
   Color get primaryBlue => brandPrimary;
-  Color get backgroundGrey => isDarkMode ? const Color(0xFF111111) : parchment;
+  Color get backgroundGrey => isDarkMode ? const Color(0xFF000000) : parchment;
   Color get surfaceWhite => isDarkMode ? const Color(0xFF212121) : ivory;
   Color get textBlack => isDarkMode ? const Color(0xFFFFFFFF) : nearBlack;
   Color get textWhite => isDarkMode ? const Color(0xFF111111) : ivory;
