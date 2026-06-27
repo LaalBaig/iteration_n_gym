@@ -90,7 +90,9 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   children: [
                     Image.asset(
-                      'assets/icon/app_icon_nobg.png',
+                      isDark
+                          ? 'assets/icon/app_icon_nobg_white.png'
+                          : 'assets/icon/app_icon_nobg.png',
                       width: 160,
                       height: 160,
                     ),
