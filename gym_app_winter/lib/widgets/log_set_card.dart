@@ -857,23 +857,29 @@ class _LogSetCardState extends State<LogSetCard> {
 
           // Table Columns Header Row
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16.0), vertical: ResponsiveHelper.h(8.0)),
+            padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24.0), vertical: ResponsiveHelper.h(8.0)),
             child: Row(
               children: [
                 SizedBox(
-                  width: 45,
-                  child: Text(
-                    "SET",
-                    style: TextStyle(fontSize: ResponsiveHelper.sp(12), fontWeight: FontWeight.bold, color: headerTextColor),
+                  width: ResponsiveHelper.w(45),
+                  child: Center(
+                    child: Text(
+                      "SET",
+                      style: TextStyle(fontSize: ResponsiveHelper.sp(12), fontWeight: FontWeight.bold, color: headerTextColor),
+                    ),
                   ),
                 ),
+                SizedBox(width: ResponsiveHelper.w(8)),
                 Expanded(
                   flex: 3,
-                  child: Text(
-                    "PREVIOUS",
-                    style: TextStyle(fontSize: ResponsiveHelper.sp(12), fontWeight: FontWeight.bold, color: headerTextColor),
+                  child: Center(
+                    child: Text(
+                      "PREV",
+                      style: TextStyle(fontSize: ResponsiveHelper.sp(12), fontWeight: FontWeight.bold, color: headerTextColor),
+                    ),
                   ),
                 ),
+                SizedBox(width: ResponsiveHelper.w(8)),
                 if (widget.variant == LogSetCardVariant.timed) ...[
                   Expanded(
                     flex: 6,
@@ -1123,7 +1129,7 @@ class _LogSetCardState extends State<LogSetCard> {
     return Row(
       children: [
         SizedBox(
-          width: 42,
+          width: ResponsiveHelper.w(45),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1156,6 +1162,7 @@ class _LogSetCardState extends State<LogSetCard> {
             ],
           ),
         ),
+        SizedBox(width: ResponsiveHelper.w(8)),
         Expanded(
           flex: 3,
           child: GestureDetector(
@@ -1163,6 +1170,7 @@ class _LogSetCardState extends State<LogSetCard> {
             onTap: index < _previousLogs.length ? () => _copyPreviousToCurrent(index) : null,
             child: Text(
               previousText,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: ResponsiveHelper.sp(14),
                 color: index < _previousLogs.length ? brandPurple : colorScheme.onSurfaceVariant,
@@ -1171,6 +1179,7 @@ class _LogSetCardState extends State<LogSetCard> {
             ),
           ),
         ),
+        SizedBox(width: ResponsiveHelper.w(8)),
         Expanded(
           flex: 3,
           child: TextField(
@@ -1265,8 +1274,8 @@ class _LogSetCardState extends State<LogSetCard> {
         if (widget.showCheckmark) ...[
           SizedBox(width: ResponsiveHelper.w(8)),
           SizedBox(
-            width: 44,
-            height: 40,
+            width: ResponsiveHelper.w(44),
+            height: ResponsiveHelper.h(40),
             child: TextButton(
               onPressed: () {
                 if (!setData.isCompleted) {
@@ -1327,7 +1336,7 @@ class _LogSetCardState extends State<LogSetCard> {
     return Row(
       children: [
         SizedBox(
-          width: 42,
+          width: ResponsiveHelper.w(45),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1360,6 +1369,7 @@ class _LogSetCardState extends State<LogSetCard> {
             ],
           ),
         ),
+        SizedBox(width: ResponsiveHelper.w(8)),
         Expanded(
           flex: 3,
           child: GestureDetector(
@@ -1367,6 +1377,7 @@ class _LogSetCardState extends State<LogSetCard> {
             onTap: index < _previousLogs.length ? () => _copyPreviousToCurrent(index) : null,
             child: Text(
               previousText,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: ResponsiveHelper.sp(14),
                 color: index < _previousLogs.length ? brandPurple : colorScheme.onSurfaceVariant,
@@ -1375,6 +1386,7 @@ class _LogSetCardState extends State<LogSetCard> {
             ),
           ),
         ),
+        SizedBox(width: ResponsiveHelper.w(8)),
         Expanded(
           flex: 6,
           child: TextField(
@@ -1423,8 +1435,8 @@ class _LogSetCardState extends State<LogSetCard> {
         if (widget.showCheckmark) ...[
           SizedBox(width: ResponsiveHelper.w(8)),
           SizedBox(
-            width: 44,
-            height: 40,
+            width: ResponsiveHelper.w(44),
+            height: ResponsiveHelper.h(40),
             child: TextButton(
               onPressed: () {
                 if (!setData.isCompleted) {
@@ -1487,7 +1499,7 @@ class _LogSetCardState extends State<LogSetCard> {
     return Row(
       children: [
         SizedBox(
-          width: 42,
+          width: ResponsiveHelper.w(45),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1520,6 +1532,7 @@ class _LogSetCardState extends State<LogSetCard> {
             ],
           ),
         ),
+        SizedBox(width: ResponsiveHelper.w(8)),
         Expanded(
           flex: 3,
           child: GestureDetector(
@@ -1527,6 +1540,7 @@ class _LogSetCardState extends State<LogSetCard> {
             onTap: index < _previousLogs.length ? () => _copyPreviousToCurrent(index) : null,
             child: Text(
               previousText,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: ResponsiveHelper.sp(14),
                 color: index < _previousLogs.length ? brandPurple : colorScheme.onSurfaceVariant,
@@ -1535,6 +1549,7 @@ class _LogSetCardState extends State<LogSetCard> {
             ),
           ),
         ),
+        SizedBox(width: ResponsiveHelper.w(8)),
         Expanded(
           flex: 6,
           child: GestureDetector(
@@ -1568,8 +1583,8 @@ class _LogSetCardState extends State<LogSetCard> {
         if (widget.showCheckmark) ...[
           SizedBox(width: ResponsiveHelper.w(8)),
           SizedBox(
-            width: 44,
-            height: 40,
+            width: ResponsiveHelper.w(44),
+            height: ResponsiveHelper.h(40),
             child: isCompleted && !isRunning
                 ? TextButton(
                     onPressed: () {

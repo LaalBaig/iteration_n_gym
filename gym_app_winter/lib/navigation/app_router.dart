@@ -13,16 +13,28 @@ import 'package:gym_app_winter/screens/workout_history_screen.dart';
 import 'package:gym_app_winter/screens/save_workout_screen.dart';
 import 'package:gym_app_winter/screens/create_routine_screen.dart';
 import 'package:gym_app_winter/screens/explore_routines_screen.dart';
+import 'package:gym_app_winter/screens/splash_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   static final GoRouter routeManager = GoRouter(
     navigatorKey: navigatorKey,
+    initialLocation: '/splash',
     routes: [
       GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
         path: '/',
-        builder: (context, state) => const MainScreen(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const MainScreen(),
+          transitionDuration: const Duration(milliseconds: 325),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
+        ),
       ),
       GoRoute(
         path: '/exercise_page/:exerciseName',

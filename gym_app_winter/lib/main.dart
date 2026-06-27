@@ -9,12 +9,20 @@ import 'package:gym_app_winter/theme/app_theme.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final isDark = prefs.getBool('isDarkTheme');
+  final initialTheme = isDark == null
+      ? ThemeMode.system
+      : (isDark ? ThemeMode.dark : ThemeMode.light);
+  runApp(MyApp(initialThemeMode: initialTheme));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, this.initialThemeMode = ThemeMode.system});
+
+  final ThemeMode initialThemeMode;
 
   static _MyAppState of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>()!;
 
@@ -23,22 +31,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = ThemeMode.system;
+  late ThemeMode _themeMode;
 
   @override
   void initState() {
     super.initState();
-    _loadThemeMode();
-  }
-
-  Future<void> _loadThemeMode() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isDark = prefs.getBool('isDarkTheme');
-    if (isDark != null) {
-      setState(() {
-        _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
-      });
-    }
+    _themeMode = widget.initialThemeMode;
   }
 
   void toggleTheme(bool isDark) async {
