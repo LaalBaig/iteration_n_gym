@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gym_app_winter/utils/responsive_helper.dart';
 
 import 'package:go_router/go_router.dart';
@@ -87,6 +88,7 @@ class WorkoutButtonTop extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () async {
+                      HapticFeedback.mediumImpact();
                       Navigator.pop(context);
                       await WorkoutManager().discardWorkout();
                       WorkoutManager().startWorkout();
@@ -156,6 +158,7 @@ class WorkoutButtonTop extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(24.0, 12, 24, 4),
       child: BouncingButton(
         onTap: () {
+          HapticFeedback.mediumImpact();
           if (WorkoutManager().isActive) {
             _showActiveWorkoutDialog(context);
           } else {
