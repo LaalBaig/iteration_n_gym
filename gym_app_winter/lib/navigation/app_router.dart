@@ -14,6 +14,7 @@ import 'package:gym_app_winter/screens/save_workout_screen.dart';
 import 'package:gym_app_winter/screens/create_routine_screen.dart';
 import 'package:gym_app_winter/screens/explore_routines_screen.dart';
 import 'package:gym_app_winter/screens/splash_screen.dart';
+import 'package:gym_app_winter/screens/onboarding_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -25,6 +26,16 @@ class AppRouter {
       GoRoute(
         path: '/splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const OnboardingScreen(),
+          transitionDuration: const Duration(milliseconds: 325),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
+        ),
       ),
       GoRoute(
         path: '/',

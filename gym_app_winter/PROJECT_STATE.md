@@ -1,6 +1,6 @@
 # Project State — gym_app_winter
 
-> Last updated: 2026-06-26 (session 3)
+> Last updated: 2026-06-28 (session 5)
 > Branch: `vibecode-supreme` | Version: `1.0.0+1` | DB schema: v11
 
 ---
@@ -26,6 +26,8 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 | UI colour consistency pass | ✅ Done | "Add Exercise" button aligned to `WorkoutButtonTop` style (`primary`/`onPrimary`, `elevation: 0`, `cornerRadius: 12`). Routine tile play button switched to tonal `primaryContainer`/`primary` to match icon badges. Dark mode backgrounds made OLED black: `AppColors.backgroundGrey` → `0xFF000000`; `workout_page.dart` scaffold fixed from `surfaceWhite` to `scaffoldBackgroundColor`. |
 | Haptic feedback — Start New Workout | ✅ Done | `HapticFeedback.mediumImpact()` on the main `WorkoutButtonTop` tap and the "Start new workout" button inside the active-workout conflict dialog (`workout_button_top.dart`). |
 | Splash screen logo + animation polish | ✅ Done | Replaced generic icon with `app_icon_nobg.png` (light) / `app_icon_nobg_white.png` (dark). Removed title text, tagline, and pulse dots. Added mirrored exit animation: `easeInBack` scale-down + fade-out before navigating. |
+| Active workout Settings button — Coming Soon placeholder | ✅ Done | Both Settings button instances in `active_workout_screen.dart` now open a modal bottom sheet with a "Coming Soon" message instead of doing nothing. |
+| Onboarding flow — name + bodyweight + welcome | ✅ Done | 3-step PageView (`onboarding_screen.dart`): name (with shake+red-border error on empty) → bodyweight in kg (with back button) → animated welcome screen (staggered icon/glow/text entrance, pulsing glow ring, "Start Training" CTA). Shown once on first launch (`hasCompletedOnboarding` pref). Splash routes to `/onboarding` or `/`. Profile tab gains Bodyweight row (`userBodyweightKg` double pref, editable). Profile Danger Zone gains "Reset Onboarding" row for testing. |
 
 ---
 
@@ -109,7 +111,7 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 
 > Add items here as they come up. No priority order implied.
 
-- [ ] User profile (name, bodyweight tracking for bodyweight exercise volume calc)
+- [ ] User profile — bodyweight exercise volume calc (data now collected via onboarding + profile tab)
 - [ ] Weekly volume targets / goal setting
 - [ ] Exercise notes per set
 - [ ] Superset / circuit support in the workout flow

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:gym_app_winter/utils/responsive_helper.dart';
@@ -17,19 +18,25 @@ class ProfileTab extends StatefulWidget {
 
 class _ProfileTabState extends State<ProfileTab> {
   String _displayName = 'Athlete';
+  double? _bodyweightKg;
   static const _nameKey = 'userName';
+  static const _weightKey = 'userBodyweightKg';
 
   @override
   void initState() {
     super.initState();
-    _loadName();
+    _loadPrefs();
   }
 
-  Future<void> _loadName() async {
+  Future<void> _loadPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString(_nameKey);
-    if (saved != null && saved.isNotEmpty && mounted) {
-      setState(() => _displayName = saved);
+    final savedName = prefs.getString(_nameKey);
+    final savedWeight = prefs.getDouble(_weightKey);
+    if (mounted) {
+      setState(() {
+        if (savedName != null && savedName.isNotEmpty) _displayName = savedName;
+        _bodyweightKg = savedWeight;
+      });
     }
   }
 
@@ -93,6 +100,78 @@ class _ProfileTabState extends State<ProfileTab> {
     }
   }
 
+  Future<void> _editBodyweight() async {
+    final controller = TextEditingController(
+      text: _bodyweightKg != null ? _bodyweightKg!.toStringAsFixed(1) : '',
+    );
+    final result = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: SmoothRectangleBorder(
+          borderRadius: SmoothBorderRadius(cornerRadius: 16, cornerSmoothing: 1.0),
+        ),
+        title: Text(
+          'Edit Bodyweight',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d{0,3}\.?\d{0,1}')),
+          ],
+          decoration: InputDecoration(
+            hintText: '70.0',
+            suffixText: 'kg',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
+            child: Text(
+              'Save',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null) {
+      final prefs = await SharedPreferences.getInstance();
+      if (result.isEmpty) {
+        await prefs.remove(_weightKey);
+        if (mounted) setState(() => _bodyweightKg = null);
+      } else {
+        final parsed = double.tryParse(result);
+        if (parsed != null) {
+          await prefs.setDouble(_weightKey, parsed);
+          if (mounted) setState(() => _bodyweightKg = parsed);
+        }
+      }
+    }
+  }
+
   String _memberSince(List<LogWithWorkoutAndExercise> logs) {
     if (logs.isEmpty) return 'No workouts yet';
     final earliest = logs.map((l) => l.workout.startTime).reduce((a, b) => a.isBefore(b) ? a : b);
@@ -146,7 +225,16 @@ class _ProfileTabState extends State<ProfileTab> {
                 padding: EdgeInsets.all(ResponsiveHelper.w(24)),
                 decoration: ShapeDecoration(
                   gradient: LinearGradient(
-                    colors: [colorScheme.primary, colorScheme.primaryContainer],
+                    colors: [
+                      colorScheme.primary,
+                      Color.alphaBlend(
+                        (Theme.of(context).brightness == Brightness.dark
+                                ? Colors.black
+                                : Colors.white)
+                            .withValues(alpha: 0.28),
+                        colorScheme.primary,
+                      ),
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -261,27 +349,32 @@ class _ProfileTabState extends State<ProfileTab> {
                 ],
               ),
 
-              SizedBox(height: ResponsiveHelper.h(32)),
+              SizedBox(height: ResponsiveHelper.h(16)),
 
-              // ── Danger zone ──────────────────────────────────────────────
-              _SectionLabel('DANGER ZONE'),
+              _SectionLabel('BODY'),
               SizedBox(height: ResponsiveHelper.h(8)),
 
               BouncingButton(
-                onTap: () => _confirmAndClearHistory(context),
+                onTap: _editBodyweight,
                 child: _SettingsCard(
                   children: [
                     _SettingsRow(
-                      icon: Icons.delete_sweep_outlined,
-                      iconColor: colorScheme.error,
-                      iconBg: colorScheme.errorContainer,
-                      label: 'Clear All History',
-                      labelColor: colorScheme.error,
-                      subtitle: 'Permanently delete all workout logs',
+                      icon: Icons.monitor_weight_outlined,
+                      label: 'Bodyweight',
+                      subtitle: _bodyweightKg != null
+                          ? '${_bodyweightKg!.toStringAsFixed(1)} kg'
+                          : 'Not set',
                       trailing: Icon(Icons.chevron_right, color: context.colors.emptyText),
                     ),
                   ],
                 ),
+              ),
+
+              SizedBox(height: ResponsiveHelper.h(32)),
+
+              // ── Danger zone ──────────────────────────────────────────────
+              _DangerZoneSection(
+                onClearHistory: () => _confirmAndClearHistory(context),
               ),
 
               SizedBox(height: ResponsiveHelper.h(40)),
@@ -461,6 +554,113 @@ class _SettingsCard extends StatelessWidget {
   }
 }
 
+class _DangerZoneSection extends StatefulWidget {
+  const _DangerZoneSection({required this.onClearHistory});
+  final VoidCallback onClearHistory;
+
+  @override
+  State<_DangerZoneSection> createState() => _DangerZoneSectionState();
+}
+
+class _DangerZoneSectionState extends State<_DangerZoneSection>
+    with SingleTickerProviderStateMixin {
+  bool _expanded = false;
+  late final AnimationController _controller;
+  late final Animation<double> _fadeAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+    _fadeAnim = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    setState(() => _expanded = !_expanded);
+    if (_expanded) {
+      _controller.forward();
+    } else {
+      _controller.reverse();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: _toggle,
+          behavior: HitTestBehavior.opaque,
+          child: Row(
+            children: [
+              Text(
+                'DANGER ZONE',
+                style: TextStyle(
+                  fontSize: ResponsiveHelper.sp(12),
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: _expanded
+                      ? colorScheme.error
+                      : context.colors.emptyText,
+                ),
+              ),
+              SizedBox(width: ResponsiveHelper.w(6)),
+              AnimatedRotation(
+                turns: _expanded ? 0.5 : 0.0,
+                duration: const Duration(milliseconds: 250),
+                child: Icon(
+                  Icons.keyboard_arrow_down,
+                  size: 16,
+                  color: _expanded
+                      ? colorScheme.error
+                      : context.colors.emptyText,
+                ),
+              ),
+            ],
+          ),
+        ),
+        FadeTransition(
+          opacity: _fadeAnim,
+          child: SizeTransition(
+            sizeFactor: _fadeAnim,
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.only(top: ResponsiveHelper.h(8)),
+              child: BouncingButton(
+                onTap: widget.onClearHistory,
+                child: _SettingsCard(
+                  children: [
+                    _SettingsRow(
+                      icon: Icons.delete_sweep_outlined,
+                      iconColor: colorScheme.error,
+                      iconBg: colorScheme.errorContainer,
+                      label: 'Clear All History',
+                      labelColor: colorScheme.error,
+                      subtitle: 'Permanently delete all workout logs',
+                      trailing: Icon(Icons.chevron_right, color: context.colors.emptyText),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _SettingsRow extends StatelessWidget {
   const _SettingsRow({
     required this.icon,
@@ -529,7 +729,7 @@ class _SettingsRow extends StatelessWidget {
               ],
             ),
           ),
-          if (trailing != null) trailing!,
+          ?trailing,
         ],
       ),
     );

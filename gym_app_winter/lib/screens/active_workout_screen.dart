@@ -25,6 +25,54 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
   String? _newlyAddedExerciseId;
   GlobalKey? _newlyAddedCardKey;
 
+  void _showComingSoon(BuildContext ctx) {
+    final colorScheme = Theme.of(ctx).colorScheme;
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(ResponsiveHelper.w(20)),
+        ),
+      ),
+      builder: (_) => Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveHelper.w(24),
+          vertical: ResponsiveHelper.h(36),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.construction_rounded,
+              size: ResponsiveHelper.w(48),
+              color: colorScheme.primary,
+            ),
+            SizedBox(height: ResponsiveHelper.h(16)),
+            Text(
+              'Coming Soon',
+              style: TextStyle(
+                fontSize: ResponsiveHelper.sp(22),
+                fontWeight: FontWeight.w700,
+                color: colorScheme.onSurface,
+              ),
+            ),
+            SizedBox(height: ResponsiveHelper.h(8)),
+            Text(
+              'Workout settings are on the way.',
+              style: TextStyle(
+                fontSize: ResponsiveHelper.sp(15),
+                color: colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: ResponsiveHelper.h(24)),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _navigateToAddExercise() async {
     FocusManager.instance.primaryFocus?.unfocus();
     await Future.delayed(const Duration(milliseconds: 50));
@@ -446,7 +494,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => _showComingSoon(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.surfaceContainerHighest,
                     padding: EdgeInsets.symmetric(
@@ -571,7 +619,7 @@ class _ActiveWorkoutScreenState extends State<ActiveWorkoutScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => _showComingSoon(itemContext),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.surfaceContainerHighest,
                           padding: EdgeInsets.symmetric(
