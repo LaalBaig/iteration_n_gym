@@ -71,13 +71,11 @@ class CustomBottomNavigationBar extends StatelessWidget {
                     builder: (context, constraints) {
                       final double totalWidth = constraints.maxWidth;
                       final double tabWidth = totalWidth / 4;
-                      final double highlightWidth = tabWidth - 8; // Centered pill with 4px margin on each side
-                      final double highlightHeight = 64;
-                      // Calculate exact pixel offset to center the active highlight over active tab mathematically
+                      final double highlightWidth = tabWidth - 8;
+                      const double highlightHeight = 64;
+                      const double containerHeight = 72;
                       final double activeLeft = currentIndex * tabWidth + (tabWidth - highlightWidth) / 2;
-
-                      // Dynamically calculate top coordinate inside layout constraints to resolve vertical offset
-                      final double activeTop = (constraints.maxHeight - highlightHeight) / 2;
+                      const double activeTop = (containerHeight - highlightHeight) / 2;
 
                       return Stack(
                         children: [

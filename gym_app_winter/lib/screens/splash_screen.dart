@@ -19,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 300),
     );
 
     _scale = Tween<double>(begin: 0.82, end: 1.0).animate(
@@ -37,10 +37,10 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _controller.forward().then((_) async {
-      await Future.delayed(const Duration(milliseconds: 400));
+      await Future.delayed(const Duration(milliseconds: 150));
       if (!mounted) return;
       await _controller.animateBack(0,
-          duration: const Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 350),
           curve: Curves.easeInBack);
       if (mounted) context.go('/');
     });

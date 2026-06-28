@@ -25,6 +25,7 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 | Auto-scroll for newly added exercises | ✅ Done | Active workout + routine screens |
 | UI colour consistency pass | ✅ Done | "Add Exercise" button aligned to `WorkoutButtonTop` style (`primary`/`onPrimary`, `elevation: 0`, `cornerRadius: 12`). Routine tile play button switched to tonal `primaryContainer`/`primary` to match icon badges. Dark mode backgrounds made OLED black: `AppColors.backgroundGrey` → `0xFF000000`; `workout_page.dart` scaffold fixed from `surfaceWhite` to `scaffoldBackgroundColor`. |
 | Haptic feedback — Start New Workout | ✅ Done | `HapticFeedback.mediumImpact()` on the main `WorkoutButtonTop` tap and the "Start new workout" button inside the active-workout conflict dialog (`workout_button_top.dart`). |
+| Splash screen logo + animation polish | ✅ Done | Replaced generic icon with `app_icon_nobg.png` (light) / `app_icon_nobg_white.png` (dark). Removed title text, tagline, and pulse dots. Added mirrored exit animation: `easeInBack` scale-down + fade-out before navigating. |
 
 ---
 

@@ -7,10 +7,6 @@ import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/bottom_navigation_bar.dart';
 import 'package:gym_app_winter/state/rest_timer_notifier.dart';
 
-
-
-
-
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -22,21 +18,24 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  late final PageController _pageController;
-  bool _isProgrammaticScroll = false;
+
+  static const List<Widget> _tabs = [
+    WorkoutsTab(),
+    ExercisesTab(),
+    StatsTab(),
+    ProfileTab(),
+  ];
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = MainScreen.activeTabNotifier.value;
-    _pageController = PageController(initialPage: _selectedIndex);
     MainScreen.activeTabNotifier.addListener(_onActiveTabChanged);
   }
 
   @override
   void dispose() {
     MainScreen.activeTabNotifier.removeListener(_onActiveTabChanged);
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -47,31 +46,12 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  final List<Widget> _tabs = const [
-    WorkoutsTab(),
-    ExercisesTab(),
-    StatsTab(),
-    ProfileTab(),
-  ];
-
   void _onTabSelected(int index) {
     if (_selectedIndex == 1 && index != 1) {
       RestTimerNotifier().cancel();
     }
-    setState(() {
-      _selectedIndex = index;
-      _isProgrammaticScroll = true;
-    });
+    setState(() => _selectedIndex = index);
     MainScreen.activeTabNotifier.value = index;
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    ).then((_) {
-      if (mounted) {
-        _isProgrammaticScroll = false;
-      }
-    });
   }
 
   @override
@@ -82,20 +62,20 @@ class _MainScreenState extends State<MainScreen> {
       extendBody: true,
       body: SafeArea(
         bottom: false,
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (index) {
-            if (!_isProgrammaticScroll) {
-              if (_selectedIndex == 1 && index != 1) {
-                RestTimerNotifier().cancel();
-              }
-              setState(() {
-                _selectedIndex = index;
-              });
-              MainScreen.activeTabNotifier.value = index;
-            }
-          },
-          children: _tabs,
+        child: Stack(
+          fit: StackFit.expand,
+          children: List.generate(_tabs.length, (i) {
+            final isSelected = i == _selectedIndex;
+            return IgnorePointer(
+              ignoring: !isSelected,
+              child: AnimatedOpacity(
+                opacity: isSelected ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeIn,
+                child: _tabs[i],
+              ),
+            );
+          }),
         ),
       ),
       bottomNavigationBar: isKeyboardOpen
