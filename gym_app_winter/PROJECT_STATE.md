@@ -122,6 +122,7 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 - [ ] Workout templates (distinct from routines — pre-filled sets/reps)
 - [ ] Export workout history (CSV / JSON)
 - [x] Notification for rest timer completion
+- [ ] Minimized card layout for workout history
 - [ ] Search/filter on workout history screen
 - [ ] Pagination or lazy loading for long exercise history lists
 - [ ] Widget tests for `WorkoutManager` state transitions
