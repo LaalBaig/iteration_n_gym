@@ -3,13 +3,15 @@ import 'package:gym_app_winter/database/database.dart';
 import 'package:intl/intl.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/utils/responsive_helper.dart';
+import 'package:gym_app_winter/utils/volume_utils.dart';
 import 'package:gym_app_winter/constants/spacing.dart';
 import 'package:gym_app_winter/widgets/app_card.dart';
 
 class WorkoutSummaryCard extends StatelessWidget {
   final List<LogWithWorkoutAndExercise> logs;
+  final double? bodyweightKg;
 
-  const WorkoutSummaryCard({super.key, required this.logs});
+  const WorkoutSummaryCard({super.key, required this.logs, this.bodyweightKg});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class WorkoutSummaryCard extends StatelessWidget {
     double sumOfWeights = 0;
 
     for (var item in weeklyLogs) {
-      final tType = item.exercise.trackingType?.toLowerCase();
+      final tType = item.exercise.trackingType?.toLowerCase() ?? '';
       final cat = item.exercise.category.toLowerCase();
       if (tType == 'time based' || tType == 'timed' || cat == 'timed' || cat == 'cardio') {
         continue;
@@ -46,9 +48,15 @@ class WorkoutSummaryCard extends StatelessWidget {
 
       final weight = item.log.weight;
       final reps = item.log.reps;
-      
-      final setVolume = weight > 0 ? weight * reps : reps.toDouble();
-      totalVolume += setVolume;
+
+      totalVolume += calcSetVolume(
+        weight: weight,
+        reps: reps,
+        trackingType: item.exercise.trackingType,
+        category: item.exercise.category,
+        exerciseType: item.exercise.exerciseType,
+        bodyweightKg: bodyweightKg,
+      );
 
       if (weight > 0) {
         if (weight > heaviestWeight) heaviestWeight = weight;

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/utils/responsive_helper.dart';
+import 'package:gym_app_winter/utils/volume_utils.dart';
 
 import 'package:gym_app_winter/database/database.dart';
 
 class MuscleVolumeHeatmap extends StatefulWidget {
   final List<LogWithWorkoutAndExercise> logs;
+  final double? bodyweightKg;
 
-  const MuscleVolumeHeatmap({super.key, required this.logs});
+  const MuscleVolumeHeatmap({super.key, required this.logs, this.bodyweightKg});
 
   @override
   State<MuscleVolumeHeatmap> createState() => _MuscleVolumeHeatmapState();
@@ -112,9 +114,14 @@ class _MuscleVolumeHeatmapState extends State<MuscleVolumeHeatmap> {
           if (cat == 'Timed' || cat == 'Cardio') {
             volume = item.log.time?.toDouble() ?? 0.0;
           } else {
-            volume = item.log.weight > 0
-                ? item.log.weight * item.log.reps
-                : item.log.reps.toDouble();
+            volume = calcSetVolume(
+              weight: item.log.weight,
+              reps: item.log.reps,
+              trackingType: item.exercise.trackingType,
+              category: item.exercise.category,
+              exerciseType: item.exercise.exerciseType,
+              bodyweightKg: widget.bodyweightKg,
+            );
           }
           gridData[cat]![col] = (gridData[cat]![col] ?? 0.0) + volume;
         }

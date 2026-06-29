@@ -4,7 +4,9 @@ import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart' hide Exercise;
 import 'package:drift/drift.dart' hide Column;
 import 'package:gym_app_winter/datamodel/exercise.dart';
+import 'package:gym_app_winter/utils/volume_utils.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WorkoutManager extends ChangeNotifier {
   static final WorkoutManager _instance = WorkoutManager._internal();
@@ -28,6 +30,8 @@ class WorkoutManager extends ChangeNotifier {
   // Track IDs of exercises added to database during the current workout session
   final List<String> _newlyCreatedExerciseIds = [];
   final List<String> _restoredExerciseIds = [];
+
+  double? _bodyweightKg;
 
   bool get isActive => _isActive;
   bool get isMinimized => _isMinimized;
@@ -106,17 +110,16 @@ class WorkoutManager extends ChangeNotifier {
         (e) => e.name == exerciseName,
         orElse: () => Exercise(id: '', name: '', lastLog: '', category: ''),
       );
-      final tType = exercise.trackingType?.toLowerCase();
-      final cat = exercise.category.toLowerCase();
-      if (tType == 'time based' || tType == 'timed' || cat == 'timed' || cat == 'cardio') {
-        return;
-      }
-
       for (var set in sets) {
         if (_isSetLogged(exerciseName, set)) {
-          final w = (set['weight'] ?? 0).toDouble();
-          final r = set['reps'] ?? 0;
-          volume += w * r;
+          volume += calcSetVolume(
+            weight: (set['weight'] ?? 0).toDouble(),
+            reps: set['reps'] ?? 0,
+            trackingType: exercise.trackingType,
+            category: exercise.category,
+            exerciseType: exercise.exerciseType,
+            bodyweightKg: _bodyweightKg,
+          );
         }
       }
     });
@@ -142,7 +145,11 @@ class WorkoutManager extends ChangeNotifier {
     _activeExercises.clear();
     _newlyCreatedExerciseIds.clear();
     _restoredExerciseIds.clear();
-    
+
+    SharedPreferences.getInstance().then((prefs) {
+      _bodyweightKg = prefs.getDouble('userBodyweightKg');
+    });
+
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _elapsedSeconds++;

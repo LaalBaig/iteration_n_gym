@@ -111,7 +111,7 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 
 > Add items here as they come up. No priority order implied.
 
-- [ ] User profile — bodyweight exercise volume calc (data now collected via onboarding + profile tab)
+- [x] User profile — bodyweight exercise volume calc (`calcSetVolume` in `lib/utils/volume_utils.dart`; applied across `WorkoutManager.totalVolume`, `WorkoutSummaryCard`, `TopExercisesCard`, `MuscleVolumeHeatmap`, and Weekly Volume Trend in `StatsTab`)
 - [ ] Weekly volume targets / goal setting
 - [ ] Exercise notes per set
 - [ ] Superset / circuit support in the workout flow

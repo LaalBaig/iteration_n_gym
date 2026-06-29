@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/database/database.dart';
 import 'package:gym_app_winter/utils/responsive_helper.dart';
+import 'package:gym_app_winter/utils/volume_utils.dart';
 import 'package:gym_app_winter/constants/spacing.dart';
 import 'package:gym_app_winter/widgets/insight_card.dart';
 
@@ -8,8 +9,9 @@ import 'package:gym_app_winter/widgets/insight_card.dart';
 /// Accepts the full [logs] list and derives its own data internally.
 class TopExercisesCard extends StatelessWidget {
   final List<LogWithWorkoutAndExercise> logs;
+  final double? bodyweightKg;
 
-  const TopExercisesCard({super.key, required this.logs});
+  const TopExercisesCard({super.key, required this.logs, this.bodyweightKg});
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +31,14 @@ class TopExercisesCard extends StatelessWidget {
           cat == 'cardio';
       final vol = isTimed
           ? (item.log.time?.toDouble() ?? 0.0)
-          : (item.log.weight > 0
-              ? item.log.weight * item.log.reps
-              : item.log.reps.toDouble());
+          : calcSetVolume(
+              weight: item.log.weight,
+              reps: item.log.reps,
+              trackingType: item.exercise.trackingType,
+              category: item.exercise.category,
+              exerciseType: item.exercise.exerciseType,
+              bodyweightKg: bodyweightKg,
+            );
 
       exerciseVolumes[name] = (exerciseVolumes[name] ?? 0.0) + vol;
       exerciseSets[name] = (exerciseSets[name] ?? 0) + 1;

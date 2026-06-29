@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app_winter/utils/responsive_helper.dart';
+import 'package:gym_app_winter/utils/volume_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
@@ -10,8 +12,27 @@ import 'package:gym_app_winter/widgets/top_exercises_card.dart';
 import 'package:gym_app_winter/widgets/muscle_group_focus_card.dart';
 import 'package:gym_app_winter/widgets/personal_records_card.dart';
 
-class StatsTab extends StatelessWidget {
+class StatsTab extends StatefulWidget {
   const StatsTab({super.key});
+
+  @override
+  State<StatsTab> createState() => _StatsTabState();
+}
+
+class _StatsTabState extends State<StatsTab> {
+  double? _bodyweightKg;
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      if (mounted) {
+        setState(() {
+          _bodyweightKg = prefs.getDouble('userBodyweightKg');
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +55,14 @@ class StatsTab extends StatelessWidget {
           if (logDate.isAfter(startOfWeek.subtract(const Duration(seconds: 1))) &&
               logDate.isBefore(startOfWeek.add(const Duration(days: 7)))) {
             final dayIndex = logDate.difference(startOfWeek).inDays.clamp(0, 6);
-            final volume = item.log.weight > 0
-                ? item.log.weight * item.log.reps
-                : item.log.reps.toDouble();
-            weeklyVolumes[dayIndex] += volume;
+            weeklyVolumes[dayIndex] += calcSetVolume(
+              weight: item.log.weight,
+              reps: item.log.reps,
+              trackingType: item.exercise.trackingType,
+              category: item.exercise.category,
+              exerciseType: item.exercise.exerciseType,
+              bodyweightKg: _bodyweightKg,
+            );
           }
         }
 
@@ -59,10 +84,10 @@ class StatsTab extends StatelessWidget {
               ),
               SizedBox(height: ResponsiveHelper.h(24)),
 
-              WorkoutSummaryCard(logs: logs),
+              WorkoutSummaryCard(logs: logs, bodyweightKg: _bodyweightKg),
               SizedBox(height: ResponsiveHelper.h(24)),
 
-              TopExercisesCard(logs: logs),
+              TopExercisesCard(logs: logs, bodyweightKg: _bodyweightKg),
               SizedBox(height: ResponsiveHelper.h(24)),
 
               MuscleGroupFocusCard(logs: logs),
@@ -94,7 +119,7 @@ class StatsTab extends StatelessWidget {
               ),
               SizedBox(height: ResponsiveHelper.h(24)),
 
-              MuscleVolumeHeatmap(logs: logs),
+              MuscleVolumeHeatmap(logs: logs, bodyweightKg: _bodyweightKg),
 
               SizedBox(height: ResponsiveHelper.h(120)),
             ],
