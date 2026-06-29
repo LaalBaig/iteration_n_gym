@@ -1,6 +1,6 @@
 # Project State — gym_app_winter
 
-> Last updated: 2026-06-28 (session 5)
+> Last updated: 2026-06-29 (session 6)
 > Branch: `vibecode-supreme` | Version: `1.0.0+1` | DB schema: v11
 
 ---
@@ -28,6 +28,7 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 | Splash screen logo + animation polish | ✅ Done | Replaced generic icon with `app_icon_nobg.png` (light) / `app_icon_nobg_white.png` (dark). Removed title text, tagline, and pulse dots. Added mirrored exit animation: `easeInBack` scale-down + fade-out before navigating. |
 | Active workout Settings button — Coming Soon placeholder | ✅ Done | Both Settings button instances in `active_workout_screen.dart` now open a modal bottom sheet with a "Coming Soon" message instead of doing nothing. |
 | Onboarding flow — name + bodyweight + welcome | ✅ Done | 3-step PageView (`onboarding_screen.dart`): name (with shake+red-border error on empty) → bodyweight in kg (with back button) → animated welcome screen (staggered icon/glow/text entrance, pulsing glow ring, "Start Training" CTA). Shown once on first launch (`hasCompletedOnboarding` pref). Splash routes to `/onboarding` or `/`. Profile tab gains Bodyweight row (`userBodyweightKg` double pref, editable). Profile Danger Zone gains "Reset Onboarding" row for testing. |
+| Bodyweight exercise volume calc | ✅ Done | `calcSetVolume()` utility in `lib/utils/volume_utils.dart`. Formula: `(bodyweightKg + additionalWeight) × reps` for bodyweight exercises. Applied to `WorkoutManager.totalVolume` (loads bw from prefs on `startWorkout`), `WorkoutSummaryCard`, `TopExercisesCard`, `MuscleVolumeHeatmap`, and Weekly Volume Trend bars in `StatsTab` (converted to `StatefulWidget`, loads bw in `initState`). |
 
 ---
 
@@ -111,7 +112,6 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 
 > Add items here as they come up. No priority order implied.
 
-- [x] User profile — bodyweight exercise volume calc (`calcSetVolume` in `lib/utils/volume_utils.dart`; applied across `WorkoutManager.totalVolume`, `WorkoutSummaryCard`, `TopExercisesCard`, `MuscleVolumeHeatmap`, and Weekly Volume Trend in `StatsTab`)
 - [ ] Weekly volume targets / goal setting
 - [ ] Exercise notes per set
 - [ ] Superset / circuit support in the workout flow
