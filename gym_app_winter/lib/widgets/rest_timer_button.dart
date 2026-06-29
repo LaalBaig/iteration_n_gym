@@ -124,9 +124,16 @@ class _RestTimerButtonState extends State<RestTimerButton> {
                 padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(16)),
               ),
               icon: Icon(Icons.timer_outlined, size: ResponsiveHelper.w(20)),
-              label: Text(
-                label,
-                style: TextStyle(fontWeight: FontWeight.w600),
+              label: SizedBox(
+                width: 36,
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontFeatures: [FontFeature.tabularFigures()],
+                  ),
+                ),
               ),
             ),
           ),

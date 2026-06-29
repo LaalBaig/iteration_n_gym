@@ -6,11 +6,13 @@ import 'package:gym_app_winter/widgets/minimized_workout_bar.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/utils/responsive_helper.dart';
 import 'package:gym_app_winter/theme/app_theme.dart';
+import 'package:gym_app_winter/services/notification_service.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().initialize();
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('isDarkTheme');
   final initialTheme = isDark == null

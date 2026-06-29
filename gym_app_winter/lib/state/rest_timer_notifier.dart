@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gym_app_winter/main.dart';
+import 'package:gym_app_winter/services/notification_service.dart';
 
 class RestTimerNotifier extends ChangeNotifier {
   static final RestTimerNotifier _instance = RestTimerNotifier._internal();
@@ -48,12 +49,13 @@ class RestTimerNotifier extends ChangeNotifier {
     _isRunning = false;
     _timer?.cancel();
     notifyListeners();
-    
+
     // Double haptic feedback pattern
     HapticFeedback.vibrate();
     await Future.delayed(const Duration(milliseconds: 150));
     HapticFeedback.vibrate();
-    
+
+    NotificationService().showRestCompleteNotification();
     SystemSound.play(SystemSoundType.alert);
 
     // Show 1-second toast
