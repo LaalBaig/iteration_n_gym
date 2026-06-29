@@ -22,7 +22,10 @@ class WorkoutManager extends ChangeNotifier {
   Timer? _timer;
 
   // Temporary storage for logs during an active workout
-  final Map<String, List<Map<String, int>>> _workoutLogs = {};
+  final Map<String, List<Map<String, dynamic>>> _workoutLogs = {};
+
+  // Per-exercise notes for the current workout
+  final Map<String, String> _exerciseNotes = {};
   
   // Persisted list of exercises in the active workout
   final List<Exercise> _activeExercises = [];
@@ -55,13 +58,13 @@ class WorkoutManager extends ChangeNotifier {
     }
   }
 
-  bool _isSetLogged(String exerciseName, Map<String, int> set) {
-    final isCompleted = (set['isCompleted'] ?? 0) == 1;
+  bool _isSetLogged(String exerciseName, Map<String, dynamic> set) {
+    final isCompleted = ((set['isCompleted'] as int?) ?? 0) == 1;
     if (isCompleted) return true;
 
-    final weight = set['weight'] ?? 0;
-    final reps = set['reps'] ?? 0;
-    final time = set['time'] ?? 0;
+    final weight = (set['weight'] as int?) ?? 0;
+    final reps = (set['reps'] as int?) ?? 0;
+    final time = (set['time'] as int?) ?? 0;
 
     final exercise = _activeExercises.firstWhere(
       (e) => e.name == exerciseName,
@@ -113,8 +116,8 @@ class WorkoutManager extends ChangeNotifier {
       for (var set in sets) {
         if (_isSetLogged(exerciseName, set)) {
           volume += calcSetVolume(
-            weight: (set['weight'] ?? 0).toDouble(),
-            reps: set['reps'] ?? 0,
+            weight: ((set['weight'] as int?) ?? 0).toDouble(),
+            reps: (set['reps'] as int?) ?? 0,
             trackingType: exercise.trackingType,
             category: exercise.category,
             exerciseType: exercise.exerciseType,
@@ -142,6 +145,7 @@ class WorkoutManager extends ChangeNotifier {
     _currentExerciseName = "No exercise";
     _setsCount = 0;
     _workoutLogs.clear();
+    _exerciseNotes.clear();
     _activeExercises.clear();
     _newlyCreatedExerciseIds.clear();
     _restoredExerciseIds.clear();
@@ -166,13 +170,21 @@ class WorkoutManager extends ChangeNotifier {
     }
   }
 
-  void addLogsForExercise(String exerciseName, List<Map<String, int>> sets) {
+  void addLogsForExercise(String exerciseName, List<Map<String, dynamic>> sets) {
     _workoutLogs[exerciseName] = sets;
     notifyListeners();
   }
 
-  List<Map<String, int>>? getLogsForExercise(String exerciseName) {
+  List<Map<String, dynamic>>? getLogsForExercise(String exerciseName) {
     return _workoutLogs[exerciseName];
+  }
+
+  void setNoteForExercise(String exerciseName, String note) {
+    _exerciseNotes[exerciseName] = note;
+  }
+
+  String getNoteForExercise(String exerciseName) {
+    return _exerciseNotes[exerciseName] ?? '';
   }
 
   void minimize() {
@@ -212,6 +224,7 @@ class WorkoutManager extends ChangeNotifier {
       _setsCount = (_setsCount - sets.length).clamp(0, double.infinity).toInt();
       _workoutLogs.remove(exerciseName);
     }
+    _exerciseNotes.remove(exerciseName);
     if (_currentExerciseName == exerciseName) {
       _currentExerciseName = _activeExercises.isNotEmpty ? _activeExercises.last.name : "No exercise";
     }
@@ -225,6 +238,9 @@ class WorkoutManager extends ChangeNotifier {
     }
     if (_workoutLogs.containsKey(oldName)) {
       _workoutLogs[newExercise.name] = _workoutLogs.remove(oldName)!;
+    }
+    if (_exerciseNotes.containsKey(oldName)) {
+      _exerciseNotes[newExercise.name] = _exerciseNotes.remove(oldName)!;
     }
     if (_currentExerciseName == oldName) {
       _currentExerciseName = newExercise.name;
@@ -275,6 +291,7 @@ class WorkoutManager extends ChangeNotifier {
       final completedSets = sets.where((s) => _isSetLogged(exerciseName, s)).toList();
       if (completedSets.isEmpty) continue;
 
+      final exerciseNote = _exerciseNotes[exerciseName];
       // Save completed sets
       for (int i = 0; i < completedSets.length; i++) {
         await db.insertExerciseLog(
@@ -282,9 +299,10 @@ class WorkoutManager extends ChangeNotifier {
             workoutId: workoutId,
             exerciseName: exerciseName,
             setNumber: i + 1,
-            weight: (completedSets[i]['weight'] ?? 0).toDouble(),
-            reps: completedSets[i]['reps'] ?? 0,
-            time: completedSets[i].containsKey('time') ? Value(completedSets[i]['time']) : const Value.absent(),
+            weight: ((completedSets[i]['weight'] as int?) ?? 0).toDouble(),
+            reps: (completedSets[i]['reps'] as int?) ?? 0,
+            time: completedSets[i].containsKey('time') ? Value(completedSets[i]['time'] as int?) : const Value.absent(),
+            notes: i == 0 ? Value(exerciseNote?.isNotEmpty == true ? exerciseNote : null) : const Value.absent(),
           ),
         );
       }
@@ -366,6 +384,7 @@ class WorkoutManager extends ChangeNotifier {
     _setsCount = 0;
     _currentExerciseName = "No exercise";
     _workoutLogs.clear();
+    _exerciseNotes.clear();
     _activeExercises.clear();
     _newlyCreatedExerciseIds.clear();
     _restoredExerciseIds.clear();
@@ -405,6 +424,7 @@ class WorkoutManager extends ChangeNotifier {
     _setsCount = 0;
     _currentExerciseName = "No exercise";
     _workoutLogs.clear();
+    _exerciseNotes.clear();
     _activeExercises.clear();
     _newlyCreatedExerciseIds.clear();
     _restoredExerciseIds.clear();

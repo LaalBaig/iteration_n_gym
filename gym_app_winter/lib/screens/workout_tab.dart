@@ -118,11 +118,12 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
       if (re.sets != null && re.sets!.isNotEmpty) {
         try {
           final List<dynamic> parsedSets = jsonDecode(re.sets!);
-          final List<Map<String, int>> mappedSets = parsedSets.map((s) {
+          final List<Map<String, dynamic>> mappedSets = parsedSets.map<Map<String, dynamic>>((s) {
             return {
               'weight': (s['weight'] as num).toInt(),
               'reps': (s['reps'] as num).toInt(),
               'isCompleted': 0,
+              'note': '',
             };
           }).toList();
 

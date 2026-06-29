@@ -1,7 +1,7 @@
 # Project State — gym_app_winter
 
-> Last updated: 2026-06-29 (session 6)
-> Branch: `vibecode-supreme` | Version: `1.0.0+1` | DB schema: v11
+> Last updated: 2026-06-29 (session 8)
+> Branch: `vibecode-supreme` | Version: `1.0.0+1` | DB schema: v12
 
 ---
 
@@ -29,6 +29,7 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 | Active workout Settings button — Coming Soon placeholder | ✅ Done | Both Settings button instances in `active_workout_screen.dart` now open a modal bottom sheet with a "Coming Soon" message instead of doing nothing. |
 | Onboarding flow — name + bodyweight + welcome | ✅ Done | 3-step PageView (`onboarding_screen.dart`): name (with shake+red-border error on empty) → bodyweight in kg (with back button) → animated welcome screen (staggered icon/glow/text entrance, pulsing glow ring, "Start Training" CTA). Shown once on first launch (`hasCompletedOnboarding` pref). Splash routes to `/onboarding` or `/`. Profile tab gains Bodyweight row (`userBodyweightKg` double pref, editable). Profile Danger Zone gains "Reset Onboarding" row for testing. |
 | Bodyweight exercise volume calc | ✅ Done | `calcSetVolume()` utility in `lib/utils/volume_utils.dart`. Formula: `(bodyweightKg + additionalWeight) × reps` for bodyweight exercises. Applied to `WorkoutManager.totalVolume` (loads bw from prefs on `startWorkout`), `WorkoutSummaryCard`, `TopExercisesCard`, `MuscleVolumeHeatmap`, and Weekly Volume Trend bars in `StatsTab` (converted to `StatefulWidget`, loads bw in `initState`). |
+| Exercise notes (per exercise, per session) | ✅ Done | `notes` nullable TEXT column in `ExerciseLogs` (schema v12). One note per exercise per workout (not per set). Tappable "Add note..." row in `LogSetCard` header (active workout only); opens bottom sheet (200-char, Save/Clear). `WorkoutManager` stores notes in `_exerciseNotes: Map<String, String>` — cleared on start/discard/finish, transferred on replace. Note written to set 1's `notes` column in DB. Displayed in: workout history screen (inline under each exercise's sets line) and exercise history `HistoryTile` (italic + notes icon below sets, capped at 2 lines). History tile height bumped to 280. Set data maps changed from `Map<String, int>` to `Map<String, dynamic>` throughout. |
 
 ---
 
@@ -113,7 +114,7 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 > Add items here as they come up. No priority order implied.
 
 - [ ] Weekly volume targets / goal setting
-- [ ] Exercise notes per set
+- [x] Exercise notes per session
 - [ ] Superset / circuit support in the workout flow
 - [ ] Workout templates (distinct from routines — pre-filled sets/reps)
 - [ ] Export workout history (CSV / JSON)
@@ -134,7 +135,7 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 | `MuscleGroups` | v3 | `id`, `name (unique)` |
 | `ExerciseMuscleGroups` | v3 | `(exerciseId, muscleGroupId)` PK, `role` (1=Primary, 2=Secondary) |
 | `Workouts` | v1 | `id`, `startTime`, `endTime`, `isStandalone`, `description` |
-| `ExerciseLogs` | v1 | `id`, `workoutId`, `exerciseName`, `setNumber`, `weight`, `reps`, `time` (v11) |
+| `ExerciseLogs` | v1 | `id`, `workoutId`, `exerciseName`, `setNumber`, `weight`, `reps`, `time` (v11), `notes` (v12) |
 | `Routines` | v7 | `id`, `title` |
 | `RoutineExercises` | v7 | `routineId`, `exerciseName`, `category`, `exerciseType`, `trackingType`, `exerciseOrder`, `sets` |
 

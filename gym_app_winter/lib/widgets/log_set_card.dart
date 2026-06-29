@@ -18,7 +18,7 @@ enum LogSetCardVariant {
 class LogSetCard extends StatefulWidget {
   final String exerciseName;
   final VoidCallback onAddSet;
-  final FutureOr<void> Function(List<Map<String, int>>) onFinish;
+  final FutureOr<void> Function(List<Map<String, dynamic>>) onFinish;
   final bool showLogButton;
   final LogSetCardVariant variant;
 
@@ -27,8 +27,8 @@ class LogSetCard extends StatefulWidget {
   final VoidCallback? onReplace;
   final VoidCallback? onReorder;
 
-  final List<Map<String, int>>? initialSets;
-  final ValueChanged<List<Map<String, int>>>? onChanged;
+  final List<Map<String, dynamic>>? initialSets;
+  final ValueChanged<List<Map<String, dynamic>>>? onChanged;
   final bool showCheckmark;
   final bool isHighlighted;
 
@@ -130,6 +130,8 @@ class _SetData {
 class _LogSetCardState extends State<LogSetCard> {
   final List<_SetData> _sets = [];
   List<ExerciseLog> _previousLogs = [];
+  String _exerciseNote = '';
+  final TextEditingController _noteController = TextEditingController();
 
   Map<int, int> _repMaxes = {};
   int _maxBodyweightReps = 0;
@@ -162,16 +164,20 @@ class _LogSetCardState extends State<LogSetCard> {
     }
     _loadPreviousLogs();
     
+    if (widget.onChanged == null) {
+      _exerciseNote = WorkoutManager().getNoteForExercise(widget.exerciseName);
+    }
+
     if (widget.initialSets != null && widget.initialSets!.isNotEmpty) {
       for (var setMap in widget.initialSets!) {
-        int w = setMap['weight'] ?? 0;
-        int r = setMap['reps'] ?? 0;
-        bool completed = (setMap['isCompleted'] ?? 0) == 1;
-        
+        int w = (setMap['weight'] as int?) ?? 0;
+        int r = (setMap['reps'] as int?) ?? 0;
+        bool completed = ((setMap['isCompleted'] as int?) ?? 0) == 1;
+
         final setData = _createSetData(weight: w, reps: r);
         setData.isCompleted = completed;
         if (widget.variant == LogSetCardVariant.timed) {
-          int w = setMap['time'] ?? setMap['weight'] ?? 0;
+          int w = (setMap['time'] as int?) ?? (setMap['weight'] as int?) ?? 0;
           setData.durationMs = w * 1000;
           setData.timeBeforeStartMs = w * 1000;
         }
@@ -182,14 +188,14 @@ class _LogSetCardState extends State<LogSetCard> {
       final activeSets = WorkoutManager().getLogsForExercise(widget.exerciseName);
       if (activeSets != null && activeSets.isNotEmpty) {
         for (var setMap in activeSets) {
-          int w = setMap['weight'] ?? 0;
-          int r = setMap['reps'] ?? 0;
-          bool completed = setMap['isCompleted'] == 1;
-          
+          int w = (setMap['weight'] as int?) ?? 0;
+          int r = (setMap['reps'] as int?) ?? 0;
+          bool completed = (setMap['isCompleted'] as int?) == 1;
+
           final setData = _createSetData(weight: w, reps: r);
           setData.isCompleted = completed;
           if (widget.variant == LogSetCardVariant.timed) {
-            int w = setMap['time'] ?? setMap['weight'] ?? 0;
+            int w = (setMap['time'] as int?) ?? (setMap['weight'] as int?) ?? 0;
             setData.durationMs = w * 1000;
             setData.timeBeforeStartMs = w * 1000;
           }
@@ -231,6 +237,7 @@ class _LogSetCardState extends State<LogSetCard> {
     for (var set in _sets) {
       set.dispose();
     }
+    _noteController.dispose();
     super.dispose();
   }
 
@@ -614,20 +621,20 @@ class _LogSetCardState extends State<LogSetCard> {
   void _notifyChanges() {
     final setsData = _sets.map((s) {
       if (widget.variant == LogSetCardVariant.timed) {
-        return {
+        return <String, dynamic>{
           'weight': 0,
           'reps': 0,
           'time': s.durationMs ~/ 1000,
           'isCompleted': s.isCompleted ? 1 : 0,
         };
       } else if (widget.variant == LogSetCardVariant.bodyweight) {
-        return {
+        return <String, dynamic>{
           'weight': 0,
           'reps': s.reps,
           'isCompleted': s.isCompleted ? 1 : 0,
         };
       } else {
-        return {
+        return <String, dynamic>{
           'weight': s.weight,
           'reps': s.reps,
           'isCompleted': s.isCompleted ? 1 : 0,
@@ -768,6 +775,128 @@ class _LogSetCardState extends State<LogSetCard> {
     );
   }
 
+  void _showExerciseNoteBottomSheet(BuildContext context) {
+    _noteController.text = _exerciseNote;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            padding: EdgeInsets.fromLTRB(24, 20, 24, 32),
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: colorScheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.w(2)),
+                    ),
+                  ),
+                ),
+                Text(
+                  "Exercise note",
+                  style: TextStyle(
+                    fontSize: ResponsiveHelper.sp(18),
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                SizedBox(height: ResponsiveHelper.h(4)),
+                Text(
+                  widget.exerciseName,
+                  style: TextStyle(
+                    fontSize: ResponsiveHelper.sp(13),
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                SizedBox(height: ResponsiveHelper.h(16)),
+                TextField(
+                  controller: _noteController,
+                  autofocus: true,
+                  maxLength: 200,
+                  maxLines: 4,
+                  style: TextStyle(fontSize: ResponsiveHelper.sp(15), color: colorScheme.onSurface),
+                  decoration: InputDecoration(
+                    hintText: "e.g. felt strong, wide grip, paused reps...",
+                    hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+                    filled: true,
+                    fillColor: colorScheme.surfaceContainerHighest,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
+                      borderSide: BorderSide.none,
+                    ),
+                    counterStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+                  ),
+                ),
+                SizedBox(height: ResponsiveHelper.h(12)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          setState(() {
+                            _exerciseNote = '';
+                            _noteController.clear();
+                          });
+                          if (widget.onChanged == null) {
+                            WorkoutManager().setNoteForExercise(widget.exerciseName, '');
+                          }
+                          Navigator.pop(context);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: colorScheme.outlineVariant),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveHelper.w(12))),
+                          padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(14)),
+                        ),
+                        child: Text("Clear", style: TextStyle(color: colorScheme.onSurface, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    SizedBox(width: ResponsiveHelper.w(12)),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final note = _noteController.text.trim();
+                          setState(() {
+                            _exerciseNote = note;
+                          });
+                          if (widget.onChanged == null) {
+                            WorkoutManager().setNoteForExercise(widget.exerciseName, note);
+                          }
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ResponsiveHelper.w(12))),
+                          padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(14)),
+                        ),
+                        child: Text("Save", style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -854,6 +983,46 @@ class _LogSetCardState extends State<LogSetCard> {
               ],
             ),
           ),
+
+          // Exercise-level note row (only shown in active workout mode)
+          if (widget.onChanged == null) ...[
+            GestureDetector(
+              onTap: () => _showExerciseNoteBottomSheet(context),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: ResponsiveHelper.w(16),
+                  right: ResponsiveHelper.w(16),
+                  bottom: ResponsiveHelper.h(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      _exerciseNote.isNotEmpty ? Icons.notes_rounded : Icons.add_comment_outlined,
+                      size: ResponsiveHelper.w(14),
+                      color: _exerciseNote.isNotEmpty
+                          ? brandPurple
+                          : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                    ),
+                    SizedBox(width: ResponsiveHelper.w(6)),
+                    Expanded(
+                      child: Text(
+                        _exerciseNote.isNotEmpty ? _exerciseNote : "Add note...",
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.sp(13),
+                          color: _exerciseNote.isNotEmpty
+                              ? colorScheme.onSurface
+                              : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                          fontStyle: _exerciseNote.isEmpty ? FontStyle.italic : FontStyle.normal,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
 
           // Table Columns Header Row
           Padding(
@@ -1038,11 +1207,11 @@ class _LogSetCardState extends State<LogSetCard> {
                       final setData = _sets
                           .map((set) {
                             if (widget.variant == LogSetCardVariant.timed) {
-                              return {'weight': set.durationMs ~/ 1000, 'reps': 0};
+                              return <String, dynamic>{'weight': set.durationMs ~/ 1000, 'reps': 0};
                             } else if (widget.variant == LogSetCardVariant.bodyweight) {
-                              return {'weight': 0, 'reps': set.reps};
+                              return <String, dynamic>{'weight': 0, 'reps': set.reps};
                             } else {
-                              return {'weight': set.weight, 'reps': set.reps};
+                              return <String, dynamic>{'weight': set.weight, 'reps': set.reps};
                             }
                           })
                           .toList();

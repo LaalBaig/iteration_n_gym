@@ -114,6 +114,10 @@ class _SeeAllHistoryScreenState extends State<SeeAllHistoryScreen> {
           // Create HistoryTiles from grouped logs
           final List<HistoryTile> history = groupedLogs.entries.map((entry) {
             final workout = entry.value.first.workout;
+            final set1 = entry.value.firstWhere(
+              (e) => e.log.setNumber == 1,
+              orElse: () => entry.value.first,
+            );
             return HistoryTile(
               setData: entry.value.map((e) => {
                 'weight': e.log.weight.toInt(),
@@ -123,6 +127,7 @@ class _SeeAllHistoryScreenState extends State<SeeAllHistoryScreen> {
               workoutId: entry.key,
               date: workout.startTime,
               isWorkout: !workout.isStandalone,
+              note: set1.log.notes,
             );
           }).toList();
 

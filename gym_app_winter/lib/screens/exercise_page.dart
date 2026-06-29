@@ -108,6 +108,10 @@ class _ExercisePageState extends State<ExercisePage> {
               // Create HistoryTiles from grouped logs
               final List<HistoryTile> history = groupedLogs.entries.map((entry) {
                 final workout = entry.value.first.workout;
+                final set1 = entry.value.firstWhere(
+                  (e) => e.log.setNumber == 1,
+                  orElse: () => entry.value.first,
+                );
                 return HistoryTile(
                   setData: entry.value.map((e) {
                     int isPR = 0;
@@ -136,6 +140,7 @@ class _ExercisePageState extends State<ExercisePage> {
                   workoutId: entry.key,
                   date: workout.startTime,
                   isWorkout: !workout.isStandalone,
+                  note: set1.log.notes,
                 );
               }).toList();
 
@@ -207,9 +212,9 @@ class _ExercisePageState extends State<ExercisePage> {
                             workoutId: workoutId,
                             exerciseName: widget.exerciseName,
                             setNumber: i + 1,
-                            weight: setData[i]['weight']!.toDouble(),
-                            reps: setData[i]['reps']!,
-                            time: setData[i].containsKey('time') ? Value(setData[i]['time']) : const Value.absent(),
+                            weight: ((setData[i]['weight'] as int?) ?? 0).toDouble(),
+                            reps: (setData[i]['reps'] as int?) ?? 0,
+                            time: setData[i].containsKey('time') ? Value(setData[i]['time'] as int?) : const Value.absent(),
                           ),
                         );
                       }
@@ -278,8 +283,8 @@ class _ExercisePageState extends State<ExercisePage> {
                       ),
                       SizedBox(height: ResponsiveHelper.h(12)),
                       SizedBox(
-                        height: 220,
-                        child: history.isEmpty 
+                        height: history.any((t) => t.note != null && t.note!.isNotEmpty) ? 320 : 280,
+                        child: history.isEmpty
                           ? Center(child: Text("No history yet", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)))
                           : ListView.builder(
                               scrollDirection: Axis.horizontal,

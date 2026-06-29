@@ -352,6 +352,12 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                             final exerciseSets = entry.value;
                             final setListText = exerciseSets.map(_formatSetLog).join(" • ");
                             final setCountText = exerciseSets.length == 1 ? "1 set" : "${exerciseSets.length} sets";
+                            final note = exerciseSets
+                                .firstWhere(
+                                  (s) => s.setNumber == 1,
+                                  orElse: () => exerciseSets.first,
+                                )
+                                .notes;
 
                             return Padding(
                               padding: EdgeInsets.only(bottom: 10.0),
@@ -374,6 +380,30 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                                       color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
+                                  if (note != null && note.isNotEmpty) ...[
+                                    SizedBox(height: ResponsiveHelper.h(3)),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          Icons.notes_rounded,
+                                          size: ResponsiveHelper.w(12),
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
+                                        SizedBox(width: ResponsiveHelper.w(4)),
+                                        Expanded(
+                                          child: Text(
+                                            note,
+                                            style: TextStyle(
+                                              fontSize: ResponsiveHelper.sp(12),
+                                              color: colorScheme.onSurfaceVariant,
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ],
                               ),
                             );

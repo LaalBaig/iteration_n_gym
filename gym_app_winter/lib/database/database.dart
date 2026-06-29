@@ -57,6 +57,7 @@ class ExerciseLogs extends Table {
   RealColumn get weight => real()();
   IntColumn get reps => integer()();
   IntColumn get time => integer().nullable()();
+  TextColumn get notes => text().nullable()();
 }
 
 @DataClassName('Routine')
@@ -100,7 +101,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -177,23 +178,26 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 11) {
             await m.addColumn(exerciseLogs, exerciseLogs.time);
-            
+
             // Migrate existing timed exercises to use time column instead of weight
-            final timedExercises = await (select(exercises)..where((t) => 
-              t.category.equals('Timed') | 
-              t.category.equals('Cardio') | 
-              t.trackingType.equals('Time Based') | 
+            final timedExercises = await (select(exercises)..where((t) =>
+              t.category.equals('Timed') |
+              t.category.equals('Cardio') |
+              t.trackingType.equals('Time Based') |
               t.trackingType.equals('Timed')
             )).get();
-            
+
             final timedExerciseNames = timedExercises.map((e) => e.name).toSet().toList();
-            
+
             if (timedExerciseNames.isNotEmpty) {
                final inClause = timedExerciseNames.map((e) => "'${e.replaceAll("'", "''")}'").join(', ');
                await customStatement(
                  'UPDATE exercise_logs SET time = CAST(weight AS INTEGER), weight = 0.0 WHERE exercise_name IN ($inClause)'
                );
             }
+          }
+          if (from < 12) {
+            await m.addColumn(exerciseLogs, exerciseLogs.notes);
           }
         },
         beforeOpen: (details) async {

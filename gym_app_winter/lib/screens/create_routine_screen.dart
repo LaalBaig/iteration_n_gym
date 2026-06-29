@@ -19,7 +19,7 @@ class CreateRoutineScreen extends StatefulWidget {
 class _CreateRoutineScreenState extends State<CreateRoutineScreen> {
   final TextEditingController _titleController = TextEditingController();
   final List<Exercise> _exercises = [];
-  final Map<String, List<Map<String, int>>> _routineSets = {};
+  final Map<String, List<Map<String, dynamic>>> _routineSets = {};
   bool _showHelpBanner = true;
   bool _isSaving = false;
   bool _isReordering = false;

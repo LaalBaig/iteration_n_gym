@@ -15,13 +15,15 @@ class HistoryTile extends StatelessWidget {
     this.workoutId,
     this.date,
     this.isWorkout = false,
+    this.note,
   });
 
-  final List<Map<String, int>> setData;
+  final List<Map<String, dynamic>> setData;
   final LogSetCardVariant variant;
   final String? workoutId;
   final DateTime? date;
   final bool isWorkout;
+  final String? note;
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +169,32 @@ class HistoryTile extends StatelessWidget {
                       ),
                     ),
                   ),
+                if (note != null && note!.isNotEmpty) ...[
+                  SizedBox(height: ResponsiveHelper.h(10)),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.notes_rounded,
+                        size: ResponsiveHelper.w(13),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      SizedBox(width: ResponsiveHelper.w(6)),
+                      Expanded(
+                        child: Text(
+                          note!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: ResponsiveHelper.sp(13),
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
           ),
         ),
@@ -174,16 +202,16 @@ class HistoryTile extends StatelessWidget {
     );
   }
 
-  String _formatSet(Map<String, int> set) {
+  String _formatSet(Map<String, dynamic> set) {
     if (variant == LogSetCardVariant.timed) {
-      final seconds = set['time'] ?? set['weight'] ?? 0;
+      final seconds = (set['time'] as int?) ?? (set['weight'] as int?) ?? 0;
       final min = (seconds ~/ 60).toString().padLeft(2, '0');
       final sec = (seconds % 60).toString().padLeft(2, '0');
       return "$min:$sec";
     } else if (variant == LogSetCardVariant.bodyweight) {
-      return "${set['reps']}  reps";
+      return "${(set['reps'] as int?) ?? 0}  reps";
     } else {
-      return "${set['reps']}  reps  x  ${set['weight']} kg";
+      return "${(set['reps'] as int?) ?? 0}  reps  x  ${(set['weight'] as int?) ?? 0} kg";
     }
   }
 
