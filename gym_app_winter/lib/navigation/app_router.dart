@@ -13,6 +13,7 @@ import 'package:gym_app_winter/screens/workout_history_screen.dart';
 import 'package:gym_app_winter/screens/save_workout_screen.dart';
 import 'package:gym_app_winter/screens/create_routine_screen.dart';
 import 'package:gym_app_winter/screens/explore_routines_screen.dart';
+import 'package:gym_app_winter/screens/export_history_screen.dart';
 import 'package:gym_app_winter/screens/splash_screen.dart';
 import 'package:gym_app_winter/screens/onboarding_screen.dart';
 
@@ -133,6 +134,10 @@ class AppRouter {
       GoRoute(
         path: '/explore_routines',
         builder: (context, state) => const ExploreRoutinesScreen(),
+      ),
+      GoRoute(
+        path: '/export_history',
+        builder: (context, state) => const ExportHistoryScreen(),
       ),
     ],
   );

@@ -231,7 +231,7 @@ class _WorkoutsTabState extends State<WorkoutsTab> {
                             ),
                             SizedBox(height: ResponsiveHelper.h(12)),
                             Text(
-                              "New Routine",
+                              "Create Routine",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: ResponsiveHelper.sp(16),

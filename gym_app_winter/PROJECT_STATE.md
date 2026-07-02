@@ -1,6 +1,6 @@
 # Project State — gym_app_winter
 
-> Last updated: 2026-06-29 (session 9)
+> Last updated: 2026-07-02 (session 11)
 > Branch: `vibecode-supreme` | Version: `1.0.0+1` | DB schema: v12
 
 ---
@@ -32,6 +32,8 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 | Exercise notes (per exercise, per session) | ✅ Done | `notes` nullable TEXT column in `ExerciseLogs` (schema v12). One note per exercise per workout (not per set). Tappable "Add note..." row in `LogSetCard` header (active workout only); opens bottom sheet (200-char, Save/Clear). `WorkoutManager` stores notes in `_exerciseNotes: Map<String, String>` — cleared on start/discard/finish, transferred on replace. Note written to set 1's `notes` column in DB. Displayed in: workout history screen (inline under each exercise's sets line) and exercise history `HistoryTile` (italic + notes icon below sets, capped at 2 lines). History tile height bumped to 280. Set data maps changed from `Map<String, int>` to `Map<String, dynamic>` throughout. |
 | Rest timer notification | ✅ Done | `flutter_local_notifications ^22.0.1` added. `NotificationService` singleton (`lib/services/notification_service.dart`) initialized in `main()`. Fires local push notification on timer completion alongside existing haptic + snackbar. Android: `POST_NOTIFICATIONS` permission in manifest + runtime request for API 33+. iOS: permission requested on first launch via `DarwinInitializationSettings`. Requires full cold build (not hot restart) after adding the plugin. ⚠️ Needs finetuning — see Known Issues. |
 | Rest timer button UI wobble | ✅ Done | Label wrapped in `SizedBox(width: 36)` with `FontFeature.tabularFigures()` and `textAlign: center`. Button no longer resizes when switching between "Rest" and time display, and digit widths are stable as the countdown changes. |
+| Workout history — minimized-by-default cards | ✅ Done | `workout_history_screen.dart` refactored: per-item `Container` extracted into a new `_WorkoutHistoryCard` `StatefulWidget` with local `_expanded` state, defaulting to `false`. Header (date/time/duration) is always visible and tappable to toggle; a rotating chevron indicates state. Full exercise/set breakdown (previously always rendered) now lives inside an `AnimatedSize` that only builds when expanded. Delete icon still works independently via its own `GestureDetector`. |
+| Export workout history (CSV/JSON) | ✅ Done | New "DATA" section in `profile_tab.dart` → "Export Workout History" row → `/export_history` route (`export_history_screen.dart`). Flow: scope (All Workouts vs. Specific Exercise, with a searchable bottom-sheet exercise picker) → format (CSV/JSON) → "Export & Share" triggers `lib/services/export_service.dart`, which builds the file from `watchAllLogsWithWorkoutAndExercise()` and hands it to the native share sheet via `share_plus`. CSV uses the `csv` package (`Csv().encode(...)`, `\r\n` line endings) for correct quoting/escaping of notes; JSON nests sets under exercises under workouts. File written to a temp dir via `path_provider` before sharing. New deps: `path_provider`, `share_plus`, `csv`. |
 
 ---
 
@@ -120,9 +122,9 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 - [x] Exercise notes per session
 - [ ] Superset / circuit support in the workout flow
 - [ ] Workout templates (distinct from routines — pre-filled sets/reps)
-- [ ] Export workout history (CSV / JSON)
+- [x] Export workout history (CSV / JSON)
 - [x] Notification for rest timer completion
-- [ ] Minimized card layout for workout history
+- [x] Minimized card layout for workout history
 - [ ] Search/filter on workout history screen
 - [ ] Pagination or lazy loading for long exercise history lists
 - [ ] Widget tests for `WorkoutManager` state transitions
@@ -155,3 +157,4 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 | New stats widget | Extend `lib/widgets/insight_card.dart`, add to `lib/screens/stats_tab.dart` |
 | Theming / colours | `lib/palette/color_scheme.dart`, `lib/theme/app_theme.dart`, `main.dart` (RestTimerTheme) |
 | Responsive sizing | `lib/utils/responsive_helper.dart` |
+| Data export | `lib/services/export_service.dart` (CSV/JSON building + share), `lib/screens/export_history_screen.dart` (UI) |

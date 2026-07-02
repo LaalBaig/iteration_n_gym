@@ -8,6 +8,7 @@ import 'package:gym_app_winter/main.dart' as import_main;
 import 'package:gym_app_winter/database/database_service.dart';
 import 'package:gym_app_winter/database/database.dart';
 import 'package:gym_app_winter/widgets/bouncing_button.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -364,6 +365,26 @@ class _ProfileTabState extends State<ProfileTab> {
                       subtitle: _bodyweightKg != null
                           ? '${_bodyweightKg!.toStringAsFixed(1)} kg'
                           : 'Not set',
+                      trailing: Icon(Icons.chevron_right, color: context.colors.emptyText),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: ResponsiveHelper.h(32)),
+
+              // ── Data ─────────────────────────────────────────────────────
+              _SectionLabel('DATA'),
+              SizedBox(height: ResponsiveHelper.h(8)),
+
+              BouncingButton(
+                onTap: () => context.push('/export_history'),
+                child: _SettingsCard(
+                  children: [
+                    _SettingsRow(
+                      icon: Icons.ios_share_outlined,
+                      label: 'Export Workout History',
+                      subtitle: 'Save as CSV or JSON',
                       trailing: Icon(Icons.chevron_right, color: context.colors.emptyText),
                     ),
                   ],

@@ -231,192 +231,252 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
             padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(24), vertical: ResponsiveHelper.h(8)),
             itemBuilder: (context, index) {
               final workout = workouts[index];
-              final dateStr = DateFormat('EEEE, MMM d').format(workout.startTime);
-              final timeStr = DateFormat('h:mm a').format(workout.startTime);
-              final durationStr = _formatDuration(workout.startTime, workout.endTime);
-
-              return Container(
-                margin: EdgeInsets.only(bottom: 16),
-                padding: EdgeInsets.all(ResponsiveHelper.w(16)),
-                decoration: ShapeDecoration(
-                  color: context.colors.surfaceWhite,
-                  shape: SmoothRectangleBorder(
-                    borderRadius: SmoothBorderRadius(
-                      cornerRadius: 16,
-                      cornerSmoothing: 1,
-                    ),
-                    side: BorderSide(
-                      color: colorScheme.outlineVariant,
-                      width: 1.0,
-                    ),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header Row: Date, Duration, and Delete
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                dateStr,
-                                style: TextStyle(
-                                  fontSize: ResponsiveHelper.sp(17),
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.onSurface,
-                                ),
-                              ),
-                              SizedBox(height: ResponsiveHelper.h(4)),
-                              Text(
-                                "$timeStr • $durationStr",
-                                style: TextStyle(
-                                  fontSize: ResponsiveHelper.sp(13),
-                                  fontWeight: FontWeight.w500,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => _confirmAndDelete(context, workout),
-                          behavior: HitTestBehavior.opaque,
-                          child: Padding(
-                            padding: EdgeInsets.all(ResponsiveHelper.w(4.0)),
-                            child: Icon(
-                              Icons.delete_outline,
-                              size: ResponsiveHelper.w(22),
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (workout.description != null && workout.description!.isNotEmpty) ...[
-                      SizedBox(height: ResponsiveHelper.h(10)),
-                      Text(
-                        workout.description!,
-                        style: TextStyle(
-                          fontSize: ResponsiveHelper.sp(14),
-                          fontStyle: FontStyle.italic,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                    SizedBox(height: ResponsiveHelper.h(12)),
-                    Divider(height: 1),
-                    SizedBox(height: ResponsiveHelper.h(12)),
-                    // Exercises and sets list
-                    FutureBuilder<List<ExerciseLog>>(
-                      future: DatabaseService().db.getLogsForWorkout(workout.id),
-                      builder: (context, logSnapshot) {
-                        final logs = logSnapshot.data ?? [];
-
-                        if (logSnapshot.connectionState == ConnectionState.waiting && logs.isEmpty) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(8.0)),
-                            child: SizedBox(
-                              height: 14,
-                              width: 14,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          );
-                        }
-
-                        if (logs.isEmpty) {
-                          return Text(
-                            "No logs recorded for this workout.",
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.sp(13),
-                              color: colorScheme.onSurfaceVariant,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          );
-                        }
-
-                        // Group logs by exerciseName
-                        final Map<String, List<ExerciseLog>> groupedLogs = {};
-                        for (final log in logs) {
-                          groupedLogs.putIfAbsent(log.exerciseName, () => []).add(log);
-                        }
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: groupedLogs.entries.map((entry) {
-                            final exerciseName = entry.key;
-                            final exerciseSets = entry.value;
-                            final setListText = exerciseSets.map(_formatSetLog).join(" • ");
-                            final setCountText = exerciseSets.length == 1 ? "1 set" : "${exerciseSets.length} sets";
-                            final note = exerciseSets
-                                .firstWhere(
-                                  (s) => s.setNumber == 1,
-                                  orElse: () => exerciseSets.first,
-                                )
-                                .notes;
-
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: 10.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    exerciseName,
-                                    style: TextStyle(
-                                      fontSize: ResponsiveHelper.sp(14),
-                                      fontWeight: FontWeight.w600,
-                                      color: colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  SizedBox(height: ResponsiveHelper.h(3)),
-                                  Text(
-                                    "$setCountText: $setListText",
-                                    style: TextStyle(
-                                      fontSize: ResponsiveHelper.sp(13),
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                  if (note != null && note.isNotEmpty) ...[
-                                    SizedBox(height: ResponsiveHelper.h(3)),
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          Icons.notes_rounded,
-                                          size: ResponsiveHelper.w(12),
-                                          color: colorScheme.onSurfaceVariant,
-                                        ),
-                                        SizedBox(width: ResponsiveHelper.w(4)),
-                                        Expanded(
-                                          child: Text(
-                                            note,
-                                            style: TextStyle(
-                                              fontSize: ResponsiveHelper.sp(12),
-                                              color: colorScheme.onSurfaceVariant,
-                                              fontStyle: FontStyle.italic,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+              return _WorkoutHistoryCard(
+                workout: workout,
+                formatDuration: _formatDuration,
+                formatSetLog: _formatSetLog,
+                onDelete: () => _confirmAndDelete(context, workout),
               );
             },
           );
         },
+      ),
+    );
+  }
+}
+
+class _WorkoutHistoryCard extends StatefulWidget {
+  const _WorkoutHistoryCard({
+    required this.workout,
+    required this.formatDuration,
+    required this.formatSetLog,
+    required this.onDelete,
+  });
+
+  final Workout workout;
+  final String Function(DateTime start, DateTime? end) formatDuration;
+  final String Function(ExerciseLog log) formatSetLog;
+  final VoidCallback onDelete;
+
+  @override
+  State<_WorkoutHistoryCard> createState() => _WorkoutHistoryCardState();
+}
+
+class _WorkoutHistoryCardState extends State<_WorkoutHistoryCard> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final workout = widget.workout;
+
+    final dateStr = DateFormat('EEEE, MMM d').format(workout.startTime);
+    final timeStr = DateFormat('h:mm a').format(workout.startTime);
+    final durationStr = widget.formatDuration(workout.startTime, workout.endTime);
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(ResponsiveHelper.w(16)),
+      decoration: ShapeDecoration(
+        color: context.colors.surfaceWhite,
+        shape: SmoothRectangleBorder(
+          borderRadius: SmoothBorderRadius(
+            cornerRadius: 16,
+            cornerSmoothing: 1,
+          ),
+          side: BorderSide(
+            color: colorScheme.outlineVariant,
+            width: 1.0,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header Row: Date, Duration, Expand toggle, and Delete
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => setState(() => _expanded = !_expanded),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        dateStr,
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.sp(17),
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveHelper.h(4)),
+                      Text(
+                        "$timeStr • $durationStr",
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.sp(13),
+                          fontWeight: FontWeight.w500,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                AnimatedRotation(
+                  turns: _expanded ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    Icons.keyboard_arrow_down,
+                    size: ResponsiveHelper.w(24),
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: widget.onDelete,
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: EdgeInsets.all(ResponsiveHelper.w(4.0)),
+                    child: Icon(
+                      Icons.delete_outline,
+                      size: ResponsiveHelper.w(22),
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (workout.description != null && workout.description!.isNotEmpty) ...[
+            SizedBox(height: ResponsiveHelper.h(10)),
+            Text(
+              workout.description!,
+              style: TextStyle(
+                fontSize: ResponsiveHelper.sp(14),
+                fontStyle: FontStyle.italic,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+          AnimatedSize(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            alignment: Alignment.topCenter,
+            child: !_expanded
+                ? const SizedBox(width: double.infinity)
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: ResponsiveHelper.h(12)),
+                      Divider(height: 1),
+                      SizedBox(height: ResponsiveHelper.h(12)),
+                      // Exercises and sets list
+                      FutureBuilder<List<ExerciseLog>>(
+                        future: DatabaseService().db.getLogsForWorkout(workout.id),
+                        builder: (context, logSnapshot) {
+                          final logs = logSnapshot.data ?? [];
+
+                          if (logSnapshot.connectionState == ConnectionState.waiting && logs.isEmpty) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.h(8.0)),
+                              child: SizedBox(
+                                height: 14,
+                                width: 14,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            );
+                          }
+
+                          if (logs.isEmpty) {
+                            return Text(
+                              "No logs recorded for this workout.",
+                              style: TextStyle(
+                                fontSize: ResponsiveHelper.sp(13),
+                                color: colorScheme.onSurfaceVariant,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            );
+                          }
+
+                          // Group logs by exerciseName
+                          final Map<String, List<ExerciseLog>> groupedLogs = {};
+                          for (final log in logs) {
+                            groupedLogs.putIfAbsent(log.exerciseName, () => []).add(log);
+                          }
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: groupedLogs.entries.map((entry) {
+                              final exerciseName = entry.key;
+                              final exerciseSets = entry.value;
+                              final setListText = exerciseSets.map(widget.formatSetLog).join(" • ");
+                              final setCountText = exerciseSets.length == 1 ? "1 set" : "${exerciseSets.length} sets";
+                              final note = exerciseSets
+                                  .firstWhere(
+                                    (s) => s.setNumber == 1,
+                                    orElse: () => exerciseSets.first,
+                                  )
+                                  .notes;
+
+                              return Padding(
+                                padding: EdgeInsets.only(bottom: 10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      exerciseName,
+                                      style: TextStyle(
+                                        fontSize: ResponsiveHelper.sp(14),
+                                        fontWeight: FontWeight.w600,
+                                        color: colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    SizedBox(height: ResponsiveHelper.h(3)),
+                                    Text(
+                                      "$setCountText: $setListText",
+                                      style: TextStyle(
+                                        fontSize: ResponsiveHelper.sp(13),
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    if (note != null && note.isNotEmpty) ...[
+                                      SizedBox(height: ResponsiveHelper.h(3)),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            Icons.notes_rounded,
+                                            size: ResponsiveHelper.w(12),
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                          SizedBox(width: ResponsiveHelper.w(4)),
+                                          Expanded(
+                                            child: Text(
+                                              note,
+                                              style: TextStyle(
+                                                fontSize: ResponsiveHelper.sp(12),
+                                                color: colorScheme.onSurfaceVariant,
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+          ),
+        ],
       ),
     );
   }
