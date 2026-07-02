@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:flutter/services.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/widgets/bouncing_button.dart';
 
 class LogSetCard extends StatefulWidget {
   final String exerciseName;
@@ -92,10 +95,10 @@ class _LogSetCardState extends State<LogSetCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(ResponsiveHelper.w(16)),
       decoration: BoxDecoration(
-        color: AppColors.backgroundGrey,
-        borderRadius: BorderRadius.circular(16),
+        color: context.colors.backgroundGrey,
+        borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -104,29 +107,29 @@ class _LogSetCardState extends State<LogSetCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Log Set",
                 style: TextStyle(
-                  color: AppColors.textBlack,
-                  fontSize: 18,
+                  color: context.colors.textBlack,
+                  fontSize: ResponsiveHelper.sp(18),
                   fontWeight: FontWeight.w600,
                 ),
               ),
               TextButton.icon(
                 onPressed: _addSet,
-                icon: const Icon(
+                icon: Icon(
                   Icons.add,
-                  size: 18,
-                  color: AppColors.primaryBlue,
+                  size: ResponsiveHelper.w(18),
+                  color: context.colors.primaryBlue,
                 ),
-                label: const Text(
+                label: Text(
                   "Add Set",
-                  style: TextStyle(color: AppColors.primaryBlue),
+                  style: TextStyle(color: context.colors.primaryBlue),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: ResponsiveHelper.h(12)),
 
           // All Sets
           ...List.generate(_sets.length, (index) {
@@ -138,7 +141,7 @@ class _LogSetCardState extends State<LogSetCard> {
               child: Row(
                 children: [
                   _buildSetCircle("set ${index + 1}:"),
-                  const SizedBox(width: 12),
+                  SizedBox(width: ResponsiveHelper.w(12)),
                   Expanded(
                     child: _buildCrownPicker(
                       label: "kg",
@@ -161,7 +164,7 @@ class _LogSetCardState extends State<LogSetCard> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: ResponsiveHelper.w(8)),
                   Expanded(
                     child: _buildCrownPicker(
                       label: "reps",
@@ -186,14 +189,14 @@ class _LogSetCardState extends State<LogSetCard> {
                   ),
                   // Remove button (only show if more than 1 set)
                   if (_sets.length > 1) ...[
-                    const SizedBox(width: 8),
+                    SizedBox(width: ResponsiveHelper.w(8)),
                     IconButton(
                       onPressed: () => _removeSet(index),
-                      icon: const Icon(Icons.remove_circle_outline),
+                      icon: Icon(Icons.remove_circle_outline),
                       color: Colors.red,
                       iconSize: 24,
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                      constraints: BoxConstraints(),
                     ),
                   ],
                 ],
@@ -201,7 +204,7 @@ class _LogSetCardState extends State<LogSetCard> {
             );
           }),
 
-          const SizedBox(height: 20),
+          SizedBox(height: ResponsiveHelper.h(20)),
 
           // Finish Workout Action
           SizedBox(
@@ -210,17 +213,17 @@ class _LogSetCardState extends State<LogSetCard> {
             child: ElevatedButton(
               onPressed: widget.onFinish,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
+                backgroundColor: context.colors.primaryBlue,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 "Log Exercise",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: ResponsiveHelper.sp(16),
                 ),
               ),
             ),
@@ -234,7 +237,7 @@ class _LogSetCardState extends State<LogSetCard> {
   Widget _buildSetCircle(String number) {
     return Text(
       number,
-      style: const TextStyle(color: AppColors.emptyText, fontSize: 16),
+      style: TextStyle(color: context.colors.emptyText, fontSize: ResponsiveHelper.sp(16)),
     );
   }
 
@@ -256,17 +259,15 @@ class _LogSetCardState extends State<LogSetCard> {
     return Container(
       height: 50,
       decoration: BoxDecoration(
-        color: AppColors.textWhite,
-        borderRadius: BorderRadius.circular(8),
+        color: context.colors.textWhite,
+        borderRadius: BorderRadius.circular(ResponsiveHelper.w(8)),
       ),
       child: Row(
         children: [
           // Display value on the left (tappable for keyboard input)
           Expanded(
             child: ClipRect(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
+              child: BouncingButton(
                   onTap: () {
                     debugPrint(
                       'Tapped! Current value: $value, isEditing: $isEditing',
@@ -286,7 +287,7 @@ class _LogSetCardState extends State<LogSetCard> {
                   },
                   child: Container(
                     alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(8)),
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -300,21 +301,21 @@ class _LogSetCardState extends State<LogSetCard> {
                               Flexible(
                                 child: Text(
                                   value.toString(),
-                                  style: const TextStyle(
-                                    color: AppColors.textBlack,
-                                    fontSize: 16,
+                                  style: TextStyle(
+                                    color: context.colors.textBlack,
+                                    fontSize: ResponsiveHelper.sp(16),
                                     fontWeight: FontWeight.w600,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                 ),
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(width: ResponsiveHelper.w(4)),
                               Text(
                                 label,
-                                style: const TextStyle(
-                                  color: AppColors.emptyText,
-                                  fontSize: 10,
+                                style: TextStyle(
+                                  color: context.colors.emptyText,
+                                  fontSize: ResponsiveHelper.sp(10),
                                 ),
                               ),
                             ],
@@ -340,12 +341,12 @@ class _LogSetCardState extends State<LogSetCard> {
                                 keyboardType: TextInputType.number,
                                 textAlign: TextAlign.center,
                                 maxLength: 3,
-                                style: const TextStyle(
-                                  color: AppColors.textBlack,
-                                  fontSize: 16,
+                                style: TextStyle(
+                                  color: context.colors.textBlack,
+                                  fontSize: ResponsiveHelper.sp(16),
                                   fontWeight: FontWeight.w600,
                                 ),
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.zero,
                                   isDense: true,
@@ -364,7 +365,6 @@ class _LogSetCardState extends State<LogSetCard> {
                     ),
                   ),
                 ),
-              ),
             ),
           ),
 
@@ -372,14 +372,14 @@ class _LogSetCardState extends State<LogSetCard> {
           Container(
             width: 35,
             decoration: BoxDecoration(
-              color: AppColors.backgroundGrey.withOpacity(0.3),
+              color: context.colors.backgroundGrey.withValues(alpha: 0.3),
               border: Border(
                 left: BorderSide(
-                  color: AppColors.emptyText.withOpacity(0.2),
+                  color: context.colors.emptyText.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topRight: Radius.circular(8),
                 bottomRight: Radius.circular(8),
               ),
@@ -407,9 +407,9 @@ class _LogSetCardState extends State<LogSetCard> {
                       width: isSelected ? 20 : 14,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.primaryBlue
-                            : AppColors.emptyText,
-                        borderRadius: BorderRadius.circular(1),
+                            ? context.colors.primaryBlue
+                            : context.colors.emptyText,
+                        borderRadius: BorderRadius.circular(ResponsiveHelper.w(1)),
                       ),
                     ),
                   );
