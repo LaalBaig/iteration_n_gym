@@ -8,17 +8,23 @@ import 'package:gym_app_winter/utils/responsive_helper.dart';
 import 'package:gym_app_winter/theme/app_theme.dart';
 import 'package:gym_app_winter/services/notification_service.dart';
 
-final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService().initialize();
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('isDarkTheme');
   final initialTheme = isDark == null
       ? ThemeMode.system
       : (isDark ? ThemeMode.dark : ThemeMode.light);
   runApp(MyApp(initialThemeMode: initialTheme));
+
+  // Notification setup can involve a system permission dialog; doing this
+  // after runApp() avoids blocking the first frame on it.
+  NotificationService().initialize().catchError((e) {
+    debugPrint('Notification initialization failed: $e');
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -26,7 +32,8 @@ class MyApp extends StatefulWidget {
 
   final ThemeMode initialThemeMode;
 
-  static _MyAppState of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>()!;
+  static _MyAppState of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>()!;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -48,15 +55,15 @@ class _MyAppState extends State<MyApp> {
       _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     });
   }
-  
+
   final _appRouter = AppRouter();
-  
+
   @override
   Widget build(BuildContext context) {
     ResponsiveHelper.init(context);
     return MaterialApp.router(
-        scaffoldMessengerKey: scaffoldMessengerKey,
-        title: "Fitness App",
+      scaffoldMessengerKey: scaffoldMessengerKey,
+      title: "Fitness App",
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
       theme: ThemeData(
@@ -134,7 +141,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, child) {
         final mediaQueryData = MediaQuery.of(context);
         final clampedTextScaler = TextScaler.linear(
-          mediaQueryData.textScaler.scale(1).clamp(0.85, 1.15)
+          mediaQueryData.textScaler.scale(1).clamp(0.85, 1.15),
         );
         return MediaQuery(
           data: mediaQueryData.copyWith(textScaler: clampedTextScaler),
