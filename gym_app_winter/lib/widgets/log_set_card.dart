@@ -1263,6 +1263,76 @@ class _LogSetCardState extends State<LogSetCard> {
     );
   }
 
+  Widget _buildSetNumberColumn(
+    BuildContext context,
+    int index,
+    _SetData setData,
+    ColorScheme colorScheme, {
+    bool showRemoveButton = false,
+  }) {
+    return SizedBox(
+      width: ResponsiveHelper.w(45),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "${index + 1}",
+            style: TextStyle(
+              fontSize: ResponsiveHelper.sp(16),
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          if (_isPR(setData))
+            Container(
+              margin: EdgeInsets.only(top: 2),
+              padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(4), vertical: ResponsiveHelper.h(2)),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(ResponsiveHelper.w(4)),
+              ),
+              child: Text(
+                "PR",
+                style: TextStyle(
+                  fontSize: ResponsiveHelper.sp(9),
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.primary,
+                ),
+              ),
+            ),
+          if (showRemoveButton && index > 0)
+            Padding(
+              padding: EdgeInsets.only(top: 2),
+              child: IconButton(
+                onPressed: () => _removeSet(index),
+                icon: Icon(Icons.remove_circle_outline, color: colorScheme.primary, size: ResponsiveHelper.w(16)),
+                tooltip: "Remove set",
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints(maxWidth: ResponsiveHelper.w(24), maxHeight: ResponsiveHelper.h(20)),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRemoveSetButton(int index, ColorScheme colorScheme) {
+    return SizedBox(
+      width: ResponsiveHelper.w(44),
+      height: ResponsiveHelper.h(40),
+      child: index > 0
+          ? IconButton(
+              onPressed: () => _removeSet(index),
+              icon: Icon(Icons.remove_circle_outline, color: colorScheme.primary, size: ResponsiveHelper.w(22)),
+              tooltip: "Remove set",
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            )
+          : null,
+    );
+  }
+
   Widget _buildRowContent(
     BuildContext context,
     int index,
@@ -1297,40 +1367,7 @@ class _LogSetCardState extends State<LogSetCard> {
 
     return Row(
       children: [
-        SizedBox(
-          width: ResponsiveHelper.w(45),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "${index + 1}",
-                style: TextStyle(
-                  fontSize: ResponsiveHelper.sp(16),
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              if (_isPR(setData))
-                Container(
-                  margin: EdgeInsets.only(top: 2),
-                  padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(4), vertical: ResponsiveHelper.h(2)),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(4)),
-                  ),
-                  child: Text(
-                    "PR",
-                    style: TextStyle(
-                      fontSize: ResponsiveHelper.sp(9),
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
+        _buildSetNumberColumn(context, index, setData, colorScheme),
         SizedBox(width: ResponsiveHelper.w(8)),
         Expanded(
           flex: 3,
@@ -1442,48 +1479,7 @@ class _LogSetCardState extends State<LogSetCard> {
         ),
         if (widget.showCheckmark) ...[
           SizedBox(width: ResponsiveHelper.w(8)),
-          SizedBox(
-            width: ResponsiveHelper.w(44),
-            height: ResponsiveHelper.h(40),
-            child: TextButton(
-              onPressed: () {
-                if (!setData.isCompleted) {
-                  if (setData.weightTextController.text.trim().isEmpty ||
-                      setData.repsTextController.text.trim().isEmpty) {
-                    final messenger = ScaffoldMessenger.of(context);
-                    messenger.clearSnackBars();
-                    messenger.showSnackBar(
-                      const SnackBar(
-                        content: Text("Weight and reps cannot be empty"),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    return;
-                  }
-                }
-                setState(() {
-                  setData.isCompleted = !setData.isCompleted;
-                  _notifyChanges();
-                });
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: setData.isCompleted
-                    ? const Color(0xFF10B981)
-                    : colorScheme.surfaceContainerHighest,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
-                ),
-                padding: EdgeInsets.zero,
-              ),
-              child: Icon(
-                Icons.check,
-                color: setData.isCompleted
-                    ? Colors.white
-                    : colorScheme.onSurfaceVariant,
-                size: ResponsiveHelper.w(18),
-              ),
-            ),
-          ),
+          _buildRemoveSetButton(index, colorScheme),
         ],
       ],
     );
@@ -1504,40 +1500,7 @@ class _LogSetCardState extends State<LogSetCard> {
 
     return Row(
       children: [
-        SizedBox(
-          width: ResponsiveHelper.w(45),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "${index + 1}",
-                style: TextStyle(
-                  fontSize: ResponsiveHelper.sp(16),
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              if (_isPR(setData))
-                Container(
-                  margin: EdgeInsets.only(top: 2),
-                  padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(4), vertical: ResponsiveHelper.h(2)),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(4)),
-                  ),
-                  child: Text(
-                    "PR",
-                    style: TextStyle(
-                      fontSize: ResponsiveHelper.sp(9),
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
+        _buildSetNumberColumn(context, index, setData, colorScheme),
         SizedBox(width: ResponsiveHelper.w(8)),
         Expanded(
           flex: 3,
@@ -1603,47 +1566,7 @@ class _LogSetCardState extends State<LogSetCard> {
         ),
         if (widget.showCheckmark) ...[
           SizedBox(width: ResponsiveHelper.w(8)),
-          SizedBox(
-            width: ResponsiveHelper.w(44),
-            height: ResponsiveHelper.h(40),
-            child: TextButton(
-              onPressed: () {
-                if (!setData.isCompleted) {
-                  if (setData.repsTextController.text.trim().isEmpty) {
-                    final messenger = ScaffoldMessenger.of(context);
-                    messenger.clearSnackBars();
-                    messenger.showSnackBar(
-                      const SnackBar(
-                        content: Text("Reps cannot be empty"),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    return;
-                  }
-                }
-                setState(() {
-                  setData.isCompleted = !setData.isCompleted;
-                  _notifyChanges();
-                });
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: setData.isCompleted
-                    ? const Color(0xFF10B981)
-                    : colorScheme.surfaceContainerHighest,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
-                ),
-                padding: EdgeInsets.zero,
-              ),
-              child: Icon(
-                Icons.check,
-                color: setData.isCompleted
-                    ? Colors.white
-                    : colorScheme.onSurfaceVariant,
-                size: ResponsiveHelper.w(18),
-              ),
-            ),
-          ),
+          _buildRemoveSetButton(index, colorScheme),
         ],
       ],
     );
@@ -1667,40 +1590,7 @@ class _LogSetCardState extends State<LogSetCard> {
 
     return Row(
       children: [
-        SizedBox(
-          width: ResponsiveHelper.w(45),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "${index + 1}",
-                style: TextStyle(
-                  fontSize: ResponsiveHelper.sp(16),
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              if (_isPR(setData))
-                Container(
-                  margin: EdgeInsets.only(top: 2),
-                  padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.w(4), vertical: ResponsiveHelper.h(2)),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(ResponsiveHelper.w(4)),
-                  ),
-                  child: Text(
-                    "PR",
-                    style: TextStyle(
-                      fontSize: ResponsiveHelper.sp(9),
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
+        _buildSetNumberColumn(context, index, setData, colorScheme, showRemoveButton: true),
         SizedBox(width: ResponsiveHelper.w(8)),
         Expanded(
           flex: 3,

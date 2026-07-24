@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:gym_app_winter/navigation/app_router.dart';
@@ -7,6 +10,7 @@ import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/utils/responsive_helper.dart';
 import 'package:gym_app_winter/theme/app_theme.dart';
 import 'package:gym_app_winter/services/notification_service.dart';
+import 'package:gym_app_winter/database/database_service.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -25,6 +29,23 @@ void main() async {
   NotificationService().initialize().catchError((e) {
     debugPrint('Notification initialization failed: $e');
   });
+
+  _backfillExerciseMetadata().catchError((e) {
+    debugPrint('Exercise metadata backfill failed: $e');
+  });
+}
+
+Future<void> _backfillExerciseMetadata() async {
+  final jsonString = await rootBundle.loadString('assets/exercises.json');
+  final List<dynamic> jsonList = jsonDecode(jsonString);
+  final catalogByName = <String, ({String? exerciseType, String? trackingType})>{
+    for (final entry in jsonList)
+      entry['name'] as String: (
+        exerciseType: entry['exerciseType'] as String?,
+        trackingType: entry['trackingType'] as String?,
+      ),
+  };
+  await DatabaseService().db.backfillExerciseMetadata(catalogByName);
 }
 
 class MyApp extends StatefulWidget {

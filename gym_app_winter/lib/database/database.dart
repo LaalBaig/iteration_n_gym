@@ -232,7 +232,32 @@ class AppDatabase extends _$AppDatabase {
     return list.isEmpty ? null : list.first;
   }
   Future<int> addExercise(ExercisesCompanion entry) => into(exercises).insert(entry, mode: InsertMode.insertOrReplace);
-  
+
+  /// One-time repair for rows saved before `exerciseType`/`trackingType`
+  /// were reliably persisted (e.g. logged pre-migration) — without this,
+  /// bodyweight exercises silently drop out of volume calculations because
+  /// they're indistinguishable from a plain weighted exercise.
+  Future<void> backfillExerciseMetadata(Map<String, ({String? exerciseType, String? trackingType})> catalogByName) async {
+    final rows = await (select(exercises)
+          ..where((t) => t.exerciseType.isNull() | t.trackingType.isNull()))
+        .get();
+
+    for (final row in rows) {
+      final catalogEntry = catalogByName[row.name];
+      if (catalogEntry == null) continue;
+      final newExerciseType = row.exerciseType ?? catalogEntry.exerciseType;
+      final newTrackingType = row.trackingType ?? catalogEntry.trackingType;
+      if (newExerciseType == row.exerciseType && newTrackingType == row.trackingType) continue;
+
+      await (update(exercises)..where((t) => t.id.equals(row.id))).write(
+        ExercisesCompanion(
+          exerciseType: Value(newExerciseType),
+          trackingType: Value(newTrackingType),
+        ),
+      );
+    }
+  }
+
   Future<void> addExerciseWithMuscles(ExercisesCompanion entry, List<String> muscleNames) async {
     await transaction(() async {
       await into(exercises).insert(entry, mode: InsertMode.insertOrReplace);

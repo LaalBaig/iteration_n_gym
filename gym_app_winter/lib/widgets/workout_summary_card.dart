@@ -144,10 +144,15 @@ class _StatItem extends StatelessWidget {
           ),
         ),
         SizedBox(height: AppSpacing.xs),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: isHighlight ? colorScheme.primary : colors.textBlack,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            value,
+            maxLines: 1,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              color: isHighlight ? colorScheme.primary : colors.textBlack,
+            ),
           ),
         ),
       ],

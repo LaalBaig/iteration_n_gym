@@ -313,14 +313,21 @@ class WorkoutManager extends ChangeNotifier {
           ? null 
           : existingList.firstWhere((e) => !e.isDeleted, orElse: () => existingList.first);
       if (existing != null) {
+        // Backfill exerciseType/trackingType from the active session's exercise
+        // if the stored row predates that metadata (e.g. logged before the
+        // bodyweight-volume feature existed and never updated since).
+        final activeEx = _activeExercises.firstWhere(
+          (e) => e.name == exerciseName,
+          orElse: () => Exercise(id: '', name: '', lastLog: '', category: ''),
+        );
         await db.addExercise(
           ExercisesCompanion(
             id: Value(existing.id),
             name: Value(existing.name),
             category: Value(existing.category),
             lastLog: Value(formattedDate),
-            exerciseType: Value(existing.exerciseType),
-            trackingType: Value(existing.trackingType),
+            exerciseType: Value(existing.exerciseType ?? activeEx.exerciseType),
+            trackingType: Value(existing.trackingType ?? activeEx.trackingType),
             isDeleted: Value(existing.isDeleted),
           ),
         );
