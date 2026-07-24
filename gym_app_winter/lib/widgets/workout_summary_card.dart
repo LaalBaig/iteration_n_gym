@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:figma_squircle/figma_squircle.dart';
 import 'package:gym_app_winter/database/database.dart';
 import 'package:intl/intl.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
@@ -85,9 +86,7 @@ class WorkoutSummaryCard extends StatelessWidget {
               ),
               IconButton(
                 icon: Icon(Icons.help_outline),
-                onPressed: () {
-                  // TODO: Show help dialog explaining the stats
-                },
+                onPressed: () => _showHelpDialog(context),
                 color: colors.emptyText,
                 padding: EdgeInsets.zero,
                 constraints: BoxConstraints(),
@@ -110,6 +109,90 @@ class WorkoutSummaryCard extends StatelessWidget {
               Expanded(child: _StatItem(label: 'Heaviest', value: '${numberFormat.format(heaviestWeight)} kg')),
               Expanded(child: _StatItem(label: 'Average', value: '${numberFormat.format(averageWeight)} kg')),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showHelpDialog(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: SmoothRectangleBorder(
+          borderRadius: SmoothBorderRadius(cornerRadius: 16, cornerSmoothing: 1.0),
+        ),
+        title: Text(
+          'Weekly Summary',
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            _HelpRow(term: 'Exercises', explanation: 'Number of distinct exercises logged this week.'),
+            _HelpRow(term: 'Sets', explanation: 'Total completed sets logged this week.'),
+            _HelpRow(term: 'Reps', explanation: 'Total reps across all sets this week.'),
+            _HelpRow(
+              term: 'Volume',
+              explanation: 'Total weight moved this week (weight × reps per set, summed). '
+                  'Bodyweight exercises use your bodyweight plus any added weight.',
+            ),
+            _HelpRow(term: 'Heaviest', explanation: 'The single heaviest weight logged this week.'),
+            _HelpRow(term: 'Average', explanation: 'Average weight across all weighted sets this week.'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Got it',
+              style: TextStyle(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HelpRow extends StatelessWidget {
+  final String term;
+  final String explanation;
+
+  const _HelpRow({required this.term, required this.explanation});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            term,
+            style: TextStyle(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Text(
+            explanation,
+            style: TextStyle(
+              color: colorScheme.onSurfaceVariant,
+              fontSize: ResponsiveHelper.sp(13),
+              height: 1.3,
+            ),
           ),
         ],
       ),
@@ -151,6 +234,7 @@ class _StatItem extends StatelessWidget {
             value,
             maxLines: 1,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontSize: ResponsiveHelper.sp(16),
               color: isHighlight ? colorScheme.primary : colors.textBlack,
             ),
           ),
