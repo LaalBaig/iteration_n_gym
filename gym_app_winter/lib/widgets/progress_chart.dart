@@ -137,7 +137,7 @@ class _ProgressChartState extends State<ProgressChart> {
                   DropdownButton<String>(
                     value: _selectedMetric,
                     dropdownColor: isDark ? const Color(0xFF222222) : Colors.white,
-                    iconEnabledColor: context.colors.brandPrimary,
+                    iconEnabledColor: isDark ? const Color(0xFF9F92EC) : context.colors.brandPrimary,
                     underline: SizedBox(),
                     style: TextStyle(
                       color: isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9),
@@ -162,7 +162,7 @@ class _ProgressChartState extends State<ProgressChart> {
                   DropdownButton<String>(
                     value: _selectedTimeframe,
                     dropdownColor: isDark ? const Color(0xFF222222) : Colors.white,
-                    iconEnabledColor: context.colors.brandPrimary,
+                    iconEnabledColor: isDark ? const Color(0xFF9F92EC) : context.colors.brandPrimary,
                     underline: SizedBox(),
                     style: TextStyle(
                       color: isDark ? const Color(0xFF9F92EC) : const Color(0xFF4C3BC9),
@@ -284,12 +284,13 @@ class _ProgressChartState extends State<ProgressChart> {
                     ),
                     lineTouchData: LineTouchData(
                       touchTooltipData: LineTouchTooltipData(
+                        getTooltipColor: (touchedSpot) => isDark ? const Color(0xFF3A3A3A) : Colors.white,
                         getTooltipItems: (touchedSpots) {
                           return touchedSpots.map((spot) {
                             return LineTooltipItem(
                               '${spot.y.toInt()}',
                               TextStyle(
-                                color: brandPurple,
+                                color: isDark ? Colors.white : const Color(0xFF111111),
                                 fontWeight: FontWeight.bold,
                                 fontSize: ResponsiveHelper.sp(16),
                               ),
