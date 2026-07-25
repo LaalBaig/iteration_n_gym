@@ -371,13 +371,13 @@ class _LogSetCardState extends State<LogSetCard> {
     setState(() {
       if (setData.isRunning) {
         setData.stopTimer();
-        setData.isCompleted = true;
+        setData.isCompleted = setData.durationMs >= 1000;
       } else {
         // Stop any other running timer
         for (int i = 0; i < _sets.length; i++) {
           if (i != index && _sets[i].isRunning) {
             _sets[i].stopTimer();
-            _sets[i].isCompleted = true;
+            _sets[i].isCompleted = _sets[i].durationMs >= 1000;
           }
         }
         setData.startTimer(() {
@@ -608,7 +608,7 @@ class _LogSetCardState extends State<LogSetCard> {
       setState(() {
         setData.durationMs = result;
         setData.timeBeforeStartMs = result;
-        setData.isCompleted = true;
+        setData.isCompleted = result >= 1000;
         _notifyChanges();
       });
     } else if (isRunningBefore) {
@@ -657,7 +657,7 @@ class _LogSetCardState extends State<LogSetCard> {
           final seconds = log.time ?? log.weight.toInt();
           setData.durationMs = seconds * 1000;
           setData.timeBeforeStartMs = seconds * 1000;
-          setData.isCompleted = true;
+          setData.isCompleted = seconds > 0;
         } else if (widget.variant == LogSetCardVariant.bodyweight) {
           setData.reps = log.reps;
           setData.repsTextController.text = log.reps > 0 ? log.reps.toString() : '';
@@ -1127,7 +1127,7 @@ class _LogSetCardState extends State<LogSetCard> {
               }
 
               // Background row color highlighted if checked (greenish accent)
-              final Color rowColor = setData.isCompleted
+              final Color rowColor = setData.isCompleted && widget.variant != LogSetCardVariant.timed
                   ? (isDark ? const Color(0xFF0E2A1E) : const Color(0xFFE8F8EE))
                   : Colors.transparent;
 
@@ -1190,6 +1190,18 @@ class _LogSetCardState extends State<LogSetCard> {
                           messenger.showSnackBar(
                             SnackBar(
                               content: Text("Please fill in reps for set ${i + 1}"),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+                      } else if (widget.variant == LogSetCardVariant.timed) {
+                        if (set.durationMs < 1000) {
+                          final messenger = ScaffoldMessenger.of(context);
+                          messenger.clearSnackBars();
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text("Please record a time for set ${i + 1}"),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -1648,20 +1660,25 @@ class _LogSetCardState extends State<LogSetCard> {
                 ? TextButton(
                     onPressed: () {
                       setState(() {
+                        setData.resetTimer(() {});
                         setData.isCompleted = false;
                         _notifyChanges();
                       });
                     },
                     style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFF10B981),
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                      side: BorderSide(
+                        color: colorScheme.outlineVariant,
+                        width: 1.5,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
                       ),
                       padding: EdgeInsets.zero,
                     ),
                     child: Icon(
-                      Icons.check,
-                      color: Colors.white,
+                      Icons.restart_alt,
+                      color: colorScheme.onSurfaceVariant,
                       size: ResponsiveHelper.w(18),
                     ),
                   )

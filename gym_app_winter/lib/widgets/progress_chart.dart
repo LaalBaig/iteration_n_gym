@@ -4,12 +4,22 @@ import 'package:gym_app_winter/utils/responsive_helper.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:gym_app_winter/palette/color_scheme.dart';
 import 'package:gym_app_winter/widgets/history_tile.dart';
+import 'package:gym_app_winter/widgets/log_set_card.dart';
+import 'package:gym_app_winter/utils/volume_utils.dart';
 
 class ProgressChart extends StatefulWidget {
   final List<HistoryTile> history;
   final String initialMetric;
-  
-  const ProgressChart({super.key, required this.history, this.initialMetric = 'Volume'});
+  final LogSetCardVariant variant;
+  final double? bodyweightKg;
+
+  const ProgressChart({
+    super.key,
+    required this.history,
+    this.initialMetric = 'Volume',
+    this.variant = LogSetCardVariant.weighted,
+    this.bodyweightKg,
+  });
 
   @override
   State<ProgressChart> createState() => _ProgressChartState();
@@ -19,10 +29,16 @@ class _ProgressChartState extends State<ProgressChart> {
   late String _selectedMetric;
   String _selectedTimeframe = 'All Time';
 
+  List<String> get _availableMetrics => widget.variant == LogSetCardVariant.timed
+      ? const ['Time']
+      : const ['Volume', 'Max Weight', 'Reps'];
+
   @override
   void initState() {
     super.initState();
-    _selectedMetric = widget.initialMetric;
+    _selectedMetric = _availableMetrics.contains(widget.initialMetric)
+        ? widget.initialMetric
+        : _availableMetrics.first;
   }
 
   @override
@@ -30,6 +46,9 @@ class _ProgressChartState extends State<ProgressChart> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialMetric != widget.initialMetric) {
       _selectedMetric = widget.initialMetric;
+    }
+    if (!_availableMetrics.contains(_selectedMetric)) {
+      _selectedMetric = _availableMetrics.first;
     }
   }
 
@@ -72,7 +91,14 @@ class _ProgressChartState extends State<ProgressChart> {
         
         if (_selectedMetric == 'Volume') {
            for (var s in sets) {
-             yValue += (s['reps'] ?? 0) * (s['weight'] ?? 0);
+             yValue += calcSetVolume(
+               weight: (s['weight'] ?? 0).toDouble(),
+               reps: (s['reps'] ?? 0) as int,
+               trackingType: widget.variant == LogSetCardVariant.timed ? 'timed' : null,
+               category: widget.variant == LogSetCardVariant.bodyweight ? 'bodyweight' : '',
+               exerciseType: widget.variant == LogSetCardVariant.bodyweight ? 'bodyweight' : null,
+               bodyweightKg: widget.bodyweightKg,
+             );
            }
         } else if (_selectedMetric == 'Max Weight') {
            for (var s in sets) {
@@ -144,7 +170,7 @@ class _ProgressChartState extends State<ProgressChart> {
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),
-                    items: ['Volume', 'Max Weight', 'Reps', 'Time']
+                    items: _availableMetrics
                         .map((e) => DropdownMenuItem(
                               value: e,
                               child: Text(e, style: TextStyle(color: context.colors.textBlack, fontSize: ResponsiveHelper.sp(13))),

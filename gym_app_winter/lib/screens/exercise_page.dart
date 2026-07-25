@@ -11,6 +11,7 @@ import 'package:gym_app_winter/database/database.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:intl/intl.dart';
 import 'package:gym_app_winter/widgets/rest_timer_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ExercisePage extends StatefulWidget {
   const ExercisePage({super.key, required this.exerciseName});
@@ -22,11 +23,19 @@ class ExercisePage extends StatefulWidget {
 
 class _ExercisePageState extends State<ExercisePage> {
   Exercise? _exercise;
+  double? _bodyweightKg;
 
   @override
   void initState() {
     super.initState();
     _loadExercise();
+    SharedPreferences.getInstance().then((prefs) {
+      if (mounted) {
+        setState(() {
+          _bodyweightKg = prefs.getDouble('userBodyweightKg');
+        });
+      }
+    });
   }
 
   void _loadExercise() async {
@@ -241,6 +250,8 @@ class _ExercisePageState extends State<ExercisePage> {
                   SizedBox(height: ResponsiveHelper.h(24)),
                   ProgressChart(
                     history: history,
+                    variant: variant,
+                    bodyweightKg: _bodyweightKg,
                     initialMetric: variant == LogSetCardVariant.timed
                         ? 'Time'
                         : variant == LogSetCardVariant.bodyweight
