@@ -1,120 +1,372 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
+import 'package:gym_app_winter/widgets/bouncing_button.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+import 'package:gym_app_winter/constants/spacing.dart';
 
 class ExerciseTile extends StatelessWidget {
   final String title;
   final String subtitle;
+  final String? category;
+  final List<String> muscleGroups;
   final VoidCallback onTap;
   final VoidCallback? onDelete;
+  final VoidCallback? onSoftDelete;
+  final double bottomMargin;
+  final bool confirmDelete;
+  final bool isCustom;
+  final bool showDeleteIcon;
 
   const ExerciseTile({
     super.key,
     required this.title,
     required this.subtitle,
+    this.category,
+    this.muscleGroups = const [],
     required this.onTap,
     this.onDelete,
+    this.onSoftDelete,
+    this.bottomMargin = 8.0,
+    this.confirmDelete = true,
+    this.isCustom = false,
+    this.showDeleteIcon = true,
   });
+
+  Widget _buildTag(
+    BuildContext context,
+    String text,
+    Color badgeBgColor,
+    Color brandPurple,
+  ) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveHelper.w(6),
+        vertical: ResponsiveHelper.h(2),
+      ),
+      decoration: BoxDecoration(
+        color: badgeBgColor,
+        borderRadius: BorderRadius.circular(ResponsiveHelper.w(6)),
+      ),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: brandPurple,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    // Define colors for the dumbbell badge and category pill
+    final Color badgeBgColor = colorScheme.primaryContainer;
+    final Color brandPurple = colorScheme.primary;
+
     return Dismissible(
       key: key ?? ValueKey(title),
-      direction: DismissDirection.endToStart,
+      direction: onDelete == null
+          ? DismissDirection.none
+          : DismissDirection.endToStart,
       onDismissed: (direction) {
+        // handled inside confirmDismiss — never reaches here for custom exercises
         onDelete?.call();
       },
       confirmDismiss: (direction) async {
-        return await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              backgroundColor: AppColors.textWhite,
-              title: const Text("Delete Exercise"),
-              content: const Text("Are you sure you want to delete this exercise?"),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text("Cancel"),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text("Delete", style: TextStyle(color: Colors.red)),
-                ),
-              ],
-            );
-          },
-        );
+        if (!confirmDelete) return true;
+        if (isCustom && onSoftDelete != null) {
+          await _showCustomDeleteDialog(context, colorScheme);
+          return false; // always prevent Dismissible from removing the tile itself
+        }
+        return await _showDeleteDialog(context, colorScheme);
       },
       background: Container(
-        margin: const EdgeInsets.fromLTRB(0,0,0,12), 
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        margin: EdgeInsets.only(bottom: ResponsiveHelper.h(bottomMargin)),
+        padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
         decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(14),
+          color: colorScheme.error,
+          borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
         ),
         alignment: Alignment.centerRight,
-        child: const Icon(Icons.delete, color: Colors.white),
+        child: Icon(
+          Icons.delete,
+          color: Colors.white,
+          size: ResponsiveHelper.w(24),
+        ),
       ),
-      child: GestureDetector(
+      child: BouncingButton(
         onTap: onTap,
         child: Container(
-          margin: const EdgeInsets.fromLTRB(0,0,0,12), 
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12), 
-          decoration: BoxDecoration(
-            color: AppColors.backgroundGrey,
-            borderRadius: BorderRadius.circular(14), // Slightly tighter radius
+          margin: EdgeInsets.only(bottom: ResponsiveHelper.h(bottomMargin)),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: ResponsiveHelper.h(12),
           ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8), // Reduced from 12
-              decoration: BoxDecoration(
-                color: AppColors.textWhite,
-                borderRadius: BorderRadius.circular(10),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(ResponsiveHelper.w(16)),
+            border: Border.all(color: colorScheme.outlineVariant, width: 1.0),
+          ),
+          child: Row(
+            children: [
+              // 1. Dumbbell Icon Badge
+              Container(
+                width: ResponsiveHelper.w(40),
+                height: ResponsiveHelper.w(40),
+                decoration: BoxDecoration(
+                  color: badgeBgColor,
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.w(10)),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.fitness_center,
+                    color: brandPurple,
+                    size: ResponsiveHelper.w(18),
+                  ),
+                ),
               ),
-              child: const Icon(
-                Icons.fitness_center,
-                color: AppColors.primaryBlue,
-                size: 24, 
-              ),
-            ),
-            const SizedBox(width: 12),
+              SizedBox(width: AppSpacing.sm),
 
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 15, 
-                      fontWeight: FontWeight.w600, 
-                      color: AppColors.textBlack,
+              // 2. Title & Subtitle + Category Badges
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    SizedBox(height: AppSpacing.xs),
+                    if (muscleGroups.isNotEmpty ||
+                        (category != null && category!.isNotEmpty) ||
+                        isCustom)
+                      Padding(
+                        padding: EdgeInsets.only(bottom: ResponsiveHelper.h(4)),
+                        child: Wrap(
+                          spacing: ResponsiveHelper.w(6),
+                          runSpacing: ResponsiveHelper.h(4),
+                          children: [
+                            if (isCustom)
+                              _buildTag(
+                                context,
+                                "Custom",
+                                colorScheme.secondaryContainer,
+                                colorScheme.onSecondaryContainer,
+                              ),
+                            if (muscleGroups.isNotEmpty)
+                              ...muscleGroups.map(
+                                (m) => _buildTag(
+                                  context,
+                                  m,
+                                  badgeBgColor,
+                                  brandPurple,
+                                ),
+                              )
+                            else if (category != null && category!.isNotEmpty)
+                              _buildTag(
+                                context,
+                                category!,
+                                badgeBgColor,
+                                brandPurple,
+                              ),
+                          ],
+                        ),
+                      ),
+                    if (subtitle.isNotEmpty)
+                      Text(
+                        subtitle,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+              ),
+              SizedBox(width: AppSpacing.sm),
+
+              // 3. Delete Option or Chevron Right
+              if (onDelete != null && showDeleteIcon)
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () async {
+                    if (!confirmDelete) {
+                      onDelete!.call();
+                      return;
+                    }
+                    if (isCustom && onSoftDelete != null) {
+                      await _showCustomDeleteDialog(context, colorScheme);
+                      return;
+                    }
+                    final confirmed = await _showDeleteDialog(
+                      context,
+                      colorScheme,
+                    );
+                    if (confirmed) {
+                      onDelete!.call();
+                    }
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(AppSpacing.sm),
+                    child: Icon(
+                      Icons.delete_outline,
+                      color: colorScheme.error,
+                      size: ResponsiveHelper.w(22),
                     ),
                   ),
-                  const SizedBox(height: 2), 
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12, 
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
+                )
+              else
+                Icon(
+                  Icons.chevron_right,
+                  color: colorScheme.onSurfaceVariant,
+                  size: ResponsiveHelper.w(20),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showCustomDeleteDialog(
+    BuildContext context,
+    ColorScheme colorScheme,
+  ) async {
+    final choice = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colorScheme.surface,
+        title: Text(
+          'Remove "$title"?',
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          'Choose how you want to remove this exercise from your catalogue.',
+          style: TextStyle(color: colorScheme.onSurfaceVariant),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(null),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colorScheme.onSurfaceVariant),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop('soft'),
+            child: Text(
+              'Remove from catalogue',
+              style: TextStyle(color: colorScheme.primary),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop('hard'),
+            child: Text(
+              'Delete permanently',
+              style: TextStyle(color: colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (choice == 'soft') {
+      onSoftDelete!.call();
+    } else if (choice == 'hard') {
+      if (!context.mounted) return;
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: colorScheme.surface,
+          title: Text(
+            'Delete permanently?',
+            style: TextStyle(
+              color: colorScheme.error,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: Text(
+            'Your past workout logs for "$title" will be kept in history but '
+            'relabelled as "$title (Deleted)". This cannot be undone.',
+            style: TextStyle(color: colorScheme.onSurfaceVariant),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: colorScheme.onSurfaceVariant),
               ),
             ),
-
-            // 3. Subtle Chevron
-            const Icon(
-              Icons.chevron_right, 
-              color: Colors.grey, 
-              size: 18, // Smaller arrow
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(
+                'Yes, delete permanently',
+                style: TextStyle(color: colorScheme.error),
+              ),
             ),
           ],
         ),
-      ),
-    ),
-   );
+      );
+      if (confirmed == true) {
+        onDelete!.call();
+      }
+    }
+  }
+
+  Future<bool> _showDeleteDialog(
+    BuildContext context,
+    ColorScheme colorScheme,
+  ) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: colorScheme.surface,
+          title: Text(
+            "Delete Exercise",
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface),
+          ),
+          content: Text(
+            "Are you sure you want to delete this exercise?",
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                "Cancel",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(
+                "Delete",
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: colorScheme.error),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    return result ?? false;
   }
 }

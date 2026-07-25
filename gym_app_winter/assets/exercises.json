@@ -1,0 +1,326 @@
+[
+  {
+    "id": "ex_bench_press",
+    "name": "Bench Press",
+    "category": "Chest",
+    "muscles": ["Chest", "Triceps", "Front Delt"]
+  },
+  {
+    "id": "ex_incline_bench_press",
+    "name": "Incline Bench Press",
+    "category": "Chest",
+    "muscles": ["Upper Chest", "Triceps", "Front Delt"]
+  },
+  {
+    "id": "ex_decline_bench_press",
+    "name": "Decline Bench Press",
+    "category": "Chest",
+    "muscles": ["Lower Chest", "Triceps", "Front Delt"]
+  },
+  {
+    "id": "ex_dumbbell_flyes",
+    "name": "Dumbbell Flyes",
+    "category": "Chest",
+    "muscles": ["Chest"]
+  },
+  {
+    "id": "ex_push_ups",
+    "name": "Push-Ups",
+    "category": "Chest",
+    "muscles": ["Chest", "Triceps", "Front Delt"],
+    "exerciseType": "Bodyweight",
+    "trackingType": "Reps"
+  },
+  {
+    "id": "ex_cable_crossover",
+    "name": "Cable Crossover",
+    "category": "Chest",
+    "muscles": ["Chest"]
+  },
+  {
+    "id": "ex_deadlift",
+    "name": "Deadlift",
+    "category": "Back",
+    "muscles": ["Hamstrings", "Glutes", "Lower Back", "Lats"]
+  },
+  {
+    "id": "ex_pull_ups",
+    "name": "Pull-Ups",
+    "category": "Back",
+    "muscles": ["Lats", "Biceps", "Forearms"],
+    "exerciseType": "Bodyweight",
+    "trackingType": "Reps"
+  },
+  {
+    "id": "ex_chin_ups",
+    "name": "Chin-Ups",
+    "category": "Back",
+    "muscles": ["Lats", "Biceps"],
+    "exerciseType": "Bodyweight",
+    "trackingType": "Reps"
+  },
+  {
+    "id": "ex_barbell_row",
+    "name": "Barbell Row",
+    "category": "Back",
+    "muscles": ["Lats", "Rhomboids", "Biceps"]
+  },
+  {
+    "id": "ex_dumbbell_row",
+    "name": "Dumbbell Row",
+    "category": "Back",
+    "muscles": ["Lats", "Rhomboids", "Biceps"]
+  },
+  {
+    "id": "ex_lat_pulldown",
+    "name": "Lat Pulldown",
+    "category": "Back",
+    "muscles": ["Lats", "Biceps"]
+  },
+  {
+    "id": "ex_t_bar_row",
+    "name": "T-Bar Row",
+    "category": "Back",
+    "muscles": ["Lats", "Rhomboids"]
+  },
+  {
+    "id": "ex_squat",
+    "name": "Squat",
+    "category": "Legs",
+    "muscles": ["Quads", "Glutes", "Adductors"]
+  },
+  {
+    "id": "ex_front_squat",
+    "name": "Front Squat",
+    "category": "Legs",
+    "muscles": ["Quads", "Glutes", "Core"]
+  },
+  {
+    "id": "ex_leg_press",
+    "name": "Leg Press",
+    "category": "Legs",
+    "muscles": ["Quads", "Glutes"]
+  },
+  {
+    "id": "ex_lunges",
+    "name": "Lunges",
+    "category": "Legs",
+    "muscles": ["Quads", "Glutes"]
+  },
+  {
+    "id": "ex_bulgarian_split_squat",
+    "name": "Bulgarian Split Squat",
+    "category": "Legs",
+    "muscles": ["Quads", "Glutes"]
+  },
+  {
+    "id": "ex_leg_extension",
+    "name": "Leg Extension",
+    "category": "Legs",
+    "muscles": ["Quads"]
+  },
+  {
+    "id": "ex_leg_curl",
+    "name": "Leg Curl",
+    "category": "Legs",
+    "muscles": ["Hamstrings"]
+  },
+  {
+    "id": "ex_romanian_deadlift",
+    "name": "Romanian Deadlift",
+    "category": "Legs",
+    "muscles": ["Hamstrings", "Glutes", "Lower Back"]
+  },
+  {
+    "id": "ex_calf_raise",
+    "name": "Calf Raise",
+    "category": "Legs",
+    "muscles": ["Calves"]
+  },
+  {
+    "id": "ex_overhead_press",
+    "name": "Overhead Press",
+    "category": "Shoulders",
+    "muscles": ["Front Delt", "Triceps"]
+  },
+  {
+    "id": "ex_dumbbell_shoulder_press",
+    "name": "Dumbbell Shoulder Press",
+    "category": "Shoulders",
+    "muscles": ["Front Delt", "Side Delt", "Triceps"]
+  },
+  {
+    "id": "ex_lateral_raise",
+    "name": "Lateral Raise",
+    "category": "Shoulders",
+    "muscles": ["Side Delt"]
+  },
+  {
+    "id": "ex_front_raise",
+    "name": "Front Raise",
+    "category": "Shoulders",
+    "muscles": ["Front Delt"]
+  },
+  {
+    "id": "ex_reverse_pec_deck",
+    "name": "Reverse Pec Deck",
+    "category": "Shoulders",
+    "muscles": ["Rear Delt"]
+  },
+  {
+    "id": "ex_face_pull",
+    "name": "Face Pull",
+    "category": "Shoulders",
+    "muscles": ["Rear Delt", "Rotator Cuff"]
+  },
+  {
+    "id": "ex_shrugs",
+    "name": "Shrugs",
+    "category": "Shoulders",
+    "muscles": ["Traps"]
+  },
+  {
+    "id": "ex_bicep_curls",
+    "name": "Bicep Curls",
+    "category": "Arms",
+    "muscles": ["Biceps"]
+  },
+  {
+    "id": "ex_hammer_curls",
+    "name": "Hammer Curls",
+    "category": "Arms",
+    "muscles": ["Brachialis", "Forearms"]
+  },
+  {
+    "id": "ex_preacher_curls",
+    "name": "Preacher Curls",
+    "category": "Arms",
+    "muscles": ["Biceps"]
+  },
+  {
+    "id": "ex_tricep_extensions",
+    "name": "Tricep Extensions",
+    "category": "Arms",
+    "muscles": ["Triceps"]
+  },
+  {
+    "id": "ex_tricep_pushdown",
+    "name": "Tricep Pushdown",
+    "category": "Arms",
+    "muscles": ["Triceps"]
+  },
+  {
+    "id": "ex_skull_crushers",
+    "name": "Skull Crushers",
+    "category": "Arms",
+    "muscles": ["Triceps"]
+  },
+  {
+    "id": "ex_dips",
+    "name": "Dips",
+    "category": "Arms",
+    "muscles": ["Triceps", "Chest", "Front Delt"],
+    "exerciseType": "Bodyweight",
+    "trackingType": "Reps"
+  },
+  {
+    "id": "ex_plank",
+    "name": "Plank",
+    "category": "Core",
+    "muscles": ["Core"],
+    "exerciseType": "Bodyweight",
+    "trackingType": "Time Based"
+  },
+  {
+    "id": "ex_crunches",
+    "name": "Crunches",
+    "category": "Core",
+    "muscles": ["Core"],
+    "exerciseType": "Bodyweight",
+    "trackingType": "Reps"
+  },
+  {
+    "id": "ex_leg_raises",
+    "name": "Leg Raises",
+    "category": "Core",
+    "muscles": ["Core"],
+    "exerciseType": "Bodyweight",
+    "trackingType": "Reps"
+  },
+  {
+    "id": "ex_russian_twists",
+    "name": "Russian Twists",
+    "category": "Core",
+    "muscles": ["Core", "Obliques"]
+  },
+  {
+    "id": "ex_ab_wheel_rollout",
+    "name": "Ab Wheel Rollout",
+    "category": "Core",
+    "muscles": ["Core"]
+  },
+  {
+    "id": "ex_running",
+    "name": "Running",
+    "category": "Cardio",
+    "muscles": ["Cardio"],
+    "trackingType": "Time Based"
+  },
+  {
+    "id": "ex_cycling",
+    "name": "Cycling",
+    "category": "Cardio",
+    "muscles": ["Cardio"],
+    "trackingType": "Time Based"
+  },
+  {
+    "id": "ex_rowing_machine",
+    "name": "Rowing Machine",
+    "category": "Cardio",
+    "muscles": ["Cardio", "Back", "Legs"],
+    "trackingType": "Time Based"
+  },
+  {
+    "id": "ex_stairmaster",
+    "name": "Stairmaster",
+    "category": "Cardio",
+    "muscles": ["Cardio", "Legs"],
+    "trackingType": "Time Based"
+  },
+  {
+    "id": "ex_jump_rope",
+    "name": "Jump Rope",
+    "category": "Cardio",
+    "muscles": ["Cardio", "Calves"],
+    "trackingType": "Time Based"
+  },
+  {
+    "id": "ex_kettlebell_swings",
+    "name": "Kettlebell Swings",
+    "category": "Full Body",
+    "muscles": ["Glutes", "Hamstrings", "Core"]
+  },
+  {
+    "id": "ex_burpees",
+    "name": "Burpees",
+    "category": "Full Body",
+    "muscles": ["Chest", "Legs", "Cardio", "Core"],
+    "exerciseType": "Bodyweight",
+    "trackingType": "Reps"
+  },
+  {
+    "id": "ex_muscle_ups",
+    "name": "Muscle-Ups",
+    "category": "Full Body",
+    "muscles": ["Lats", "Triceps", "Chest", "Core"],
+    "exerciseType": "Bodyweight",
+    "trackingType": "Reps"
+  },
+  {
+    "id": "ex_farmers_walk",
+    "name": "Farmer's Walk",
+    "category": "Full Body",
+    "muscles": ["Forearms", "Core", "Traps", "Legs"],
+    "trackingType": "Time Based"
+  }
+]

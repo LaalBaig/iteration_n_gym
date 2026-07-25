@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app_winter/utils/responsive_helper.dart';
+
 import 'package:gym_app_winter/palette/color_scheme.dart';
 
 class CustomFloatingButton extends StatelessWidget {
@@ -14,11 +16,11 @@ class CustomFloatingButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryBlue,
-        foregroundColor: AppColors.textWhite,
-        padding: const EdgeInsets.fromLTRB(24,20,24,20),
+        backgroundColor: context.colors.primaryBlue,
+        foregroundColor: Colors.white,
+        padding: EdgeInsets.fromLTRB(24,20,24,20),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // Match Figma rounding
+          borderRadius: BorderRadius.circular(ResponsiveHelper.w(12)), // Match Figma rounding
         ),
       ),
       
