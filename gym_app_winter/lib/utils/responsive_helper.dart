@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 
 class ResponsiveHelper {
-  static late MediaQueryData _mediaQuery;
-  static late double screenWidth;
-  static late double screenHeight;
-  static late double _designWidth;
-  static late double _designHeight;
+  // Reference device the layout values throughout the app were designed
+  // against (iPhone 14 logical pixels).
+  static const double _designWidth = 390.0;
+  static const double _designHeight = 844.0;
+
+  // Default to the design size so widgets render at their intended
+  // dimensions before init() runs — notably under `flutter test`, where a
+  // widget is pumped directly without the app root that calls init().
+  static double screenWidth = _designWidth;
+  static double screenHeight = _designHeight;
 
   static void init(BuildContext context) {
+    MediaQueryData mediaQuery;
     try {
-      _mediaQuery = MediaQuery.of(context);
+      mediaQuery = MediaQuery.of(context);
     } catch (_) {
-      _mediaQuery = MediaQueryData.fromView(View.of(context));
+      mediaQuery = MediaQueryData.fromView(View.of(context));
     }
-    screenWidth = _mediaQuery.size.width;
-    screenHeight = _mediaQuery.size.height;
-    _designWidth = 390.0;
-    _designHeight = 844.0;
+    screenWidth = mediaQuery.size.width;
+    screenHeight = mediaQuery.size.height;
   }
 
   static double w(double width) => (width / _designWidth) * screenWidth;

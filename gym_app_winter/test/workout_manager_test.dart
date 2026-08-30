@@ -1,11 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gym_app_winter/state/workout_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  // startWorkout() persists via SharedPreferences, which needs the test
+  // binding for its platform channel and an in-memory store to back it.
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('WorkoutManager State Tracking Tests', () {
     late WorkoutManager manager;
 
     setUp(() {
+      SharedPreferences.setMockInitialValues({});
       manager = WorkoutManager();
       // Ensure it is in a clean state
       if (manager.isActive) {
