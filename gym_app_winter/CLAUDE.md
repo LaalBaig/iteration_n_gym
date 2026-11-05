@@ -14,7 +14,7 @@ The code is the source of truth. If a doc disagrees with the code, trust the cod
 
 ```sh
 flutter pub get
-flutter analyze                    # baseline is ~13 infos/warnings, 0 errors — don't add new ones
+flutter analyze                    # baseline is 10 infos/warnings, 0 errors — don't add new ones
 flutter test                       # test/ — WorkoutManager, HistoryTile, widget smoke test
 dart run build_runner build --delete-conflicting-outputs   # after ANY change to lib/database/database.dart
 ```

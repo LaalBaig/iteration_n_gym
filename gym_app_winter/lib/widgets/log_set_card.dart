@@ -912,7 +912,7 @@ class _LogSetCardState extends State<LogSetCard> {
     final Color currentBorderColor = _highlighted ? brandPurple : borderTheme;
     final double currentBorderWidth = _highlighted ? 2.5 : 1.0;
     final Color currentBgColor = _highlighted 
-        ? brandPurple.withOpacity(0.08) 
+        ? brandPurple.withValues(alpha: 0.08) 
         : colorScheme.surface;
 
     return AnimatedContainer(

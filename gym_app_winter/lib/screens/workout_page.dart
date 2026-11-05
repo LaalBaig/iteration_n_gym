@@ -3,7 +3,6 @@ import 'package:gym_app_winter/utils/responsive_helper.dart';
 
 import 'package:gym_app_winter/datamodel/exercise.dart';
 import 'package:gym_app_winter/widgets/search_bar.dart';
-import 'package:gym_app_winter/palette/color_scheme.dart';
 
 class WorkoutPage extends StatefulWidget {
   const WorkoutPage({super.key});
