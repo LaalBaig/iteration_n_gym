@@ -23,7 +23,7 @@ Adding a native plugin (e.g. notifications) needs a full cold rebuild, not hot r
 
 ## Repo layout gotcha
 
-The git root is the **parent** directory (`iteration_n_gym/`), not this folder. Commit paths look like `gym_app_winter/lib/...`. `ios/build/` artifacts show up in `git status` — don't commit them.
+The git root is the **parent** directory (`iteration_n_gym/`), not this folder. Commit paths look like `gym_app_winter/lib/...`.
 
 ## Architecture in one breath
 
