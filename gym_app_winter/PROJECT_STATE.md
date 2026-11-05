@@ -1,7 +1,7 @@
 # Project State — gym_app_winter
 
-> Last updated: 2026-07-25 (session 14)
-> Branch: `vibecode-supreme` | Version: `1.0.1+2` | DB schema: v12
+> Last updated: 2026-11-05 (session 15)
+> Branch: `vibecode-supreme` | Version: `1.0.1+5` | DB schema: v12
 
 ---
 
@@ -41,6 +41,10 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 | Exercise page progress chart — bodyweight volume bug + irrelevant "Time" metric | ✅ Done | `ProgressChart` previously computed Volume as raw `reps * weight` with no knowledge of exercise type, so bodyweight exercises (whose logged `weight` is just *added* weight) showed ~0 volume. `ProgressChart` now takes `variant: LogSetCardVariant` and `bodyweightKg` params (passed from `exercise_page.dart`, which loads `userBodyweightKg` via `SharedPreferences` the same way `stats_tab.dart` does) and uses `calcSetVolume()` from `lib/utils/volume_utils.dart` for the Volume metric. Metric dropdown (`Volume`/`Max Weight`/`Reps`/`Time`) was unconditional — now gated by variant via `_availableMetrics` (timed exercises only see `Time`; all others only see `Volume`/`Max Weight`/`Reps`), with `_selectedMetric` reset if it falls outside the available set. |
 | Timed sets — prevent zero/null time entries | ✅ Done | `log_set_card.dart`: stopping a timer (`_toggleTimer`), the manual time-adjustment sheet, and "copy previous" all set `isCompleted = true` unconditionally, even at 0 seconds — this bypassed `WorkoutManager._isSetLogged`'s empty-set filter (which short-circuits `true` on `isCompleted`) and let 0-duration rows reach the DB. Now `isCompleted` is only set true when duration ≥ 1000ms. Also added a timed-variant branch to the pre-submit validation on the standalone "Log Exercise" button (mirrors existing weighted/bodyweight checks), rejecting sets with `durationMs < 1000` with a snackbar instead of silently allowing them through — this closes the equivalent hole in the standalone per-exercise flow (`exercise_page.dart`), which has no `_isSetLogged`-style filter of its own. |
 | Timed sets — paused-state button + row highlight | ✅ Done | `log_set_card.dart`: the paused/stopped state of a timed set previously showed a green checkmark button that only toggled `isCompleted` back to `false` without resetting the recorded duration (so resuming continued from the old time). Swapped for a restart icon (`Icons.restart_alt`) wired to the pre-existing but previously-unused `_SetData.resetTimer()`, which zeroes `durationMs`/`timeBeforeStartMs` and returns the row to its play-ready state. Also removed the whole-row green highlight (`rowColor`) for timed sets specifically — it's still used for completed weighted/bodyweight sets, but for timed rows it read as misleading "success" styling on a merely-paused timer. |
+| App Store release prep (iOS) | ✅ Done | Replaced default `com.example` bundle identifier; iOS deployment target raised to 15.0 (Podfile.lock updated); export-compliance exemption declared in `Info.plist`; device family restricted to iPhone only. Build number bumped 2 → 5 across these commits. |
+| Dead code removal | ✅ Done | Deleted unreferenced `log_set_card_bonus.dart`, `exercise_tab_copy_landing.dart`, `compile_check.dart`, `datamodel/ExerciseModel.dart`, plus one-shot codemod scripts and stray dev artifacts. |
+| Test suite repaired | ✅ Done | All widget tests were failing with `LateInitializationError` in `ResponsiveHelper`. Design size is now `static const` and screen size defaults to it, so `w()`/`h()`/`sp()` are identity functions before `init()` — leaf widgets can be pumped directly in tests. `flutter test` passes. |
+| `CLAUDE.md` added | ✅ Done | Session-start context for Claude Code: points to this file and `CODEBASE_ROADMAP.md`, lists commands, conventions, and known traps. |
 
 ---
 
@@ -49,7 +53,7 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 ### Core Workout Flow
 - [x] Active workout session with live timer (`WorkoutManager` singleton)
 - [x] Minimize/maximize workout — global `MinimizedWorkoutBar` persists across navigation
-- [x] Set logging — weight/reps/time variants (`log_set_card.dart`, `log_set_card_bonus.dart`)
+- [x] Set logging — weight/reps/time variants (`log_set_card.dart`)
 - [x] Rest timer with interactive overlay (`RestTimerNotifier`, `rest_timer_button.dart`)
 - [x] Bodyweight and timed exercise tracking (separate input UI per type)
 - [x] Copy previous session's logs into a new set row
@@ -113,9 +117,8 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 |---|---|---|
 | `MuscleGroup` ID generation | Uses `ms_hashCode` — not guaranteed unique across concurrent inserts in `addExerciseWithMuscles` | Low |
 | `watchAllLogsWithWorkoutAndExercise` | Deduplication done in-memory via `Map` — could be done at query level | Low |
-| `exercises_tab_landing` vs `exercise_tab_copy_landing` | Two near-identical tab files exist; copy variant's purpose is unclear | Medium |
 | Schema migration v8/v9 | Both migrations drop + recreate routines tables identically — one is redundant | Low |
-| No unit or widget tests | Zero test coverage across the codebase | High |
+| Thin test coverage | `test/` covers only `WorkoutManager` tracking lists, `HistoryTile`, and `CustomBottomNavigationBar` rendering. No coverage of workout start/finish, DB queries, or volume calc | High |
 | `ExerciseLogs` join on `exerciseName` (string) | History joins use name-matching, not a foreign key — rename-on-delete workaround required | Medium |
 | Rest timer notification | Notification fires correctly but needs finetuning: notification copy, sound choice, and behaviour when app is foregrounded (currently shows banner even in-app since `presentAlert: true`) should all be revisited | Low |
 
@@ -134,8 +137,8 @@ A living tracker of what's been built, what's in progress, and what's planned. U
 - [x] Minimized card layout for workout history
 - [ ] Search/filter on workout history screen
 - [ ] Pagination or lazy loading for long exercise history lists
-- [ ] Widget tests for `WorkoutManager` state transitions
-- [ ] Consolidate `exercises_tab_landing` and `exercise_tab_copy_landing`
+- [ ] Tests for `WorkoutManager` state transitions (start → log → finish/discard) — only tracking-list tests exist so far
+- [x] Consolidate `exercises_tab_landing` and `exercise_tab_copy_landing` (copy deleted as dead code)
 - [ ] Migrate `ExerciseLogs.exerciseName` join to use `exerciseId` FK
 
 ---

@@ -26,8 +26,7 @@ Handles all local persistence.
 
 ### 3. `datamodel/`
 Contains plain Dart classes representing core in-memory business entities (independent of Drift schema classes).
-- **`exercise.dart`**: Basic exercise data (name, muscle group, etc.) used in-session.
-- **`ExerciseModel.dart`**: A richer exercise model used for UI state.
+- **`exercise.dart`**: Exercise data (name, muscle group, etc.) used in-session and in UI state.
 - **`ExerciseLog.dart`**: Represents a logged exercise in a session.
 - **`ExerciseLogEntry.dart`**: Represents a single set entry within an exercise log.
 - **`Workout.dart`**: Represents an active or completed workout session.
@@ -48,6 +47,8 @@ Handles all routing logic.
 
 | Path | Screen |
 |---|---|
+| `/splash` | `SplashScreen` (initial location; routes to `/onboarding` or `/`) |
+| `/onboarding` | `OnboardingScreen` (first launch only) |
 | `/` | `MainScreen` |
 | `/active_workout` | `ActiveWorkoutScreen` (slides up) |
 | `/add_exercise` | `AddExerciseScreen` |
@@ -61,13 +62,15 @@ Handles all routing logic.
 | `/recently_deleted` | `RecentlyDeletedScreen` |
 | `/exercise_page/:exerciseName` | `ExercisePage` |
 | `/see_all_history/:exerciseName` | `SeeAllHistoryScreen` |
+| `/export_history` | `ExportHistoryScreen` |
 
 ### 7. `screens/`
 Top-level UI pages, one per route. Full list:
+- **`splash_screen.dart`**: Animated logo splash; decides between onboarding and the main shell.
+- **`onboarding_screen.dart`**: 3-step first-launch flow (name → bodyweight → welcome).
 - **`main_screen.dart`**: Root shell with bottom nav; hosts the tab layout.
 - **`workout_tab.dart`**: The Workouts tab — shows recent workouts, start options.
 - **`exercises_tab_landing.dart`**: The Exercises tab — browseable exercise catalog.
-- **`exercise_tab_copy_landing.dart`**: Variant of the exercises tab (used in specific flows).
 - **`stats_tab.dart`**: Stats tab — workout analytics and volume charts.
 - **`profile_tab.dart`**: Profile tab — user settings and preferences.
 - **`active_workout_screen.dart`**: The live workout session view.
@@ -82,12 +85,13 @@ Top-level UI pages, one per route. Full list:
 - **`create_routine_screen.dart`**: UI to build and save a new routine.
 - **`custom_exercise_screen.dart`**: UI to create a new custom exercise.
 - **`recently_deleted_screen.dart`**: Recover soft-deleted workouts or exercises.
+- **`export_history_screen.dart`**: Choose scope (all / one exercise) and format (CSV / JSON), then share.
 
 ### 8. `widgets/`
 Reusable UI components. Organized by concern:
 
 **Active Workout / Logging**
-- `log_set_card.dart` / `log_set_card_bonus.dart`: Complex set-logging forms (reps, weight, time).
+- `log_set_card.dart`: Set-logging form with weighted / bodyweight / timed variants (`LogSetCardVariant`).
 - `rest_timer_button.dart`: Interactive button for starting/stopping the rest timer.
 - `minimized_workout_bar.dart`: Floating bar shown when a workout is minimized.
 - `confirm_log.dart`: Dialog/prompt to confirm logging a set.
@@ -123,10 +127,15 @@ Manages visual identity.
 - **`constants/spacing.dart`**: Constants for padding and margins for consistent UI density.
 
 ### 10. `utils/`
-- **`responsive_helper.dart`**: Adapts UI components to different screen sizes and text scaling settings.
+- **`responsive_helper.dart`**: Scales sizes against a 390×844 design base (`w()`, `h()`, `sp()`). Safe to call before `init()` — returns values unscaled, which keeps widget tests working.
+- **`volume_utils.dart`**: `calcSetVolume()` — the single source of truth for set volume (adds user bodyweight for bodyweight exercises).
 
-### 11. `compile_check.dart`
-A scratch file used to verify that third-party packages (e.g. `figma_squircle`) compile correctly. Not part of the app logic — safe to ignore.
+### 11. `services/`
+- **`notification_service.dart`**: Singleton wrapping `flutter_local_notifications`; fires the rest-timer-complete notification. Initialized in `main()`.
+- **`export_service.dart`**: Builds CSV/JSON from workout history and hands it to the native share sheet.
+
+### 12. `test/`
+- `workout_manager_test.dart`, `history_tile_test.dart`, `widget_test.dart` (bottom nav). Run with `flutter test`. Coverage is thin — see Known Issues in `PROJECT_STATE.md`.
 
 ---
 
